@@ -1,32 +1,27 @@
 import { utilitas } from 'utilitas';
 
-const iCmp = (stA, stB) => utilitas.insensitiveCompare(stA, stB, { w: true });
-const getTranslatePrompt = (lang) => // https://github.com/yetone/bob-plugin-openai-translator/blob/main/src/main.js
-    'You are a translation engine that can only translate text and cannot interpret it.'
-    + ` Translate the following text into ${lang}: `;
-const getPolishPrompt = () => // https://github.com/yetone/bob-plugin-openai-polisher/blob/main/src/main.js
-    'Revise the following text to make them more clear, concise, and coherent.'
-    + ' Please note that you need to list the changes and briefly explain why: ';
+const onProgress = { onProgress: true };
+const [YOU, BOT, LN2] = ['😸 You:', '🤖️ ', '\n\n'];
+const [joinL1, joinL2] = [a => a.join('${LN2}---${LN2}'), a => a.join(LN2)];
 
 const action = async (bot) => {
-    bot.ai && bot.use(async (ctx, next) => {
+    bot.use(async (ctx, next) => {
         if (ctx.end || !ctx.text) { return await next(); }
-        ctx.session.ai || (ctx.session.ai = new Set());
-        const [msgs, tts, onProgress, pms, matchReg]
-            = [{}, {}, { onProgress: true }, [], /^\/([^\ ]*)(.*)$/ig];
-        let [lastMsg, lastSent, firstBot] = ['', 0, null];
+        const [multiAi, msgs, tts, pms] = [ctx.session.ai.size > 1, {}, {}, []];
+        let [lastMsg, lastSent] = ['', 0];
         const packMsg = (options) => {
-            const packed = [...ctx.stt ? [`😸 You: ${ctx.stt}`] : []];
+            const packed = [...ctx.stt ? joinL2([YOU, ctx.stt]) : []];
             const source = options?.tts ? tts : msgs;
-            for (let name of ctx.session.ai.size ? ctx.session.ai : [firstBot]) {
-                packed.push([
-                    ...ctx.session.ai.size > 1 || name !== firstBot || ctx.stt ? [`🤖️ ${name}:`] : [],
+            for (let name of ctx.session.ai.size ? ctx.session.ai : [ctx.firstAi]) {
+                const defaultAi = name === ctx.firstAi;
+                packed.push(joinL2([
+                    ...multiAi || !defaultAi || ctx.stt ? [`${BOT}${name}:`] : [],
                     options?.onProgress ? (
                         source[name] ? `${source[name].trim()} |` : '...'
                     ) : (source[name] || ''),
-                ].join('\n\n'));
+                ]));
             }
-            return packed.join('\n\n---\n\n');
+            return joinL1(packed);
         };
         const ok = async (options) => {
             const [curTime, curMsg] = [Date.now(), packMsg(options)];
@@ -35,27 +30,10 @@ const action = async (bot) => {
             )) { return; }
             [lastSent, lastMsg] = [curTime, curMsg];
             return await ctx.ok(curMsg, options);
-        }
-        const curAi = new Set();
-        const cmd = ctx.text.split('\n')?.[0]?.replace(matchReg, '$1');
-        for (let name in bot.ai) {
-            firstBot || (firstBot = name);
-            (iCmp(cmd, name) || cmd === '*') && curAi.add(name);
-        }
-        switch (cmd) {
-            case '2en': ctx.text = ctx.text.replace('/2en ', getTranslatePrompt('English')); break;
-            case '2zh': ctx.text = ctx.text.replace('/2zh', getTranslatePrompt('Traditional Chinese')); break;
-            case '2zht': ctx.text = ctx.text.replace('/2zht', getTranslatePrompt('Traditional Chinese')); break;
-            case '2zhs': ctx.text = ctx.text.replace('/2zhs', getTranslatePrompt('Simplified Chinese')); break;
-            case '2fr': ctx.text = ctx.text.replace('/2fr', getTranslatePrompt('French')); break;
-            case 'p': ctx.text = ctx.text.replace('/p', getPolishPrompt()); break;
-        }
-        curAi.size && (ctx.session.ai = curAi);
-        ctx.session.ai.size
-            && (ctx.text = ctx.text.replace(matchReg, '$2').trim() || bot.hello);
+        };
         await ok(onProgress);
-        for (let name of ctx.session.ai.size ? ctx.session.ai : [firstBot]) {
-            if (iCmp('/clear', ctx.text)) {
+        for (let name of ctx.session.ai.size ? ctx.session.ai : [ctx.firstAi]) {
+            if (utilitas.insensitiveCompare('/clear', ctx.text)) {
                 bot.ai[name].clear(ctx.chatId);
                 ctx.text = bot.hello;
             }
@@ -86,7 +64,7 @@ const action = async (bot) => {
 
 export const { run, priority, func } = {
     run: true,
-    priority: 10,
+    priority: 30,
     name: 'ai',
     func: action,
 };
