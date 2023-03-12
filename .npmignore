@@ -1,0 +1,6 @@
+.history
+/.github
+/debug.mjs
+/package-lock.json
+/test.mjs
+/webpack.config.mjs
