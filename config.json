@@ -1,6 +1,0 @@
-{
-    "telegramToken": "// Telegram Bot API Token",
-    "chatGptKey": "// ChatGPT API Key",
-    "bingToken": "// Bing Usertoken from cookies",
-    "googleApiKey": "// Google Cloud API Key"
-}

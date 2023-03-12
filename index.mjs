@@ -33,4 +33,4 @@ const init = async (options) => {
 };
 
 export default init;
-export { bot, hal, speech, utilitas };
+export { bot, hal, init, speech, utilitas };
