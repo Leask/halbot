@@ -112,3 +112,4 @@ dist
 # Leask
 package-lock.json
 debug.mjs
+debug.sh
