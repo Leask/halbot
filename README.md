@@ -34,6 +34,7 @@ All supported configuration fields:
 
 ```js
 {
+
     // REQUIRED, string.
     "telegramToken": "[[Telegram Bot API Token]]",
 
@@ -69,6 +70,7 @@ All supported configuration fields:
     // By default, it will only reply to `private` chats and group `mention`s.
     // Adding 'group' or 'channel' may cause too much disturbance.
     "chatType": ["mention", "private"]
+
 }
 ```
 
@@ -94,6 +96,7 @@ Usage:
 import halbot from 'halbot';
 
 const config = {
+
     // ...[[ALL THE CONFIG FIELDS SUPPORTED ABOVE]]],
 
     // OPTIONAL, function.
