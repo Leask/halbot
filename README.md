@@ -139,7 +139,7 @@ const config = {
     // Your own speech-to-text and text-to-speech engine.
     speech: {
         stt: [[sttClient]],
-        tts: [[ttsClient]]]],
+        tts: [[ttsClient]],
     },
 
     // OPTIONAL, string.
