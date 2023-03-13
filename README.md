@@ -36,26 +36,33 @@ All supported configuration fields:
 {
     // REQUIRED, string.
     "telegramToken": "[[Telegram Bot API Token]]",
+
     // OPTIONAL, string.
     // One of the chatGptKey or bingToken is required.
     "chatGptKey": "[[ChatGPT API Key]]",
+
     // OPTIONAL, string.
     // One of the chatGptKey or bingToken is required.
     "bingToken": "[[Bing Usertoken from cookies]]",
+
     // OPTIONAL, string.
     // Set this field if you need TTS/STT features.
     "googleApiKey": "[[Google Cloud API Key]]",
+
     // OPTIONAL, undefined || array of string.
     // To open the bot to PUBLIC, DO NOT set this field;
     // To restrict the bot to PRIVATE, set chat/group/channel ids in this array.
     "private": ["[[CHAT_ID]]", "[[GROUP_ID]]", "[[CHANNEL_ID]]", ...],
+
     // OPTIONAL, string.
     // Set this field if you want to use a `magic word` to authenticate the bot.
     "magicWord": "[[Your Magic Word here]]",
+
     // OPTIONAL, string.
     // Use a HOME GROUP to authentication users.
     // Anyone in this group can access the bot.
     "homeGroup": "[[GROUP_ID]]",
+
     // OPTIONAL, array of enum string.
     // Enum: 'private', 'mention', 'group', 'channel'.
     // Defaule: ['private', 'mention'].
