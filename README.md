@@ -27,6 +27,7 @@ alt="Halbot live demo" width="240" height="180" border="10" /></a>
 - Text-to-speech (`Google Cloud` API key required, or your own engine)
 - Support `private` and `public` mode, with multiple authenticate methods.
 - `Middleware` style workflow, easy to extend.
+- Realtime stream-style response, no more waiting.
 
 ## Run it in peace-of-mind
 
