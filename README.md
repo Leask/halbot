@@ -10,15 +10,13 @@ Live demo, click to watch on YouTube:
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=MzBocSyYfcY" target="_blank"><img src="http://img.youtube.com/vi/MzBocSyYfcY/0.jpg"
 alt="Halbot live demo" width="240" height="180" border="10" /></a>
 
-Screenshots:
-
-<img width="972" alt="Screenshot 2023-03-12 at 10 59 59 AM" src="https://user-images.githubusercontent.com/233022/224584278-9c3e3374-6ac2-44ca-8d35-df7747b9c1be.png">
-
-<img width="977" alt="Screenshot 2023-03-12 at 11 00 34 AM" src="https://user-images.githubusercontent.com/233022/224584280-113c03af-54b8-4724-86c7-3aa975f53c9c.png">
-
-<img width="965" alt="Screenshot 2023-03-12 at 11 00 17 AM" src="https://user-images.githubusercontent.com/233022/224584281-526578f9-3f0f-4bf6-a89c-56b07f97beae.png">
-
-<img width="969" alt="Screenshot 2023-03-12 at 10 58 11 AM" src="https://user-images.githubusercontent.com/233022/224584282-d12dca78-1da3-4166-ba39-6d14b78ab3e2.png">
+<details>
+  <summary>Screenshots:</summary>
+  <img width="972" alt="Screenshot 2023-03-12 at 10 59 59 AM" src="https://user-images.githubusercontent.com/233022/224584278-9c3e3374-6ac2-44ca-8d35-df7747b9c1be.png">
+  <img width="977" alt="Screenshot 2023-03-12 at 11 00 34 AM" src="https://user-images.githubusercontent.com/233022/224584280-113c03af-54b8-4724-86c7-3aa975f53c9c.png">
+  <img width="965" alt="Screenshot 2023-03-12 at 11 00 17 AM" src="https://user-images.githubusercontent.com/233022/224584281-526578f9-3f0f-4bf6-a89c-56b07f97beae.png">
+  <img width="969" alt="Screenshot 2023-03-12 at 10 58 11 AM" src="https://user-images.githubusercontent.com/233022/224584282-d12dca78-1da3-4166-ba39-6d14b78ab3e2.png">
+</details>
 
 ## Features
 
