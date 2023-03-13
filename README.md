@@ -5,13 +5,15 @@
 
 Just another `ChatGPT`/`Bing Chat` Telegram bob, which is simple design, easy to use, extendable and fun.
 
-Features
+## Features
 
-- Telegram Bot (`Telegram Bot` token required)
-- ChatGPT (`OpenAI` API key required)
-- Bing Chat (`Bing Chat` user token required)
-- Speech-to-text (`Google Cloud` API key required)
-- Text-to-speech (`Google Cloud` API key required)
+- Telegram Bot (`Telegram Bot` token required);
+- ChatGPT (`OpenAI` API key required);
+- Bing Chat (`Bing Chat` user token required);
+- Speech-to-text (`Google Cloud` API key required, or your own engine);
+- Text-to-speech (`Google Cloud` API key required, or your own engine);
+- Support `private` and `public` mode, with multiple authenticate methods;
+- `Middleware` style workflow, easy to extend;
 
 ## How to use
 
@@ -99,11 +101,31 @@ const config = {
         [[aiNameB]]: [[aiClientB]],
     },
 
-    // OPTIONAL, your own speech-to-text and text-to-speech engine.
+    // OPTIONAL, object.
+    // Your own speech-to-text and text-to-speech engine.
     speech: {
         stt: [[sttClient]],
         tts: [[ttsClient]]]],
     },
+
+    // OPTIONAL, string.
+    // Path to your own middlewares.
+    // ./skills
+    //  |- skill_a.mjs
+    //    | const action = async (bot) => {
+    //    |     bot.use(async (ctx, next) => {
+    //    |         ctx.reply('42');
+    //    |         await next();
+    //    |     });
+    //    | };
+    //    |
+    //    | export const { run, priority, func } = {
+    //    |     run: true,
+    //    |     priority: 100,
+    //    |     func: action,
+    //    | };
+    skillPath: './skills',
+
 };
 
 await halbot(config);
