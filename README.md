@@ -7,13 +7,13 @@ Just another `ChatGPT`/`Bing Chat` Telegram bob, which is simple design, easy to
 
 ## Features
 
-- Telegram Bot (`Telegram Bot` token required);
-- ChatGPT (`OpenAI` API key required);
-- Bing Chat (`Bing Chat` user token required);
-- Speech-to-text (`Google Cloud` API key required, or your own engine);
-- Text-to-speech (`Google Cloud` API key required, or your own engine);
-- Support `private` and `public` mode, with multiple authenticate methods;
-- `Middleware` style workflow, easy to extend;
+- Telegram Bot (`Telegram Bot` token required)
+- ChatGPT (`OpenAI` API key required)
+- Bing Chat (`Bing Chat` user token required)
+- Speech-to-text (`Google Cloud` API key required, or your own engine)
+- Text-to-speech (`Google Cloud` API key required, or your own engine)
+- Support `private` and `public` mode, with multiple authenticate methods.
+- `Middleware` style workflow, easy to extend.
 
 ## How to use
 
