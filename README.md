@@ -15,9 +15,22 @@ Features
 
 ## How to use
 
-Make the `halbot` json config file and put it in this path `~/.halbot.json`:
+### Config
+
+Make the `halbot` json config file and put it in this path `~/.halbot.json`.
+
+#### Basic config demo
 
 ```json
+{
+    "telegramToken": "[[Telegram Bot API Token]]",
+    "chatGptKey": "[[ChatGPT API Key]]",
+}
+```
+
+#### All supported configuration fields
+
+```js
 {
     // REQUIRED, string.
     "telegramToken": "[[Telegram Bot API Token]]",
@@ -35,6 +48,9 @@ Make the `halbot` json config file and put it in this path `~/.halbot.json`:
     // To restrict the bot to PRIVATE, set chat/group/channel ids in this array.
     "private": ["[[CHAT_ID]]", "[[GROUP_ID]]", "[[CHANNEL_ID]]", ...],
     // OPTIONAL, string.
+    // Set this field if you want to use a `magic word` to authenticate the bot.
+    "magicWord": "[[Your Magic Word here]]",
+    // OPTIONAL, string.
     // Use a HOME GROUP to authentication users.
     // Anyone in this group can access the bot.
     "homeGroup": "[[GROUP_ID]]",
@@ -47,19 +63,48 @@ Make the `halbot` json config file and put it in this path `~/.halbot.json`:
 }
 ```
 
-Then, run the bot:
+### Run it
+
+Run it in peace of mind.
 
 ```bash
 $ npx halbot
 ```
 
-## Integrate to your project
+### Integrate to your project
 
 ```bash
 $ npm i halbot
 ```
 
 ```js
-const { halbot } = require('halbot');
+import halbot from 'halbot';
 
+const config = {
+    // ...[[ALL THE CONFIG FIELDS SUPPORTED ABOVE]]],
+
+    // OPTIONAL, function.
+    // Your own authentication logic.
+    // return true if the user is authenticated.
+    // return false if the user is not authenticated.
+    auth: async (ctx) => {
+        // ctx is the `telegraf` context object: https://telegraf.js.org/#context-class
+        // It has been extended: https://github.com/Leask/utilitas/blob/master/lib/bot.mjs
+        return true;
+    },
+
+    // OPTIONAL, object (key renderd as name) or array (name ignored).
+    ai: {
+        [[aiNameA]]: [[aiClientA]]
+        [[aiNameB]]: [[aiClientB]],
+    },
+
+    // OPTIONAL, your own speech-to-text and text-to-speech engine.
+    speech: {
+        stt: [[sttClient]],
+        tts: [[ttsClient]]]],
+    },
+};
+
+await halbot(config);
 ```
