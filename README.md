@@ -15,13 +15,13 @@ Just another `ChatGPT`/`Bing Chat` Telegram bob, which is simple design, easy to
 - Support `private` and `public` mode, with multiple authenticate methods.
 - `Middleware` style workflow, easy to extend.
 
-## How to use
+## Run it in peace-of-mind
 
 ### Configuration
 
 Make the `halbot` json config file and put it in this path `~/.halbot.json`.
 
-#### Basic config demo
+Basic config demo:
 
 ```json
 {
@@ -30,7 +30,7 @@ Make the `halbot` json config file and put it in this path `~/.halbot.json`.
 }
 ```
 
-#### All supported configuration fields
+All supported configuration fields:
 
 ```js
 {
@@ -73,11 +73,15 @@ Run it in peace of mind.
 $ npx halbot
 ```
 
-### Integrate to your project
+## Integrate to your project
+
+Install:
 
 ```bash
 $ npm i halbot
 ```
+
+Usage:
 
 ```js
 import halbot from 'halbot';
