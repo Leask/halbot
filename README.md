@@ -5,9 +5,10 @@
 
 Just another `ChatGPT`/`Bing Chat` Telegram bob, which is simple design, easy to use, extendable and fun.
 
-Live demo:
+Live demo, click to watch on YouTube:
 
-[![Live demo](https://img.youtube.com/vi/MzBocSyYfcY/0.jpg)](https://www.youtube.com/watch?v=MzBocSyYfcY)
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=MzBocSyYfcY" target="_blank"><img src="http://img.youtube.com/vi/MzBocSyYfcY/0.jpg"
+alt="Halbot live demo" width="240" height="180" border="10" /></a>
 
 Screenshots:
 
