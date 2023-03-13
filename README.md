@@ -26,7 +26,7 @@ Basic config demo:
 ```json
 {
     "telegramToken": "[[Telegram Bot API Token]]",
-    "chatGptKey": "[[ChatGPT API Key]]",
+    "chatGptKey": "[[ChatGPT API Key]]"
 }
 ```
 
