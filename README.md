@@ -28,6 +28,9 @@ alt="Halbot live demo" width="240" height="180" border="10" /></a>
 - Support `private` and `public` mode, with multiple authenticate methods.
 - `Middleware` style workflow, easy to extend.
 - Realtime stream-style response, no more waiting.
+- Markdown rendering for GhatGPT
+- Reference rendering for Bing Chat
+- Code block rendering, developers friendly.
 
 ## Run it in peace-of-mind
 
