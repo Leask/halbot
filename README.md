@@ -31,6 +31,7 @@ alt="Halbot live demo" width="240" height="180" border="10" /></a>
 - Markdown rendering for GhatGPT
 - Reference rendering for Bing Chat
 - Code block rendering, developers friendly.
+- ESM from the ground up
 
 ## Run it in peace-of-mind
 
