@@ -17,7 +17,7 @@ Just another `ChatGPT`/`Bing Chat` Telegram bob, which is simple design, easy to
 
 ## How to use
 
-### Config
+### Configuration
 
 Make the `halbot` json config file and put it in this path `~/.halbot.json`.
 
