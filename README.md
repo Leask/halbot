@@ -95,6 +95,8 @@ Run it in peace of mind.
 $ npx halbot
 ```
 
+`If you have multible AI engines configed, use '/chatgpt' or '/bing' to switch between them, or you can use '/*' to ask them all at the same time.`
+
 ## Integrate to your project
 
 Install:
