@@ -46,7 +46,7 @@ const action = async (bot) => {
                             ok(onProgress);
                         }
                     );
-                    msgs[name] = resp.responseRendered;
+                    msgs[name] = ctx.session.raw ? resp.response : resp.responseRendered;
                     tts[name] = resp.spokenText;
                 } catch (err) {
                     msgs[name] = `[ERROR] ${err?.message || err}`;

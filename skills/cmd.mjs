@@ -8,15 +8,20 @@ const action = async (bot) => {
         ctx.session.ai || (ctx.session.ai = new Set());
         const curAi = new Set();
         ctx.cmd = ctx.text.split('\n')?.[0]?.replace(matchReg, '$1');
+        let catched;
+        switch (ctx.cmd) {
+            case 'raw': ctx.session.raw = true; catched = true; break;
+            case 'render': ctx.session.raw = false; catched = true; break;
+        }
         for (let name in bot.ai) {
             ctx.firstAi || (ctx.firstAi = name);
-            (utilitas.insensitiveCompare(ctx.cmd, name) || ctx.cmd === '*')
-                && curAi.add(name);
+            if (utilitas.insensitiveCompare(ctx.cmd, name) || ctx.cmd === '*') {
+                curAi.add(name);
+                catched = true;
+            }
         }
         curAi.size && (ctx.session.ai = curAi);
-        ctx.session.ai.size && (
-            ctx.text = ctx.text.replace(matchReg, '$2').trim() || bot.hello
-        );
+        catched && (ctx.text = ctx.text.replace(matchReg, '$2').trim() || bot.hello);
         await next();
     });
 };
