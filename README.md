@@ -33,7 +33,7 @@ alt="Halbot live demo" width="240" height="180" border="10" /></a>
 - Code block rendering, developers friendly.
 - ESM from the ground up
 
-## Run it in peace-of-mind
+## Basic usage
 
 ### Configuration
 
@@ -94,7 +94,7 @@ All supported configuration fields:
 
 ### Run it
 
-Run it in peace of mind.
+In peace-of-mind:
 
 ```bash
 $ npx halbot
@@ -110,7 +110,7 @@ Install:
 $ npm i halbot
 ```
 
-Usage:
+Code:
 
 ```js
 import halbot from 'halbot';
@@ -139,7 +139,7 @@ const config = {
     // Your own speech-to-text and text-to-speech engine.
     speech: {
         stt: [[sttClient]],
-        tts: [[ttsClient]]]],
+        tts: [[ttsClient]],
     },
 
     // OPTIONAL, string.
