@@ -27,6 +27,6 @@ const log = content => utilitas.log(content, import.meta.url);
 // })();
 
 try {
-    const { config } = await storage.getConfig({ pack: { name: 'halbot' } });
+    const { config } = await storage.getConfig();
     await halbot(config);
 } catch (err) { debug ? utilitas.throwError(err) : log(err); }

@@ -1,5 +1,6 @@
 import { bot, hal, speech, utilitas } from 'utilitas';
 
+await utilitas.locate(utilitas.__(import.meta.url, 'package.json'));
 const skillPath = utilitas.__(import.meta.url, 'skills');
 
 const init = async (options) => {
