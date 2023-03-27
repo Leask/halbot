@@ -7,7 +7,8 @@ const [joinL1, joinL2] = [a => a.join('${LN2}---${LN2}'), a => a.join(LN2)];
 const action = async (bot) => {
     bot.use(async (ctx, next) => {
         if (ctx.end || !ctx.text) { return await next(); }
-        const [multiAi, msgs, tts, pms] = [ctx.session.ai.size > 1, {}, {}, []];
+        const [multiAi, msgs, tts, pms, extra]
+            = [ctx.session.ai.size > 1, {}, {}, [], {}];
         let [lastMsg, lastSent] = ['', 0];
         const packMsg = (options) => {
             const packed = [...ctx.stt ? joinL2([YOU, ctx.stt]) : []];
@@ -29,7 +30,7 @@ const action = async (bot) => {
                 curTime - lastSent < ctx.limit || lastMsg === curMsg
             )) { return; }
             [lastSent, lastMsg] = [curTime, curMsg];
-            return await ctx.ok(curMsg, options);
+            return await ctx.ok(curMsg, { ...options || {}, ...extra });
         };
         await ok(onProgress);
         for (let name of ctx.session.ai.size ? ctx.session.ai : [ctx.firstAi]) {
@@ -48,6 +49,17 @@ const action = async (bot) => {
                     );
                     msgs[name] = ctx.session.raw ? resp.response : resp.responseRendered;
                     tts[name] = resp.spokenText;
+                    if (resp.suggestedResponses) {
+                        extra.reply_markup = {
+                            inline_keyboard: resp.suggestedResponses.map(
+                                text => [{
+                                    text, callback_data: JSON.stringify({ text: `/bing ${text}` })
+                                }]
+                            )
+                        };
+                        // button debug
+                        // console.log(JSON.stringify(extra.reply_markup, null, 2));
+                    }
                 } catch (err) {
                     msgs[name] = `[ERROR] ${err?.message || err}`;
                     tts[name] = msgs[name];
