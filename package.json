@@ -1,7 +1,7 @@
 {
   "name": "halbot",
   "description": "Just another ChatGPT/Bing Telegram bob.",
-  "version": "1989.6.29",
+  "version": "1989.6.30",
   "private": false,
   "homepage": "https://github.com/Leask/halbot",
   "type": "module",
