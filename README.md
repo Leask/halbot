@@ -61,6 +61,7 @@ All supported configuration fields:
     "chatGptKey": "[[ChatGPT API Key]]",
 
     // OPTIONAL, string.
+    // How to get your bing user token: https://github.com/Leask/halbot/issues/13
     // One of the chatGptKey or bingToken is required.
     "bingToken": "[[Bing Usertoken from cookies]]",
 
