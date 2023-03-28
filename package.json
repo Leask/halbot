@@ -31,8 +31,8 @@
   "dependencies": {
     "@google-cloud/speech": "^5.4.0",
     "@google-cloud/text-to-speech": "^4.2.1",
-    "@waylaidwanderer/chatgpt-api": "^1.32.10",
+    "@waylaidwanderer/chatgpt-api": "^1.33.0",
     "telegraf": "^4.12.2",
-    "utilitas": "^1992.4.40"
+    "utilitas": "^1992.4.41"
   }
 }
