@@ -3,7 +3,7 @@ import { utilitas } from 'utilitas';
 const matchReg = /^\/([^\ ]*)(.*)$/ig;
 
 const action = async (ctx, next) => {
-    if (ctx.end || !ctx.text) { return await next(); }
+    if (!ctx.text) { return await next(); }
     ctx.session.ai || (ctx.session.ai = new Set());
     const curAi = new Set();
     ctx.cmd = ctx.text.split('\n')?.[0]?.replace(matchReg, '$1');

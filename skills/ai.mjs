@@ -2,29 +2,30 @@ import { utilitas } from 'utilitas';
 
 const onProgress = { onProgress: true };
 const [YOU, BOT, LN2] = ['😸 You:', '🤖️ ', '\n\n'];
-const [joinL1, joinL2] = [a => a.join('${LN2}---${LN2}'), a => a.join(LN2)];
+const [joinL1, joinL2] = [a => a.join(`${LN2}---${LN2}`), a => a.join(LN2)];
 const enrich = name => name === 'Bing' ? `${name} (Sydney)` : name;
 
 const action = async (ctx, next) => {
-    if (ctx.end || !ctx.text) { return await next(); }
+    if (!ctx.text) { return await next(); }
     const [multiAi, msgs, tts, pms, extra]
         = [ctx.session.ai.size > 1, {}, {}, [], {}];
     let [lastMsg, lastSent] = ['', 0];
-    const packMsg = (options) => {
-        const packed = [...ctx.stt ? joinL2([YOU, ctx.stt]) : []];
+    const packMsg = options => {
+        const packed = [...ctx.overwrite ? [joinL2([YOU, ctx.overwrite])] : []];
         const source = options?.tts ? tts : msgs;
         for (let name of ctx.session.ai.size ? ctx.session.ai : [ctx.firstAi]) {
             const defaultAi = name === ctx.firstAi;
             packed.push(joinL2([
-                ...multiAi || !defaultAi || ctx.stt ? [`${BOT}${enrich(name)}:`] : [],
+                ...multiAi || !defaultAi || ctx.overwrite ? [`${BOT}${enrich(name)}:`] : [],
                 options?.onProgress ? (
-                    source[name] ? `${source[name].trim()} |` : '...'
+                    source[name] ? `${source[name].trim()} █` : '💬'
                 ) : (source[name] || ''),
             ]));
         }
+        console.log(packed);
         return joinL1(packed);
     };
-    const ok = async (options) => {
+    const ok = async options => {
         const [curTime, curMsg] = [Date.now(), packMsg(options)];
         if (options?.onProgress && (
             curTime - lastSent < ctx.limit || lastMsg === curMsg

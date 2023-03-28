@@ -6,7 +6,7 @@ const getPolishPrompt = () => // https://github.com/yetone/bob-plugin-openai-pol
     + ' Please note that you need to list the changes and briefly explain why: ';
 
 const action = async (ctx, next) => {
-    if (ctx.end || !ctx.text) { return await next(); }
+    if (!ctx.text) { return await next(); }
     switch (ctx.cmd) {
         case '2en':
             ctx.text = ctx.text.replace(`/${ctx.cmd}`, getTranslatePrompt('English'));
