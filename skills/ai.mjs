@@ -22,7 +22,6 @@ const action = async (ctx, next) => {
                 ) : (source[name] || ''),
             ]));
         }
-        console.log(packed);
         return joinL1(packed);
     };
     const ok = async options => {
@@ -49,11 +48,11 @@ const action = async (ctx, next) => {
                 );
                 msgs[name] = ctx.session.raw ? resp.response : resp.responseRendered;
                 tts[name] = resp.spokenText;
-                extra.textButtons = resp?.suggestedResponses?.map?.(text => ({
-                    text, data: `/bing ${text}`
+                extra.buttons = resp?.suggestedResponses?.map?.(label => ({
+                    label, text: `/bing ${label}`,
                 }));
             } catch (err) {
-                msgs[name] = `[ERROR] ${err?.message || err}`;
+                msgs[name] = err?.message || err;
                 tts[name] = msgs[name];
                 utilitas.log(err);
             }
