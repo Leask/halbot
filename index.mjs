@@ -51,6 +51,7 @@ const init = async (options) => {
         skillPath: options?.skillPath || skillPath,
         speech: _speech,
     });
+    // https://limits.tginfo.me/en
     await _bot.telegram.setMyCommands(Object.keys(prompts).slice(0, 100).map(
         command => ({ command, description: prompts[command].description })
     ));
