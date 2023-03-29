@@ -34,6 +34,6 @@
     "@waylaidwanderer/chatgpt-api": "^1.33.1",
     "csv-parse": "^5.3.6",
     "telegraf": "^4.12.2",
-    "utilitas": "^1992.4.46"
+    "utilitas": "^1992.4.47"
   }
 }
