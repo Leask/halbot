@@ -7,13 +7,14 @@ const enrich = name => name === 'Bing' ? `${name} (Sydney)` : name;
 
 const action = async (ctx, next) => {
     if (!ctx.text) { return await next(); }
-    const [multiAi, msgs, tts, pms, extra]
-        = [ctx.session.ai.size > 1, {}, {}, [], {}];
+    const [selectedAi, msgs, tts, pms, extra]
+        = [Object.keys(ctx.session.ai), {}, {}, [], {}];
+    const multiAi = selectedAi.length > 1;
     let [lastMsg, lastSent] = ['', 0];
     const packMsg = options => {
         const packed = [...ctx.overwrite ? [joinL2([YOU, ctx.overwrite])] : []];
         const source = options?.tts ? tts : msgs;
-        for (let name of ctx.session.ai.size ? ctx.session.ai : [ctx.firstAi]) {
+        for (let name of selectedAi.length ? selectedAi : [ctx.firstAi]) {
             const defaultAi = name === ctx.firstAi;
             packed.push(joinL2([
                 ...multiAi || !defaultAi || ctx.overwrite ? [`${BOT}${enrich(name)}:`] : [],
@@ -33,7 +34,7 @@ const action = async (ctx, next) => {
         return await ctx.ok(curMsg, { ...options || {}, ...extra });
     };
     await ok(onProgress);
-    for (let name of ctx.session.ai.size ? ctx.session.ai : [ctx.firstAi]) {
+    for (let name of selectedAi.length ? selectedAi : [ctx.firstAi]) {
         if (utilitas.insensitiveCompare('/clear', ctx.text)) {
             ctx._.ai[name].clear(ctx.chatId);
             ctx.text = ctx._.hello;

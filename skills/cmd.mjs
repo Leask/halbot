@@ -4,8 +4,8 @@ const matchReg = /^\/([^\ ]*)(.*)$/ig;
 
 const action = async (ctx, next) => {
     if (!ctx.text) { return await next(); }
-    ctx.session.ai || (ctx.session.ai = new Set());
-    const curAi = new Set();
+    ctx.session.ai || (ctx.session.ai = {});
+    const curAi = {};
     ctx.cmd = ctx.text.split('\n')?.[0]?.replace(matchReg, '$1');
     let catched;
     switch (ctx.cmd) {
@@ -15,11 +15,10 @@ const action = async (ctx, next) => {
     for (let name in ctx._.ai) {
         ctx.firstAi || (ctx.firstAi = name);
         if (utilitas.insensitiveCompare(ctx.cmd, name) || ctx.cmd === '*') {
-            curAi.add(name);
-            catched = true;
+            catched = curAi[name] = true;
         }
     }
-    curAi.size && (ctx.session.ai = curAi);
+    Object.keys(curAi).length && (ctx.session.ai = curAi);
     catched && (ctx.text = ctx.text.replace(matchReg, '$2').trim() || ctx._.hello);
     await next();
 };

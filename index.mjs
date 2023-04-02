@@ -48,6 +48,7 @@ const init = async (options) => {
         magicWord: options?.magicWord,
         private: options?.private,
         prompts, provider: 'telegram',
+        session: options?.session,
         skillPath: options?.skillPath || skillPath,
         speech: _speech,
     });

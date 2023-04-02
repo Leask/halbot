@@ -5,6 +5,7 @@ import halbot from '../index.mjs';
 
 const debug = utilitas.humanReadableBoolean(process.env['DEBUG']);
 const log = content => utilitas.log(content, import.meta.url);
+const getConfig = async () => (await storage.getConfig())?.config;
 
 // Disabled for current version.
 // const args = await (async (options) => {
@@ -26,7 +27,12 @@ const log = content => utilitas.log(content, import.meta.url);
 //     return args;
 // })();
 
+const session = {
+    get: async key => (await getConfig())?.sessions?.[key],
+    set: async (k, v) => await storage.setConfig({ sessions: { [k]: v } }),
+};
+
 try {
     const { config } = await storage.getConfig();
-    await halbot(config);
+    await halbot({ ...config, session });
 } catch (err) { debug ? utilitas.throwError(err) : log(err); }
