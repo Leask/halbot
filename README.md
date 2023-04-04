@@ -88,7 +88,27 @@ All supported configuration fields:
     // Defaule: ['private', 'mention'].
     // By default, it will only reply to `private` chats and group `mention`s.
     // Adding 'group' or 'channel' may cause too much disturbance.
-    "chatType": ["mention", "private"]
+    "chatType": ["mention", "private"],
+
+    // OPTIONAL, object.
+    // Session storage, support MariaDB/MySQL and Redis for now.
+    // If omitted, the bot will use memory storage and sync to this file.
+    // Example: (Compatibility: https://github.com/sidorares/node-mysql2)
+    "session": {
+        type: [['MARIADB' || 'MYSQL']],
+        host: [[DATABASE HOST]],
+        database: [[DATABASE NAME]],
+        user: [[DATABASE USER]],
+        password: [[DATABASE PASSWORD]],
+        ...[[OTHER DATABASE OPTIONS]],
+    },
+    // OR: (Compatibility: https://github.com/luin/ioredis)
+    "session": {
+        type: 'REDIS',
+        host: [[REDIS HOST]],
+        password: [[REDIS PASSWORD]],
+        ...[[OTHER REDIS OPTIONS]],
+    },
 
 }
 ```
@@ -160,6 +180,13 @@ const config = {
     //    |     func: action,
     //    | };
     skillPath: './skills',
+
+    // OPTIONAL, object.
+    // Using customized callback as storage engine.
+    session: {
+        get: async (chatId) => { /* return session object by chatId. */ },
+        set: async (chatId, session) => { /* save session object by chatId. */ },
+    },
 
 };
 
