@@ -31,11 +31,11 @@
   "dependencies": {
     "@google-cloud/speech": "^5.4.0",
     "@google-cloud/text-to-speech": "^4.2.1",
-    "@waylaidwanderer/chatgpt-api": "^1.33.3",
+    "@waylaidwanderer/chatgpt-api": "^1.33.4",
     "csv-parse": "^5.3.6",
     "ioredis": "^5.3.1",
     "mysql2": "^3.2.0",
     "telegraf": "^4.12.2",
-    "utilitas": "^1992.4.57"
+    "utilitas": "^1992.4.59"
   }
 }
