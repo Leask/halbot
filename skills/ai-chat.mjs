@@ -4,25 +4,21 @@ const onProgress = { onProgress: true };
 const [YOU, BOT, LN2] = ['😸 You:', '🤖️ ', '\n\n'];
 const [joinL1, joinL2] = [a => a.join(`${LN2}---${LN2}`), a => a.join(LN2)];
 const enrich = name => name === 'Bing' ? `${name} (Sydney)` : name;
+const log = content => utilitas.log(content, import.meta.url);
 
 const action = async (ctx, next) => {
     if (!ctx.text) { return await next(); }
-    const [selectedAi, msgs, tts, pms, extra]
-        = [Object.keys(ctx.session.ai), {}, {}, [], {}];
-    const multiAi = selectedAi.length > 1;
+    const [msgs, tts, pms, extra] = [{}, {}, [], {}];
     let [lastMsg, lastSent] = ['', 0];
     const packMsg = options => {
         const packed = [...ctx.overwrite ? [joinL2([YOU, ctx.overwrite])] : []];
         const source = options?.tts ? tts : msgs;
-        for (let name of selectedAi.length ? selectedAi : [ctx.firstAi]) {
-            const defaultAi = name === ctx.firstAi;
-            packed.push(joinL2([
-                ...multiAi || !defaultAi || ctx.overwrite ? [`${BOT}${enrich(name)}:`] : [],
-                options?.onProgress ? (
-                    source[name] ? `${source[name].trim()} █` : '💬'
-                ) : (source[name] || ''),
-            ]));
-        }
+        ctx.selectedAi.map(n => packed.push(joinL2([
+            ...ctx.multiAi || !ctx.isDefaultAi(n) || ctx.overwrite ? [`${BOT}${enrich(n)}:`] : [],
+            options?.onProgress ? (
+                source[n] ? `${source[n].trim()} █` : '💬'
+            ) : (source[n] || ''),
+        ])));
         return joinL1(packed);
     };
     const ok = async options => {
@@ -31,31 +27,27 @@ const action = async (ctx, next) => {
             curTime - lastSent < ctx.limit || lastMsg === curMsg
         )) { return; }
         [lastSent, lastMsg] = [curTime, curMsg];
-        return await ctx.ok(curMsg, { ...options || {}, ...extra });
+        return await ctx.ok(curMsg, { md: true, ...options || {}, ...extra });
     };
     await ok(onProgress);
-    for (let name of selectedAi.length ? selectedAi : [ctx.firstAi]) {
-        if (utilitas.insensitiveCompare('/clear', ctx.text)) {
-            ctx._.ai[name].clear(ctx.chatId);
-            ctx.text = ctx._.hello;
-        }
+    for (let n of ctx.selectedAi) {
         pms.push((async () => {
             try {
-                const resp = await ctx._.ai[name].send(
+                const resp = await ctx._.ai[n].send(
                     ctx.text, { session: ctx.chatId }, tkn => {
-                        msgs[name] = `${(msgs[name] || '')}${tkn}`;
+                        msgs[n] = `${(msgs[n] || '')}${tkn}`;
                         ok(onProgress);
                     }
                 );
-                msgs[name] = ctx.session.raw ? resp.response : resp.responseRendered;
-                tts[name] = resp.spokenText;
+                msgs[n] = ctx.session.config?.render === false ? resp.response : resp.responseRendered;
+                tts[n] = resp.spokenText;
                 extra.buttons = resp?.suggestedResponses?.map?.(label => ({
                     label, text: `/bing ${label}`,
                 }));
             } catch (err) {
-                msgs[name] = err?.message || err;
-                tts[name] = msgs[name];
-                utilitas.log(err);
+                msgs[n] = err?.message || err;
+                tts[n] = msgs[n];
+                log(err);
             }
         })());
     }
@@ -67,7 +59,6 @@ const action = async (ctx, next) => {
 
 export const { run, priority, func } = {
     run: true,
-    priority: 30,
-    name: 'ai',
+    priority: 60,
     func: action,
 };

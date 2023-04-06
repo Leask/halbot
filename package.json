@@ -1,12 +1,12 @@
 {
   "name": "halbot",
-  "description": "Just another ChatGPT/Bing Telegram bob.",
+  "description": "Just another ChatGPT/Bing Chat Telegram bob, which is simple design, easy to use, extendable and fun.",
   "version": "1989.6.37",
   "private": false,
   "homepage": "https://github.com/Leask/halbot",
   "type": "module",
   "engines": {
-    "node": ">=18.x"
+    "node": ">=19.x"
   },
   "main": "index.mjs",
   "bin": {
@@ -31,11 +31,11 @@
   "dependencies": {
     "@google-cloud/speech": "^5.4.0",
     "@google-cloud/text-to-speech": "^4.2.1",
-    "@waylaidwanderer/chatgpt-api": "^1.33.4",
+    "@waylaidwanderer/chatgpt-api": "^1.34.0",
     "csv-parse": "^5.3.6",
     "ioredis": "^5.3.1",
     "mysql2": "^3.2.0",
     "telegraf": "^4.12.2",
-    "utilitas": "^1992.4.59"
+    "utilitas": "^1992.4.70"
   }
 }
