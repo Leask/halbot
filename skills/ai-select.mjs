@@ -32,7 +32,7 @@ export const { run, priority, func, help, args } = {
     priority: 10,
     func: action,
     help: bot.lines([
-        'Config AI engine.',
+        'Select between AI engines.',
         'Set `ai`=`.` to use default AI engine.',
         'Set `ai`=`@` to use all AI engines simultaneously.',
         'Example 1: /set --ai ChatGPT',
