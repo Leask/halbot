@@ -49,11 +49,15 @@ const init = async (options) => {
     }
     assert(utilitas.countKeys(ai), 'No AI provider is configured.');
     const _bot = await bot.init({
-        info: options?.info || info,
         ai, auth: options?.auth,
+        args: options?.args,
         botToken: options?.telegramToken,
         chatType: options?.chatType,
+        cmds: options?.cmds,
+        hello: options?.hello,
+        help: options?.help,
         homeGroup: options?.homeGroup,
+        info: options?.info || info,
         magicWord: options?.magicWord,
         private: options?.private,
         provider: 'telegram',
