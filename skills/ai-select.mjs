@@ -35,12 +35,12 @@ export const { run, priority, func, help, args } = {
         'Config AI engine.',
         'Set `ai`=`.` to use default AI engine.',
         'Set `ai`=`@` to use all AI engines simultaneously.',
-        'Example 1: `/set --ai ChatGPT`',
-        'Example 2: `/set --ai Bing`',
-        'Example 3: `/set --ai .`',
-        'Example 4: `/set --ai @`',
-        'Example 5: `/set --render on`',
-        'Example 6: `/set --render off`',
+        'Example 1: /set --ai ChatGPT',
+        'Example 2: /set --ai Bing',
+        'Example 3: /set --ai .',
+        'Example 4: /set --ai @',
+        'Example 5: /set --render on',
+        'Example 6: /set --render off',
     ]),
     args: {
         ai: {

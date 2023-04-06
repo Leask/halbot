@@ -28,9 +28,9 @@ export const { run, priority, func, help, cmds } = {
     func: action,
     help: bot.lines([
         'Useful commands for AI conversation.',
-        'Example 1: `/chatgpt Say hello to ChatGPT!`',
-        'Example 2: `/bing Say hello to Bing!`',
-        'Example 3: `/all Say hello to all AI engines!`',
+        'Example 1: /chatgpt Say hello to ChatGPT!',
+        'Example 2: /bing Say hello to Bing!',
+        'Example 3: /all Say hello to all AI engines!',
     ]),
     cmds: {
         all: 'Use all AI engines simultaneously temporary.',

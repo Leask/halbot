@@ -66,9 +66,9 @@ export const { run, priority, func, help, cmds } = {
         'Example 1: /prompts',
         'Example 2: /add code > Code with me.',
         'Example 3: /del code',
-        'Example 4: `/acplist`',
-        'Example 5: `/acpdetail`',
-        'Example 6: `/clear`',
+        'Example 4: /acplist',
+        'Example 5: /acpdetail',
+        'Example 6: /clear',
     ]),
     cmds: {
         prompts: 'List custom prompts.',
