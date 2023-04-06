@@ -184,8 +184,8 @@ const config = {
     // OPTIONAL, object.
     // Using customized callback as storage engine.
     session: {
-        get: async (chatId) => { /* return session object by chatId. */ },
-        set: async (chatId, session) => { /* save session object by chatId. */ },
+        get: async (key) => { /* return session object by chatId. */ },
+        set: async (key, session) => { /* save session object by chatId. */ },
     },
 
 };
