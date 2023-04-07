@@ -6,17 +6,17 @@ const action = async (ctx, next) => {
         case 'all':
             ctx.selectedAi = allAi;
             ctx.multiAi = ctx.selectedAi.length > 1;
-            ctx.text = ctx.cmd.args || ctx._.hello;
+            ctx.hello(ctx.cmd.args);
             break;
         case 'bing':
             assert(utilitas.insensitiveHas(allAi, 'bing'), 'Bing is not available.');
             ctx.selectedAi = ['Bing'];
-            ctx.text = ctx.cmd.args || ctx._.hello;
+            ctx.hello(ctx.cmd.args);
             break;
         case 'chatgpt':
             assert(utilitas.insensitiveHas(allAi, 'chatgpt'), 'ChatGPT is not available.');
             ctx.selectedAi = ['ChatGPT'];
-            ctx.text = ctx.cmd.args || ctx._.hello;
+            ctx.hello(ctx.cmd.args);
             break;
     }
     await next();
