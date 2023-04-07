@@ -1,4 +1,4 @@
-import { bot, utilitas } from 'utilitas';
+import { bot } from 'utilitas';
 
 const execPrompt = (ctx, arrLines) => ctx.overwrite((ctx.context = {
     cmd: ctx.cmd.cmd, prompt: bot.lines(arrLines),
