@@ -1,4 +1,4 @@
-import { bot } from 'utilitas';
+import { bot, utilitas } from 'utilitas';
 
 // Inspired by:
 // https://github.com/yetone/bob-plugin-openai-translator/blob/main/src/main.js
@@ -14,8 +14,25 @@ const getPolishPrompt = () =>
 
 const action = async (ctx, next) => {
     switch (ctx.cmd.cmd) {
+        case 'lang':
+            if (!ctx.cmd.args) {
+                return await ctx.ok('Please specify a language.');
+            }
+            const cnf = {
+                ...ctx.session.config = {
+                    ...ctx.session.config, ...ctx.config = {
+                        lang: ctx.cmd.args,
+                        hello: `Hello! I speak ${ctx.cmd.args}.`,
+                    }
+                }
+            };
+            Object.keys(ctx.config).map(x => cnf[x] = `${cnf[x]} <-- SET`);
+            await ctx.map(cnf);
+            await utilitas.timeout(1000);
+            await ctx.hello();
+            break;
         case 'translate':
-            ctx.overwrite(getTranslatePrompt(ctx.cmd.args || 'English'));
+            ctx.overwrite(getTranslatePrompt(ctx.cmd.args || ctx.session.config?.lang || ctx._.lang));
             break;
         case 'polish':
             ctx.overwrite(getPolishPrompt());
@@ -41,12 +58,15 @@ export const { run, priority, func, cmds, help } = {
     priority: 50,
     func: action,
     help: bot.lines([
+        'Set your default language.',
         'Prompt the AI engine to translate or polish your text.',
-        'If `TO_LANG` is not specified, English is used by default.',
-        'Example: /translate français',
+        'If `LANG` is not specified, English is used by default.',
+        'Example 1: /lang Français',
+        'Example 2: /translate Chinese',
     ]),
     cmds: {
-        translate: 'Translate your text to any language: /translate `TO_LANG`',
+        lang: 'Set your default language: /lang `LANG`',
+        translate: 'Translate your text to any language: /translate `LANG`',
         polish: 'Polish your text.',
         toen: 'Translate your text to English.',
         tofr: 'Translate your text to French.',

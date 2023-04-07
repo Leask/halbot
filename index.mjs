@@ -63,6 +63,7 @@ const init = async (options) => {
         skillPath: options?.skillPath || skillPath,
         speech: _speech,
     });
+    _bot._.lang = options?.lang || 'English';
     _bot._.prompts = await fetchPrompts();
     return _bot;
 };
