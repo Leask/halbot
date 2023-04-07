@@ -32,12 +32,14 @@ export const { run, priority, func, help, args } = {
     priority: 10,
     func: action,
     help: bot.lines([
-        'Set initial prompt to the AI engine.',
-        'Select between AI engines.',
-        'Tweak output rendering.',
-        "Tip 1: Set `hello ''` to reset to default initial prompt.",
-        "Tip 2: Set `ai ''` to use default AI engine.",
-        'Tip 3: Set `ai @` to use all AI engines simultaneously.',
+        '¶ Set initial prompt to the AI engine.',
+        "Tip 1: Set `hello=''` to reset to default initial prompt.",
+        '¶ Select between AI engines.',
+        "Tip 2: Set `ai=''` to use default AI engine.",
+        'Tip 3: Set `ai=@` to use all AI engines simultaneously.',
+        '¶ Tweak enhanced output rendering.',
+        'Example 1: /set --render on',
+        'Example 2: /set --render off',
     ]),
     args: {
         hello: {
