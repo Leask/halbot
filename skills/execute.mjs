@@ -1,4 +1,3 @@
-import { bot, shot, utilitas } from 'utilitas';
 
 const action = async (ctx, next) => {
     let prompt = ctx.session.prompts?.[ctx.cmdExt?.cmd] || (
@@ -6,7 +5,7 @@ const action = async (ctx, next) => {
     );
     if (prompt) {
         ctx.clear();
-        ctx.overwrite = ctx.text = prompt;
+        ctx.overwrite(prompt);
     }
     await next();
 };

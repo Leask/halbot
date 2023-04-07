@@ -18,10 +18,8 @@ const fetchPrompts = async () => {
             const pmts = parse(resp, { columns: true, skip_empty_lines: true });
             assert(pmts?.length, `Failed to load external prompts: ${source}.`);
             pmts.filter(x => x.act && x.prompt).map(x => {
-                const command = utilitas.ensureString(
-                    x.act, { case: 'SNAKE' }
-                ).slice(0, bot.MAX_MENU_LENGTH);
-                prompts[command] = { command, ...x };
+                const { command, description } = bot.newCommand(x.act, x.act);
+                prompts[command] = { ...x, command, act: description };
             });
         } catch (err) { log(err?.message || err); }
     }

@@ -2,7 +2,7 @@ import { utilitas } from 'utilitas';
 
 const onProgress = { onProgress: true };
 const [YOU, BOT, LN2] = ['😸 You:', '🤖️ ', '\n\n'];
-const [joinL1, joinL2] = [a => a.join(`${LN2}---${LN2}`), a => a.join(LN2)];
+const [joinL1, joinL2] = [a => a.join(LN2), a => a.join(LN2)];
 const enrich = name => name === 'Bing' ? `${name} (Sydney)` : name;
 const log = content => utilitas.log(content, import.meta.url);
 
@@ -11,10 +11,10 @@ const action = async (ctx, next) => {
     const [msgs, tts, pms, extra] = [{}, {}, [], {}];
     let [lastMsg, lastSent] = ['', 0];
     const packMsg = options => {
-        const packed = [...ctx.overwrite ? [joinL2([YOU, ctx.overwrite])] : []];
+        const packed = [...ctx._text && !options?.tts ? [joinL2([YOU, ctx.text])] : []];
         const source = options?.tts ? tts : msgs;
         ctx.selectedAi.map(n => packed.push(joinL2([
-            ...ctx.multiAi || !ctx.isDefaultAi(n) || ctx.overwrite ? [`${BOT}${enrich(n)}:`] : [],
+            ...ctx.multiAi || !ctx.isDefaultAi(n) || ctx._text ? [`${BOT}${enrich(n)}:`] : [],
             options?.onProgress ? (
                 source[n] ? `${source[n].trim()} █` : '💬'
             ) : (source[n] || ''),
@@ -39,7 +39,8 @@ const action = async (ctx, next) => {
                         ok(onProgress);
                     }
                 );
-                msgs[n] = ctx.session.config?.render === false ? resp.response : resp.responseRendered;
+                msgs[n] = ctx.session.config?.render === false
+                    ? resp.response : resp.responseRendered;
                 tts[n] = resp.spokenText;
                 extra.buttons = resp?.suggestedResponses?.map?.(label => ({
                     label, text: `/bing ${label}`,

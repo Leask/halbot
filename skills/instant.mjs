@@ -27,14 +27,11 @@ export const { run, priority, func, help, cmds } = {
     priority: 20,
     func: action,
     help: bot.lines([
-        'Use an AI engine temporary.',
-        'Example 1: /chatgpt Say hello to ChatGPT!',
-        'Example 2: /bing Say hello to Bing!',
-        'Example 3: /all Say hello to all AI engines!',
+        'Use an AI engine `temporary` without touching your settings.',
     ]),
     cmds: {
-        all: 'Use all AI engines simultaneously temporary.',
-        bing: 'Use Bing as temporary AI engine.',
-        chatgpt: 'Use ChatGPT as temporary AI engine.',
+        all: 'Use all AI engines simultaneously: /all Say hello to all AIs!',
+        chatgpt: 'Use ChatGPT temporary: /chatgpt Say hello to ChatGPT!',
+        bing: 'Use Bing temporary: /bing Say hello to Bing!',
     },
 };
