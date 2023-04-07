@@ -13,7 +13,8 @@ const action = async (ctx, next) => {
     const [msgs, ctxs, tts, pms, extra] = [{}, {}, {}, [], {}];
     let [lastMsg, lastSent] = ['', 0];
     const packMsg = options => {
-        const packed = [...ctx._text && !options?.tts ? [joinL2([YOU, ctx.text])] : []];
+        const addition = !options?.tts && (ctx._text || ctx.action) ? (ctx._text || ctx.action) : '';
+        const packed = [...addition ? [joinL2([YOU, addition])] : []];
         const source = options?.tts ? tts : msgs;
         const pure = [];
         ctx.selectedAi.map(n => {
@@ -22,7 +23,7 @@ const action = async (ctx, next) => {
             ) : (source[n] || '');
             pure.push(content);
             packed.push(joinL2([
-                ...ctx.multiAi || !ctx.isDefaultAi(n) || ctx._text || ctxs[n]?.cmd ? [
+                ...ctx.multiAi || !ctx.isDefaultAi(n) || addition || ctxs[n]?.cmd ? [
                     `${BOT}${enrich(n)}${ctxs[n]?.cmd && ` > \`${ctxs[n].cmd}\` (exit by /clear)` || ''}:`
                 ] : [], content,
             ]));

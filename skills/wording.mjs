@@ -28,13 +28,12 @@ const action = async (ctx, next) => {
                 ...ctx.session.config = {
                     ...ctx.session.config, ...ctx.config = {
                         lang: ctx.cmd.args,
-                        hello: `Hello! I speak ${ctx.cmd.args}.`,
+                        hello: `Please reply in ${ctx.cmd.args}. Hello! `,
                     }
                 }
             };
             Object.keys(ctx.config).map(x => cnf[x] = `${cnf[x]} <-- SET`);
-            await ctx.map(cnf);
-            await utilitas.timeout(1000);
+            ctx.action = bot.map(cnf);
             await ctx.hello();
             break;
         case 'translate': promptTranslate(ctx, ctx.cmd.args || ctx.session.config?.lang || ctx._.lang); break;
