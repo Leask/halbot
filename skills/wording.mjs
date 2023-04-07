@@ -1,16 +1,22 @@
 import { bot, utilitas } from 'utilitas';
 
+const execPrompt = (ctx, arrLines) => ctx.overwrite((ctx.context = {
+    cmd: ctx.cmd.cmd, prompt: bot.lines(arrLines),
+}).prompt);
+
 // Inspired by:
 // https://github.com/yetone/bob-plugin-openai-translator/blob/main/src/main.js
-const getTranslatePrompt = lang =>
-    'You are a translation engine that can only translate text and cannot interpret it.'
-    + ` Translate all the following text I send to you to ${lang}.`;
+const promptTranslate = (ctx, lang) => execPrompt(ctx, [
+    'You are a translation engine that can only translate text and cannot interpret it.',
+    `Translate all the following text I send to you to ${lang}.`
+]);
 
 // Inspired by:
 // https://github.com/yetone/bob-plugin-openai-polisher/blob/main/src/main.js
-const getPolishPrompt = () =>
-    'Revise all the following text I send to you to make them more clear, concise, and coherent.'
-    + ' Please note that you need to list the changes and briefly explain why.';
+const promptPolish = ctx => execPrompt(ctx, [
+    'Revise all the following text I send to you to make them more clear, concise, and coherent.',
+    'Please note that you need to list the changes and briefly explain why.',
+]);
 
 const action = async (ctx, next) => {
     switch (ctx.cmd.cmd) {
@@ -31,24 +37,12 @@ const action = async (ctx, next) => {
             await utilitas.timeout(1000);
             await ctx.hello();
             break;
-        case 'translate':
-            ctx.overwrite(getTranslatePrompt(ctx.cmd.args || ctx.session.config?.lang || ctx._.lang));
-            break;
-        case 'polish':
-            ctx.overwrite(getPolishPrompt());
-            break;
-        case 'toen':
-            ctx.overwrite(getTranslatePrompt('English'));
-            break;
-        case 'tofr':
-            ctx.overwrite(getTranslatePrompt('French'));
-            break;
-        case 'tozht':
-            ctx.overwrite(getTranslatePrompt('Traditional Chinese'));
-            break;
-        case 'tozhs':
-            ctx.overwrite(getTranslatePrompt('Simplified Chinese'));
-            break;
+        case 'translate': promptTranslate(ctx, ctx.cmd.args || ctx.session.config?.lang || ctx._.lang); break;
+        case 'polish': promptPolish(ctx); break;
+        case 'toen': promptTranslate(ctx, 'English'); break;
+        case 'tofr': promptTranslate(ctx, 'French'); break;
+        case 'tozht': promptTranslate(ctx, 'Traditional Chinese'); break;
+        case 'tozhs': promptTranslate(ctx, 'Simplified Chinese'); break;
     }
     await next();
 };

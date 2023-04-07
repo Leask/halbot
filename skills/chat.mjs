@@ -1,5 +1,7 @@
 import { utilitas } from 'utilitas';
 
+// @todo: consider using md v2, see https://core.telegram.org/bots/api#markdownv2-style.
+
 const onProgress = { onProgress: true };
 const [YOU, BOT, LN2] = ['😸 You:', '🤖️ ', '\n\n'];
 const [joinL1, joinL2] = [a => a.join(LN2), a => a.join(LN2)];
@@ -8,7 +10,7 @@ const log = content => utilitas.log(content, import.meta.url);
 
 const action = async (ctx, next) => {
     if (!ctx.text) { return await next(); }
-    const [msgs, tts, pms, extra] = [{}, {}, [], {}];
+    const [msgs, ctxs, tts, pms, extra] = [{}, {}, {}, [], {}];
     let [lastMsg, lastSent] = ['', 0];
     const packMsg = options => {
         const packed = [...ctx._text && !options?.tts ? [joinL2([YOU, ctx.text])] : []];
@@ -20,9 +22,10 @@ const action = async (ctx, next) => {
             ) : (source[n] || '');
             pure.push(content);
             packed.push(joinL2([
-                ...ctx.multiAi || !ctx.isDefaultAi(n) || ctx._text ? [`${BOT}${enrich(n)}:`] : [],
-                content,
-            ]))
+                ...ctx.multiAi || !ctx.isDefaultAi(n) || ctx._text || ctxs[n]?.cmd ? [
+                    `${BOT}${enrich(n)}${ctxs[n]?.cmd && ` > \`${ctxs[n].cmd}\` (exit by /clear)` || ''}:`
+                ] : [], content,
+            ]));
         });
         return options?.tts && !pure.join('').trim().length ? '' : joinL1(packed);
     };
@@ -38,15 +41,16 @@ const action = async (ctx, next) => {
     for (let n of ctx.selectedAi) {
         pms.push((async () => {
             try {
-                const resp = await ctx._.ai[n].send(
-                    ctx.text, { session: ctx.chatId }, tkn => {
-                        msgs[n] = `${(msgs[n] || '')}${tkn}`;
-                        ok(onProgress);
-                    }
-                );
+                const resp = await ctx._.ai[n].send(ctx.text, {
+                    session: ctx.chatId, context: ctx.context
+                }, token => {
+                    msgs[n] = `${(msgs[n] || '')}${token}`;
+                    ok(onProgress);
+                });
+                ctxs[n] = resp.context;
                 msgs[n] = ctx.session.config?.render === false
                     ? resp.response : resp.responseRendered;
-                tts[n] = resp.spokenText;
+                tts[n] = msgs[n].split('\n').some(x => /^```/.test(x)) ? '' : resp.spokenText;
                 extra.buttons = resp?.suggestedResponses?.map?.(label => ({
                     label, text: `/bing ${label}`,
                 }));
