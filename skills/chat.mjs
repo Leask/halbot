@@ -13,13 +13,18 @@ const action = async (ctx, next) => {
     const packMsg = options => {
         const packed = [...ctx._text && !options?.tts ? [joinL2([YOU, ctx.text])] : []];
         const source = options?.tts ? tts : msgs;
-        ctx.selectedAi.map(n => packed.push(joinL2([
-            ...ctx.multiAi || !ctx.isDefaultAi(n) || ctx._text ? [`${BOT}${enrich(n)}:`] : [],
-            options?.onProgress ? (
+        const pure = [];
+        ctx.selectedAi.map(n => {
+            const content = options?.onProgress ? (
                 source[n] ? `${source[n].trim()} █` : '💬'
-            ) : (source[n] || ''),
-        ])));
-        return joinL1(packed);
+            ) : (source[n] || '');
+            pure.push(content);
+            packed.push(joinL2([
+                ...ctx.multiAi || !ctx.isDefaultAi(n) || ctx._text ? [`${BOT}${enrich(n)}:`] : [],
+                content,
+            ]))
+        });
+        return options?.tts && !pure.join('').trim().length ? '' : joinL1(packed);
     };
     const ok = async options => {
         const [curTime, curMsg] = [Date.now(), packMsg(options)];
