@@ -3,6 +3,11 @@ import { bot, utilitas } from 'utilitas';
 let configuredAi;
 
 const action = async (ctx, next) => {
+    ctx.isDefaultAi = name => name === ctx.firstAi;
+    ctx.clear = () => (ctx.selectedAi || []).map(n => {
+        ctx._.ai[n].clear(ctx.chatId);
+        ctx.hello();
+    });
     ctx.firstAi = (configuredAi = Object.keys(ctx._.ai))[0];
     switch (ctx.session.config?.ai) {
         case '': ctx.selectedAi = [ctx.firstAi]; break;
@@ -11,11 +16,6 @@ const action = async (ctx, next) => {
             ? ctx.session.config?.ai : ctx.firstAi];
     }
     ctx.multiAi = ctx.selectedAi.length > 1;
-    ctx.isDefaultAi = name => name === ctx.firstAi;
-    ctx.clear = () => (ctx.selectedAi || []).map(n => {
-        ctx._.ai[n].clear(ctx.chatId);
-        ctx.hello();
-    });
     await next();
 };
 
