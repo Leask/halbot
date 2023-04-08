@@ -1,7 +1,7 @@
 import { bot } from 'utilitas';
 
 const action = async (ctx, next) => {
-    if (!ctx.update.message.poll) { return next(); }
+    if (!ctx.update?.message?.poll) { return next(); }
     ctx.text = bot.lines([
         'Please help me select the best option in this poll.',
         'Try your best to choose between these options.',

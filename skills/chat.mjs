@@ -1,14 +1,15 @@
 import { utilitas } from 'utilitas';
 
 const onProgress = { onProgress: true };
-const [YOU, BOT, LN2] = ['😸 You:', '🤖️ ', '\n\n'];
+const [BOT, LN2] = ['🤖️ ', '\n\n'];
 const [joinL1, joinL2] = [a => a.join(LN2), a => a.join(LN2)];
 const enrich = name => name === 'Bing' ? `${name} (Sydney)` : name;
 const log = content => utilitas.log(content, import.meta.url);
 
 const action = async (ctx, next) => {
     if (!ctx.text) { return await next(); }
-    const [msgs, ctxs, tts, pms, extra] = [{}, {}, {}, [], {}];
+    const [YOU, msgs, ctxs, tts, pms, extra]
+        = [`${ctx.avatar} You:`, {}, {}, {}, [], {}];
     let [lastMsg, lastSent] = ['', 0];
     const packMsg = options => {
         const addition = !options?.tts && (ctx._text || ctx.action) ? (ctx.text || ctx.action) : '';
@@ -69,6 +70,6 @@ const action = async (ctx, next) => {
 
 export const { run, priority, func } = {
     run: true,
-    priority: 70,
+    priority: 80,
     func: action,
 };
