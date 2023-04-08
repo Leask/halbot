@@ -1,7 +1,5 @@
 import { utilitas } from 'utilitas';
 
-// @todo: consider using md v2, see https://core.telegram.org/bots/api#markdownv2-style.
-
 const onProgress = { onProgress: true };
 const [YOU, BOT, LN2] = ['😸 You:', '🤖️ ', '\n\n'];
 const [joinL1, joinL2] = [a => a.join(LN2), a => a.join(LN2)];
@@ -13,7 +11,7 @@ const action = async (ctx, next) => {
     const [msgs, ctxs, tts, pms, extra] = [{}, {}, {}, [], {}];
     let [lastMsg, lastSent] = ['', 0];
     const packMsg = options => {
-        const addition = !options?.tts && (ctx._text || ctx.action) ? (ctx._text || ctx.action) : '';
+        const addition = !options?.tts && (ctx._text || ctx.action) ? (ctx.text || ctx.action) : '';
         const packed = [...addition ? [joinL2([YOU, addition])] : []];
         const source = options?.tts ? tts : msgs;
         const pure = [];
@@ -64,12 +62,13 @@ const action = async (ctx, next) => {
     }
     await Promise.all(pms);
     await ok();
+    ctx.responses = msgs;
     ctx.tts = packMsg({ tts: true });
     await next();
 };
 
 export const { run, priority, func } = {
     run: true,
-    priority: 60,
+    priority: 70,
     func: action,
 };
