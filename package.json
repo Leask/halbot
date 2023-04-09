@@ -38,7 +38,7 @@
     "jsdom": "^21.1.1",
     "mysql2": "^3.2.0",
     "telegraf": "^4.12.2",
-    "utilitas": "^1993.2.10",
+    "utilitas": "^1993.2.11",
     "youtube-transcript": "^1.0.5"
   }
 }
