@@ -1,4 +1,5 @@
 import { utilitas } from 'utilitas';
+import { countKeys } from 'utilitas/lib/utilitas.mjs';
 
 const onProgress = { onProgress: true };
 const [BOT, LN2] = ['🤖️ ', '\n\n'];
@@ -40,12 +41,13 @@ const action = async (ctx, next) => {
     };
     await ok(onProgress);
     // https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them
-    const additionInfo = Object.keys(ctx.urls || {}).map(u => ctx.urls[u]).join('\n').split(' ');
-    console.log(additionInfo);
+    const additionInfo = countKeys(ctx.urls) ? Object.keys(ctx.urls).map(
+        u => ctx.urls[u]
+    ).join('\n').split(' ') : [];
     while (countTokens(ctx.text) < 2250 && additionInfo.length) {
         ctx.text += ` ${additionInfo.shift()}`;
     }
-    additionInfo.length || (ctx.text += '...');
+    additionInfo.filter(x => x).length && (ctx.text += '...');
     for (let n of ctx.selectedAi) {
         pms.push((async () => {
             try {
