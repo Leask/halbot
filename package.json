@@ -31,11 +31,14 @@
   "dependencies": {
     "@google-cloud/speech": "^5.4.0",
     "@google-cloud/text-to-speech": "^4.2.1",
+    "@mozilla/readability": "^0.4.4",
     "@waylaidwanderer/chatgpt-api": "^1.34.0",
     "csv-parse": "^5.3.6",
     "ioredis": "^5.3.1",
+    "jsdom": "^21.1.1",
     "mysql2": "^3.2.0",
     "telegraf": "^4.12.2",
-    "utilitas": "^1993.2.6"
+    "utilitas": "^1993.2.9",
+    "youtube-transcript": "^1.0.5"
   }
 }

@@ -5,6 +5,7 @@ const [BOT, LN2] = ['🤖️ ', '\n\n'];
 const [joinL1, joinL2] = [a => a.join(LN2), a => a.join(LN2)];
 const enrich = name => name === 'Bing' ? `${name} (Sydney)` : name;
 const log = content => utilitas.log(content, import.meta.url);
+const countTokens = text => text.split(/[^a-z0-9]/i).length;
 
 const action = async (ctx, next) => {
     if (!ctx.text) { return await next(); }
@@ -38,6 +39,13 @@ const action = async (ctx, next) => {
         return await ctx.ok(curMsg, { md: true, ...options || {}, ...extra });
     };
     await ok(onProgress);
+    // https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them
+    const additionInfo = Object.keys(ctx.urls || {}).map(u => ctx.urls[u]).join('\n').split(' ');
+    console.log(additionInfo);
+    while (countTokens(ctx.text) < 2250 && additionInfo.length) {
+        ctx.text += ` ${additionInfo.shift()}`;
+    }
+    additionInfo.length || (ctx.text += '...');
     for (let n of ctx.selectedAi) {
         pms.push((async () => {
             try {
