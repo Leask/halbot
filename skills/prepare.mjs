@@ -19,11 +19,10 @@ const action = async (ctx, next) => {
         ctx.avatar = '😸';
     }
     // prompt
-    console.log(ctx.collected);
     const additionInfo = ctx.collected.length ? ctx.collected.map(
         x => x.content
     ).join('\n').split(' ') : [];
-    ctx.text += '\n\n';
+    ctx.text = (ctx.text || '') + '\n\n';
     while (countTokens(ctx.text) < 2250 && additionInfo.length) {
         ctx.text += ` ${additionInfo.shift()}`;
     }

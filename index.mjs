@@ -1,4 +1,4 @@
-import { bot, hal, shot, speech, utilitas } from 'utilitas';
+import { bot, hal, shot, speech, utilitas, vision } from 'utilitas';
 import { parse } from 'csv-parse/sync';
 
 await utilitas.locate(utilitas.__(import.meta.url, 'package.json'));
@@ -31,9 +31,15 @@ const init = async (options) => {
     assert(options?.telegramToken, 'Telegram Bot API Token is required.');
     const [pkg, ai, _speech] = [await utilitas.which(), {}, {}];
     const info = bot.lines([`[${bot.EMOJI_BOT} ${pkg.title}](${pkg.homepage})`, pkg.description]);
+    let _vision;
     if (options?.googleApiKey) {
-        await speech.init({ apiKey: options?.googleApiKey, tts: true, stt: true });
+        const apiKey = { apiKey: options?.googleApiKey };
+        await Promise.all([
+            speech.init({ ...apiKey, tts: true, stt: true }),
+            vision.init(apiKey),
+        ]);
         Object.assign(_speech, { stt: speech.stt, tts: speech.tts });
+        _vision = vision;
     }
     if (options?.chatGptKey) {
         ai['ChatGPT'] = await hal.init({
@@ -62,6 +68,7 @@ const init = async (options) => {
         session: options?.session,
         skillPath: options?.skillPath || skillPath,
         speech: _speech,
+        vision: _vision,
     });
     _bot._.lang = options?.lang || 'English';
     _bot._.prompts = await fetchPrompts();
