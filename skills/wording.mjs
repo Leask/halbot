@@ -1,6 +1,6 @@
 import { bot } from 'utilitas';
 
-const execPrompt = (ctx, arrLines) => ctx.overwrite((ctx.context = {
+const execPrompt = (ctx, arrLines) => ctx.collect((ctx.context = {
     cmd: ctx.cmd.cmd, prompt: bot.lines(arrLines),
 }).prompt);
 

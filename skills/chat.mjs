@@ -1,21 +1,21 @@
-import { utilitas } from 'utilitas';
-import { countKeys } from 'utilitas/lib/utilitas.mjs';
+import { bot, utilitas } from 'utilitas';
 
 const onProgress = { onProgress: true };
-const [BOT, LN2] = ['🤖️ ', '\n\n'];
+const [BOT, LN2] = [`${bot.EMOJI_BOT} `, '\n\n'];
 const [joinL1, joinL2] = [a => a.join(LN2), a => a.join(LN2)];
 const enrich = name => name === 'Bing' ? `${name} (Sydney)` : name;
 const log = content => utilitas.log(content, import.meta.url);
-const countTokens = text => text.split(/[^a-z0-9]/i).length;
 
 const action = async (ctx, next) => {
     if (!ctx.text) { return await next(); }
     const [YOU, msgs, ctxs, tts, pms, extra]
         = [`${ctx.avatar} You:`, {}, {}, {}, [], {}];
     let [lastMsg, lastSent] = ['', 0];
+    console.log(ctx.action);
+    console.log(ctx.test);
     const packMsg = options => {
-        const addition = !options?.tts && (ctx._text || ctx.action) ? (ctx.text || ctx.action) : '';
-        const packed = [...addition ? [joinL2([YOU, addition])] : []];
+        const said = !options?.tts && ctx.action ? ctx.action : '';
+        const packed = [...said ? [joinL2([YOU, said])] : []];
         const source = options?.tts ? tts : msgs;
         const pure = [];
         ctx.selectedAi.map(n => {
@@ -24,7 +24,7 @@ const action = async (ctx, next) => {
             ) : (source[n] || '');
             pure.push(content);
             packed.push(joinL2([
-                ...ctx.multiAi || !ctx.isDefaultAi(n) || addition || ctxs[n]?.cmd ? [
+                ...ctx.multiAi || !ctx.isDefaultAi(n) || said || ctxs[n]?.cmd ? [
                     `${BOT}${enrich(n)}${ctxs[n]?.cmd && ` > \`${ctxs[n].cmd}\` (exit by /clear)` || ''}:`
                 ] : [], content,
             ]));
@@ -40,20 +40,10 @@ const action = async (ctx, next) => {
         return await ctx.ok(curMsg, { md: true, ...options || {}, ...extra });
     };
     await ok(onProgress);
-    // https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them
-    const additionInfo = countKeys(ctx.urls) ? Object.keys(ctx.urls).map(
-        u => ctx.urls[u]
-    ).join('\n').split(' ') : [];
-    while (countTokens(ctx.text) < 2250 && additionInfo.length) {
-        ctx.text += ` ${additionInfo.shift()}`;
-    }
-    additionInfo.filter(x => x).length && (ctx.text += '...');
     for (let n of ctx.selectedAi) {
         pms.push((async () => {
             try {
-                const resp = await ctx._.ai[n].send(ctx.text, {
-                    session: ctx.chatId, context: ctx.context
-                }, token => {
+                const resp = await ctx._.ai[n].send(ctx.text, ctx.carry, token => {
                     msgs[n] = `${(msgs[n] || '')}${token}`;
                     ok(onProgress);
                 });
@@ -80,6 +70,6 @@ const action = async (ctx, next) => {
 
 export const { run, priority, func } = {
     run: true,
-    priority: 80,
+    priority: 70,
     func: action,
 };

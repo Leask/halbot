@@ -1,11 +1,11 @@
 
 const action = async (ctx, next) => {
-    const prompt = ctx.session.prompts?.[ctx.cmdExt?.cmd]
-        || ctx._.prompts?.[ctx.cmdExt?.cmd]?.prompt;
+    const cmd = ctx.cmd?.cmd;
+    const prompt = ctx.session.prompts?.[cmd] || ctx._.prompts?.[cmd]?.prompt;
     if (prompt) {
         ctx.clear();
-        ctx.context = { cmd: ctx.cmdExt.cmd, prompt };
-        ctx.overwrite(prompt);
+        ctx.context = { cmd, prompt };
+        ctx.collect(prompt);
     }
     await next();
 };

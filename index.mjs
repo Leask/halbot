@@ -30,7 +30,7 @@ const fetchPrompts = async () => {
 const init = async (options) => {
     assert(options?.telegramToken, 'Telegram Bot API Token is required.');
     const [pkg, ai, _speech] = [await utilitas.which(), {}, {}];
-    const info = bot.lines([`[🤖️ ${pkg.title}](${pkg.homepage})`, pkg.description]);
+    const info = bot.lines([`[${bot.EMOJI_BOT} ${pkg.title}](${pkg.homepage})`, pkg.description]);
     if (options?.googleApiKey) {
         await speech.init({ apiKey: options?.googleApiKey, tts: true, stt: true });
         Object.assign(_speech, { stt: speech.stt, tts: speech.tts });
