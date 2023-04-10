@@ -11,8 +11,6 @@ const action = async (ctx, next) => {
     const [YOU, msgs, ctxs, tts, pms, extra]
         = [`${ctx.avatar} You:`, {}, {}, {}, [], {}];
     let [lastMsg, lastSent] = ['', 0];
-    console.log(ctx.action);
-    console.log(ctx.test);
     const packMsg = options => {
         const said = !options?.tts && ctx.action ? ctx.action : '';
         const packed = [...said ? [joinL2([YOU, said])] : []];
