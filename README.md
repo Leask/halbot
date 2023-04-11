@@ -20,11 +20,14 @@ alt="Halbot live demo" width="240" height="180" border="10" /></a>
 
 ## Features
 
-- Telegram Bot (`Telegram Bot` token required)
-- ChatGPT (`OpenAI` API key required)
-- Bing Chat (`Bing Chat` user token required)
+- [Telegram](https://telegram.org/) Bot (`Telegram Bot` token required)
+- [ChatGPT]https://openai.com/blog/chatgpt) ([OpenAI])(https://openai.com/) API key required)
+- [Bing Chat](https://www.bing.com/) (`Bing Chat` user token required)
 - Speech-to-text (`Google Cloud` API key required, or your own engine)
 - Text-to-speech (`Google Cloud` API key required, or your own engine)
+- OCR/OBJECT_DETECT (`Google Cloud` API key required, or your own engine)
+- Feeding webpage and [YouTube](https://www.youtube.com/) to enhance your prompt
+- Custom prompt and [🧠 Awesome ChatGPT Prompts](https://github.com/f/awesome-chatgpt-prompts) at your fingertips
 - Support `private` and `public` mode, with multiple authenticate methods.
 - `Middleware` style workflow, easy to extend.
 - Realtime stream-style response, no more waiting.
@@ -66,7 +69,7 @@ All supported configuration fields:
     "bingToken": "[[Bing Usertoken from cookies]]",
 
     // OPTIONAL, string.
-    // Set this field if you need TTS/STT features.
+    // Set this field if you need TTS/STT/OCR/OBJECT_DETECT features.
     "googleApiKey": "[[Google Cloud API Key]]",
 
     // OPTIONAL, undefined || array of string.
@@ -90,23 +93,32 @@ All supported configuration fields:
     // Adding 'group' or 'channel' may cause too much disturbance.
     "chatType": ["mention", "private"],
 
+    // OPTIONAL, string.
+    "hello": "[[initial prompt]]",
+
+    // OPTIONAL, string.
+    "info": "[[bot description]]",
+
+    // OPTIONAL, string.
+    "help": "[[help information]]",
+
     // OPTIONAL, object.
     // Session storage, support MariaDB/MySQL and Redis for now.
     // If omitted, the bot will use memory storage and sync to this file.
     // Example: (Compatibility: https://github.com/sidorares/node-mysql2)
     "session": {
-        type: [['MARIADB' || 'MYSQL']],
-        host: [[DATABASE HOST]],
-        database: [[DATABASE NAME]],
-        user: [[DATABASE USER]],
-        password: [[DATABASE PASSWORD]],
+        "type": "[["MARIADB" || "MYSQL"]]",
+        "host": "[[DATABASE HOST]]",
+        "database": "[[DATABASE NAME]]",
+        "user": "[[DATABASE USER]]",
+        "password": "[[DATABASE PASSWORD]]",
         ...[[OTHER DATABASE OPTIONS]],
     },
     // OR: (Compatibility: https://github.com/luin/ioredis)
     "session": {
-        type: 'REDIS',
-        host: [[REDIS HOST]],
-        password: [[REDIS PASSWORD]],
+        "type": "REDIS",
+        "host": "[[REDIS HOST]]",
+        "password": "[[REDIS PASSWORD]]",
         ...[[OTHER REDIS OPTIONS]],
     },
 
@@ -159,8 +171,14 @@ const config = {
     // OPTIONAL, object.
     // Your own speech-to-text and text-to-speech engine.
     speech: {
-        stt: [[sttClient]],
-        tts: [[ttsClient]],
+        stt: [[stt api]],
+        tts: [[tts api]],
+    },
+
+    // OPTIONAL, object.
+    // Your own computer-vision engine.
+    vision {
+        see: [[ocr/object_detect api]]
     },
 
     // OPTIONAL, string.
@@ -186,6 +204,32 @@ const config = {
     session: {
         get: async (key) => { /* return session object by chatId. */ },
         set: async (key, session) => { /* save session object by chatId. */ },
+    },
+
+    // OPTIONAL, object.
+    // Adding extra commands.
+    cmds: {
+        [[commandA]]: [[descriptionA]],
+        [[commandB]]: [[descriptionB]],
+        ...[[OTHER COMMANDS]],
+    },
+
+    // OPTIONAL, object.
+    // Adding extra configurations
+    args: {
+        [[argA]]: {
+            type: 'string',
+            short: [[short cut]],
+            default: [[default value]],
+            desc: [[description]],
+        },
+        [[argB]]: {
+            type: 'binary',
+            short: [[short cut]],
+            default: [[default value]],
+            desc: [[description]],
+        },
+        ...[[OTHER ARGS]],
     },
 
 };
