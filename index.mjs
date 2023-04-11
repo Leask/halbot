@@ -39,7 +39,7 @@ const init = async (options) => {
             vision.init(apiKey),
         ]);
         Object.assign(_speech, { stt: speech.stt, tts: speech.tts });
-        _vision = vision;
+        _vision = { see: vision };
     }
     if (options?.chatGptKey) {
         ai['ChatGPT'] = await hal.init({
