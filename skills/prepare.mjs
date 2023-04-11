@@ -13,7 +13,7 @@ const action = async (ctx, next) => {
         ctx.avatar = '🔘'; ctx.action = utilitas.trim(ctx.text);
     } else if (ctx.msg?.poll) {
         ctx.avatar = '📊';
-    } else if (ctx.cmd?.cmd) {
+    } else if (ctx.cmd?.cmd && ctx.cmd?.cmd !== 'clear') {
         ctx.avatar = '🚀'; ctx.action = utilitas.trim(ctx.text);
     } else {
         ctx.avatar = '😸';
