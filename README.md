@@ -183,20 +183,8 @@ const config = {
 
     // OPTIONAL, string.
     // Path to your own middlewares.
-    // ./skills
-    //  |- skill_a.mjs
-    //    | const action = async (bot) => {
-    //    |     bot.use(async (ctx, next) => {
-    //    |         ctx.reply('42');
-    //    |         await next();
-    //    |     });
-    //    | };
-    //    |
-    //    | export const { run, priority, func } = {
-    //    |     run: true,
-    //    |     priority: 100,
-    //    |     func: action,
-    //    | };
+
+
     skillPath: './skills',
 
     // OPTIONAL, object.
