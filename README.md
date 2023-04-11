@@ -197,7 +197,7 @@ const config = {
     //    |     priority: 100,
     //    |     func: action,
     //    | };
-    skillPath: '.\/skills',
+    skillPath: './skills',
 
     // OPTIONAL, object.
     // Using customized callback as storage engine.
