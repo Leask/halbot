@@ -10,7 +10,7 @@ const action = async (ctx, next) => {
     await next();
 };
 
-export const { run, priority, func, help, cmds } = {
+export const { run, priority, func } = {
     run: true,
     priority: 40,
     func: action,
