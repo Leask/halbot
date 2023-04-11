@@ -21,7 +21,7 @@ alt="Halbot live demo" width="240" height="180" border="10" /></a>
 ## Features
 
 - [Telegram](https://telegram.org/) Bot (`Telegram Bot` token required)
-- [ChatGPT]https://openai.com/blog/chatgpt) ([OpenAI])(https://openai.com/) API key required)
+- [ChatGPT]https://openai.com/blog/chatgpt) (`OpenAI` API key required)
 - [Bing Chat](https://www.bing.com/) (`Bing Chat` user token required)
 - Speech-to-text (`Google Cloud` API key required, or your own engine)
 - Text-to-speech (`Google Cloud` API key required, or your own engine)
