@@ -178,7 +178,7 @@ const config = {
     // OPTIONAL, object.
     // Your own computer-vision engine.
     vision {
-        see: [[OcrObjectDetectApi]],
+        see: [[ocrAndObjectDetectApi]],
     },
 
     // OPTIONAL, string.
