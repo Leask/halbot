@@ -164,21 +164,21 @@ const config = {
 
     // OPTIONAL, object (key renderd as name) or array (name ignored).
     ai: {
-        [[aiNameA]]: [[aiClientA]]
+        [[aiNameA]]: [[aiClientA]],
         [[aiNameB]]: [[aiClientB]],
     },
 
     // OPTIONAL, object.
     // Your own speech-to-text and text-to-speech engine.
     speech: {
-        stt: [[stt api]],
-        tts: [[tts api]],
+        stt: [[sttApi]],
+        tts: [[ttsApi]],
     },
 
     // OPTIONAL, object.
     // Your own computer-vision engine.
     vision {
-        see: [[ocr/object_detect api]]
+        see: [[OcrObjectDetectApi]],
     },
 
     // OPTIONAL, string.
@@ -219,14 +219,14 @@ const config = {
     args: {
         [[argA]]: {
             type: 'string',
-            short: [[short cut]],
-            default: [[default value]],
+            short: [[shortCut]],
+            default: [[defaultValue]],
             desc: [[description]],
         },
         [[argB]]: {
             type: 'binary',
-            short: [[short cut]],
-            default: [[default value]],
+            short: [[shortCut]],
+            default: [[defaultValue]],
             desc: [[description]],
         },
         ...[[OTHER ARGS]],
