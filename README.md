@@ -179,6 +179,7 @@ const config = {
     // Your own computer-vision engine.
     vision {
         see: [[ocrAndObjectDetectApi]],
+        read: [[documentAnnotateApi]],
     },
 
     // OPTIONAL, string.
