@@ -31,15 +31,12 @@ const init = async (options) => {
     assert(options?.telegramToken, 'Telegram Bot API Token is required.');
     const [pkg, ai, _speech] = [await utilitas.which(), {}, {}];
     const info = bot.lines([`[${bot.EMOJI_BOT} ${pkg.title}](${pkg.homepage})`, pkg.description]);
-    let _vision;
     if (options?.googleApiKey) {
         const apiKey = { apiKey: options?.googleApiKey };
         await Promise.all([
             speech.init({ ...apiKey, tts: true, stt: true }),
             vision.init(apiKey),
         ]);
-        Object.assign(_speech, { stt: speech.stt, tts: speech.tts });
-        _vision = { see: vision };
     }
     if (options?.chatGptKey) {
         ai['ChatGPT'] = await hal.init({
@@ -67,8 +64,8 @@ const init = async (options) => {
         provider: 'telegram',
         session: options?.session,
         skillPath: options?.skillPath || skillPath,
-        speech: _speech,
-        vision: _vision,
+        speech: options?.googleApiKey && speech,
+        vision: options?.googleApiKey && vision,
     });
     _bot._.lang = options?.lang || 'English';
     _bot._.prompts = await fetchPrompts();
