@@ -1,5 +1,9 @@
 import { bot, utilitas } from 'utilitas';
 
+const [balanced, on] = ['balanced', 'on'];
+const bingTones = [balanced, 'creative', 'precise'];
+const binaryStr = [on, 'off'];
+
 let configuredAi;
 
 const action = async (ctx, next) => {
@@ -19,12 +23,18 @@ const action = async (ctx, next) => {
     await next();
 };
 
-const validate = val => {
+const validateAi = val => {
     assert(configuredAi, 'Preparing data for this option. Please try later.');
     for (let name of [...configuredAi, '', '@']) {
         if (utilitas.insensitiveCompare(val, name)) { return name; }
     }
     utilitas.throwError('No AI engine matched.');
+};
+
+const validateTone = val => {
+    val = utilitas.trim(val, { case: 'LOW' });
+    assert([...bingTones.includes(val), ''], 'Unsupported tone-style.');
+    return val;
 };
 
 export const { run, priority, func, help, args } = {
@@ -40,6 +50,8 @@ export const { run, priority, func, help, args } = {
         '¶ Tweak enhanced output rendering.',
         'Example 1: /set --render on',
         'Example 2: /set --render off',
+        '¶ Set tone-style for Bing.',
+        "Tip 4: Set `tone=''` to use default tone-style.",
     ]),
     args: {
         hello: {
@@ -49,12 +61,17 @@ export const { run, priority, func, help, args } = {
         ai: {
             type: 'string', short: 'a', default: '',
             desc: "`(ChatGPT, Bing, '', @)` Select AI engine.",
-            validate,
+            validate: validateAi,
         },
         render: {
-            type: 'string', short: 'r', default: 'on',
-            desc: '`(on, off)` Enable/Disable enhanced output rendering.',
+            type: 'string', short: 'r', default: on,
+            desc: `\`(${binaryStr.join(', ')})\` Enable/Disable enhanced output rendering.`,
             validate: utilitas.humanReadableBoolean,
+        },
+        tone: {
+            type: 'string', short: 't', default: balanced,
+            desc: `\`(${bingTones.join(', ')})\` Set tone-style for Bing.`,
+            validate: validateTone,
         },
     },
 };

@@ -29,7 +29,11 @@ const action = async (ctx, next) => {
     ctx.text = utilitas.trim(ctx.text);
     additionInfo.filter(x => x).length && (ctx.text += '...');
     // next
-    ctx.carry = { session: ctx.chatId, context: ctx.context };
+    ctx.carry = {
+        session: ctx.chatId,
+        context: ctx.context,
+        toneStyle: ctx.session.config?.tone,
+    };
     await next();
 };
 
