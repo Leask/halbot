@@ -9,7 +9,7 @@ const action = async (ctx, next) => {
             const prompts = bot.lines2(Object.keys(ctx.session.prompts || {}).map(
                 x => bot.lines([`- /${x}`, ctx.session.prompts[x]])
             ));
-            await ctx.paging(prompts || 'No custom prompts.');
+            await ctx.ok(prompts || 'No custom prompts.');
             break;
         case 'add':
             const arrText = (ctx.cmd.args || '').split('\n');
@@ -37,7 +37,7 @@ const action = async (ctx, next) => {
             const list = bot.uList(Object.keys(ctx._.prompts || {}).map(
                 x => `/${ctx._.prompts[x].command}: ${ctx._.prompts[x].act}`
             ));
-            await ctx.paging(list || 'Data not found.');
+            await ctx.ok(list || 'Data not found.');
             break;
         case 'acpdetail':
             const details = bot.lines2(Object.keys(ctx._.prompts || {}).map(
@@ -46,7 +46,7 @@ const action = async (ctx, next) => {
                     ctx._.prompts[x].prompt
                 ])
             ));
-            await ctx.paging(details || 'Data not found.');
+            await ctx.ok(details || 'Data not found.');
             break;
         case 'clear':
             ctx.clear();
