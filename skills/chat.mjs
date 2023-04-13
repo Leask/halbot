@@ -52,6 +52,7 @@ const action = async (ctx, next) => {
                 extra.buttons = resp?.suggestedResponses?.map?.(label => ({
                     label, text: `/bing ${label}`,
                 }));
+                return resp;
             } catch (err) {
                 msgs[n] = err?.message || err;
                 tts[n] = msgs[n];
@@ -59,9 +60,13 @@ const action = async (ctx, next) => {
             }
         })());
     }
-    await Promise.all(pms);
+    ctx.session._latest = {
+        prompt: ctx.text,
+        carry: ctx.carry,
+        responses: await Promise.all(pms),
+    };
     await ok();
-    ctx.responses = msgs;
+    // ctx.responses = msgs; // save responses-to-user for next middleware
     ctx.tts = packMsg({ tts: true });
     await next();
 };
