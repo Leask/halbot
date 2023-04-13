@@ -17,9 +17,7 @@ const action = async (ctx, next) => {
         const source = options?.tts ? tts : msgs;
         const pure = [];
         ctx.selectedAi.map(n => {
-            const content = options?.onProgress ? (
-                source[n] ? source[n].trim() : '💬'
-            ) : (source[n] || '');
+            const content = source[n] || '';
             pure.push(content);
             packed.push(joinL2([
                 ...ctx.multiAi || !ctx.isDefaultAi(n) || said || ctxs[n]?.cmd ? [
