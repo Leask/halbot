@@ -1,8 +1,7 @@
 import { bot, utilitas } from 'utilitas';
 
-const [balanced, on] = ['balanced', 'on'];
+const balanced = 'balanced';
 const bingTones = [balanced, 'creative', 'precise'];
-const binaryStr = [on, 'off'];
 
 let configuredAi;
 
@@ -64,8 +63,8 @@ export const { run, priority, func, help, args } = {
             validate: validateAi,
         },
         render: {
-            type: 'string', short: 'r', default: on,
-            desc: `\`(${binaryStr.join(', ')})\` Enable/Disable enhanced output rendering.`,
+            type: 'string', short: 'r', default: bot.BINARY_STRINGS[1],
+            desc: `\`(${bot.BINARY_STRINGS.join(', ')})\` Enable/Disable enhanced output rendering.`,
             validate: utilitas.humanReadableBoolean,
         },
         tone: {
