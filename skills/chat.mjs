@@ -48,7 +48,7 @@ const action = async (ctx, next) => {
                     ? resp.response : resp.responseRendered;
                 tts[n] = msgs[n].split('\n').some(x => /^```/.test(x)) ? '' : resp.spokenText;
                 extra.buttons = resp?.suggestedResponses?.map?.(label => ({
-                    label, text: `/bing ${label}`,
+                    label, text: `/bing@${ctx.botInfo.id} ${label}`,
                 }));
                 return resp;
             } catch (err) {
