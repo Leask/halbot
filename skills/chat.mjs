@@ -18,7 +18,7 @@ const action = async (ctx, next) => {
         const pure = [];
         ctx.selectedAi.map(n => {
             const content = options?.onProgress ? (
-                source[n] ? `${source[n].trim()} █` : '💬'
+                source[n] ? source[n].trim() : '💬'
             ) : (source[n] || '');
             pure.push(content);
             packed.push(joinL2([
