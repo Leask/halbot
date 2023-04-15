@@ -1,7 +1,7 @@
 {
   "name": "halbot",
   "description": "Just another ChatGPT/Bing Chat Telegram bob, which is simple design, easy to use, extendable and fun.",
-  "version": "1990.1.73",
+  "version": "1990.1.74",
   "private": false,
   "homepage": "https://github.com/Leask/halbot",
   "type": "module",
