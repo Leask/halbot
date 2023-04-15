@@ -93,11 +93,8 @@ All supported configuration fields:
     // Adding 'group' or 'channel' may cause too much disturbance.
     "chatType": ["mention", "private"],
 
-    // OPTIONAL, object.
-    "prompts": {
-        "system": "[[system prompt]]", // OPTIONAL, string.
-        "user": "[[user prompt]]",     // OPTIONAL, string.
-    },
+    // OPTIONAL, string.
+    "hello": "[[initial prompt]]",
 
     // OPTIONAL, string.
     "info": "[[bot description]]",
