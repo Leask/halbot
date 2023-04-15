@@ -63,6 +63,10 @@ const action = async (ctx, next) => {
     await ok();
     // ctx.responses = msgs; // save responses-to-user for next middleware
     ctx.tts = packMsg({ tts: true });
+    // match for session rendering
+    ctx.selectedAi.map(n => ['response', 'responseRendered'].map(k =>
+        ctx.session.latest[n][k] = ctx.session.latest[n][k].replaceAll('`', '')
+    ));
     await next();
 };
 
