@@ -7,22 +7,22 @@ const enrich = name => name === 'Bing' ? `${name} (Sydney)` : name;
 const log = content => utilitas.log(content, import.meta.url);
 
 const action = async (ctx, next) => {
-    if (!ctx.text) { return await next(); }
-    const [YOU, msgs, ctxs, tts, pms, extra]
-        = [`${ctx.avatar} You:`, {}, {}, {}, [], {}];
+    if (!ctx.prompt) { return await next(); }
+    const [YOU, msgs, tts, pms, extra] = [`${ctx.avatar} You:`, {}, {}, [], {}];
     let [lastMsg, lastSent] = [null, 0];
     const packMsg = options => {
-        const said = !options?.tts && ctx.action ? ctx.action : '';
+        const said = !options?.tts && ctx.result ? ctx.result : '';
         const packed = [...said ? [joinL2([YOU, said])] : []];
         const source = options?.tts ? tts : msgs;
         const pure = [];
         ctx.selectedAi.map(n => {
             const content = source[n] || '';
+            const cmd = ctx.session.context[n]?.cmd;
+            const context = cmd && ` > \`${cmd}\` (exit by /clear)` || '';
             pure.push(content);
             packed.push(joinL2([
-                ...ctx.multiAi || !ctx.isDefaultAi(n) || said || ctxs[n]?.cmd ? [
-                    `${BOT}${enrich(n)}${ctxs[n]?.cmd && ` > \`${ctxs[n].cmd}\` (exit by /clear)` || ''}:`
-                ] : [], content,
+                ...ctx.multiAi || !ctx.isDefaultAi(n) || said || context
+                    ? [`${BOT}${enrich(n)}${context}:`] : [], content,
             ]));
         });
         return options?.tts && !pure.join('').trim().length ? '' : joinL1(packed);
@@ -39,18 +39,24 @@ const action = async (ctx, next) => {
     for (let n of ctx.selectedAi) {
         pms.push((async () => {
             try {
-                const resp = await ctx._.ai[n].send(ctx.text, ctx.carry, token => {
+                const response = await ctx._.ai[n].send(ctx.prompt, {
+                    ...ctx.carry,
+                    session: ctx.session.latest[n]?.response,
+                    promptPrefix: ctx.session.context[n]?.prompt,
+                }, token => {
                     msgs[n] = `${(msgs[n] || '')}${token}`;
                     ok(onProgress);
                 });
-                ctxs[n] = resp.context;
                 msgs[n] = ctx.session.config?.render === false
-                    ? resp.response : resp.responseRendered;
-                tts[n] = msgs[n].split('\n').some(x => /^```/.test(x)) ? '' : resp.spokenText;
-                extra.buttons = resp?.suggestedResponses?.map?.(label => ({
+                    ? response.response : response.responseRendered;
+                tts[n] = msgs[n].split('\n').some(x => /^```/.test(x)) ? '' : response.spokenText;
+                extra.buttons = response?.suggestedResponses?.map?.(label => ({
                     label, text: `/bing@${ctx.botInfo.username} ${label}`,
                 }));
-                return resp;
+                return ctx.session.latest[n] = {
+                    carry: ctx.carry, context: ctx.session.context[n],
+                    prompt: ctx.prompt, response,
+                };
             } catch (err) {
                 msgs[n] = err?.message || err;
                 tts[n] = msgs[n];
@@ -58,11 +64,7 @@ const action = async (ctx, next) => {
             }
         })());
     }
-    ctx.session._latest = {
-        prompt: ctx.text,
-        carry: ctx.carry,
-        responses: await Promise.all(pms),
-    };
+    await Promise.all(pms);
     await ok();
     // ctx.responses = msgs; // save responses-to-user for next middleware
     ctx.tts = packMsg({ tts: true });

@@ -31,6 +31,7 @@ const init = async (options) => {
     assert(options?.telegramToken, 'Telegram Bot API Token is required.');
     const [pkg, ai, _speech] = [await utilitas.which(), {}, {}];
     const info = bot.lines([`[${bot.EMOJI_BOT} ${pkg.title}](${pkg.homepage})`, pkg.description]);
+    const cacheOptions = options?.storage ? { store: options.storage } : null;
     if (options?.googleApiKey) {
         const apiKey = { apiKey: options?.googleApiKey };
         await Promise.all([
@@ -41,17 +42,19 @@ const init = async (options) => {
     if (options?.chatGptKey) {
         ai['ChatGPT'] = await hal.init({
             provider: 'CHATGPT', clientOptions: { apiKey: options.chatGptKey },
+            cacheOptions,
         });
     }
     if (options?.bingToken) {
         ai['Bing'] = await hal.init({
             provider: 'BING', clientOptions: { userToken: options.bingToken },
+            cacheOptions,
         });
     }
     assert(utilitas.countKeys(ai), 'No AI provider is configured.');
     const _bot = await bot.init({
-        ai, auth: options?.auth,
         args: options?.args,
+        auth: options?.auth,
         botToken: options?.telegramToken,
         chatType: options?.chatType,
         cmds: options?.cmds,
@@ -62,11 +65,12 @@ const init = async (options) => {
         magicWord: options?.magicWord,
         private: options?.private,
         provider: 'telegram',
-        session: options?.session,
+        session: options?.storage,
         skillPath: options?.skillPath || skillPath,
         speech: options?.googleApiKey && speech,
         vision: options?.googleApiKey && vision,
     });
+    _bot._.ai = ai;                                                             // Should be an array of a map of AIs.
     _bot._.lang = options?.lang || 'English';
     _bot._.prompts = await fetchPrompts();
     return _bot;

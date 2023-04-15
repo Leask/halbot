@@ -6,11 +6,16 @@ const bingTones = [balanced, 'creative', 'precise'];
 let configuredAi;
 
 const action = async (ctx, next) => {
+    ctx.session.context || (ctx.session.context = {});
+    ctx.session.latest || (ctx.session.latest = {});
+    ctx.hello = str => { str = str || bot.HELLO; ctx.collect(str); return str; };
     ctx.isDefaultAi = name => name === ctx.firstAi;
-    ctx.clear = () => (ctx.selectedAi || []).map(n => {
+    ctx.clear = async context => (ctx.selectedAi || []).map(n => {
         ctx._.ai[n].clear(ctx.chatId);
-        ctx.hello();
-    });
+        delete ctx.session.context[n];
+        delete ctx.session.latest[n];
+        context && (ctx.session.context[n] = context);
+    }).length && await ctx.complete();
     ctx.firstAi = (configuredAi = Object.keys(ctx._.ai))[0];
     switch (ctx.session.config?.ai) {
         case '': ctx.selectedAi = [ctx.firstAi]; break;
@@ -49,12 +54,21 @@ export const { run, priority, func, help, args } = {
         '¶ Tweak enhanced output rendering.',
         'Example 1: /set --render on',
         'Example 2: /set --render off',
+        // '¶ Select between [OpenAI models](https://platform.openai.com/docs/models).',
+        // "Tip !!!4!!!: Set `gptmodel=''` to use default OpenAI model.",
+        // 'Popular models:',
+        // '- [gpt-4](https://platform.openai.com/docs/models/gpt-4): 8192 tokens, trained Sep 2021 (Limited beta).',
+        // '- [gpt-4-32k](https://platform.openai.com/docs/models/gpt-4): 32768 tokens, trained Sep 2021 (Limited beta).',
+        // '- [gpt-3.5-turbo](https://platform.openai.com/docs/models/gpt-3-5): 4096 tokens, trained Sep 2021.',
+        // '- [text-davinci-003](https://platform.openai.com/docs/models/gpt-3-5): 4097 tokens, trained Sep 2021.',
+        // '- [text-davinci-002](https://platform.openai.com/docs/models/gpt-3-5): 4097 tokens, trained Sep 2021.',
+        // '- [code-davinci-002](https://platform.openai.com/docs/models/gpt-3-5): 8001 tokens, trained Sep 2021 (Coding Optimized).',
         '¶ Set tone-style for Bing.',
         "Tip 4: Set `tone=''` to use default tone-style.",
     ]),
     args: {
         hello: {
-            type: 'string', short: 'h', default: 'Hello!',
+            type: 'string', short: 's', default: 'You are ChatGPT, a large...',
             desc: "Change initial prompt: /set --hello 'Bonjour!'",
         },
         ai: {
@@ -67,6 +81,10 @@ export const { run, priority, func, help, args } = {
             desc: `\`(${bot.BINARY_STRINGS.join(', ')})\` Enable/Disable enhanced output rendering.`,
             validate: utilitas.humanReadableBoolean,
         },
+        // gptmodel: {
+        //     type: 'string', short: 'g', default: 'gpt-3.5-turbo',
+        //     desc: 'Set OpenAI model: /set --gptmodel=`MODEL`.',
+        // },
         tone: {
             type: 'string', short: 't', default: balanced,
             desc: `\`(${bingTones.join(', ')})\` Set tone-style for Bing.`,

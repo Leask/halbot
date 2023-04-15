@@ -1,34 +1,34 @@
 #!/usr/bin/env node
 
-import { cache, dbio, memory, storage, utilitas } from 'utilitas';
+import { cache, dbio, memory, storage as _storage, utilitas } from 'utilitas';
 import halbot from '../index.mjs';
 
 const debug = utilitas.humanReadableBoolean(process.env['DEBUG']);
 const log = content => utilitas.log(content, import.meta.url);
-const getConfig = async () => (await storage.getConfig())?.config;
+const MEMORY = 'memory';
+const _getConfig = async () => await _storage.getConfig();
+const getConfig = async key => (await _getConfig())?.config?.[key];
 
-let session = {
-    get: async key => (await getConfig())?.sessions?.[key],
-    set: async (k, v) => await storage.setConfig({ sessions: { [k]: v } }),
+let storage = {
+    get: async key => (await getConfig(MEMORY))?.[key],
+    set: async (k, v) => await _storage.setConfig({ [MEMORY]: { [k]: v } }),
 };
 
 try {
-    const { filename, config } = await storage.getConfig();
+    const { filename, config } = await _getConfig();
     assert(utilitas.countKeys(config), `Error loading config from ${filename}.`);
-    const sessionType = utilitas.trim(config.session?.type, { case: 'UP' });
-    if (config.session?.type) { delete config.session.type; }
+    const sessionType = utilitas.trim(config.storage?.type, { case: 'UP' });
+    if (config.storage?.type) { delete config.storage.type; }
     switch (sessionType) {
         case 'MARIADB': case 'MYSQL':
-            await dbio.init(config.session);
-            await memory.init();
-            session = memory;
+            await dbio.init(config.storage);
+            storage = await memory.init();
             break;
         case 'REDIS':
-            await cache.init(config.session);
-            session = cache;
+            storage = await cache.init(config.storage);
             break;
         default:
-            config.session && utilitas.throwError('Invalid session config.');
+            config.storage && utilitas.throwError('Invalid storage config.');
     }
-    await halbot({ ...config, session });
+    await halbot({ ...config, storage });
 } catch (err) { debug ? utilitas.throwError(err) : log(err); }

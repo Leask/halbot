@@ -49,8 +49,7 @@ const action = async (ctx, next) => {
             await ctx.ok(details || 'Data not found.');
             break;
         case 'clear':
-            ctx.clear();
-            await next();
+            await ctx.clear();
             break;
     }
 };

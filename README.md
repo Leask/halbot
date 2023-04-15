@@ -93,8 +93,11 @@ All supported configuration fields:
     // Adding 'group' or 'channel' may cause too much disturbance.
     "chatType": ["mention", "private"],
 
-    // OPTIONAL, string.
-    "hello": "[[initial prompt]]",
+    // OPTIONAL, object.
+    "prompts": {
+        "system": "[[system prompt]]", // OPTIONAL, string.
+        "user": "[[user prompt]]",     // OPTIONAL, string.
+    },
 
     // OPTIONAL, string.
     "info": "[[bot description]]",
@@ -103,10 +106,10 @@ All supported configuration fields:
     "help": "[[help information]]",
 
     // OPTIONAL, object.
-    // Session storage, support MariaDB/MySQL and Redis for now.
+    // Sessions/conversations storage, support MariaDB/MySQL and Redis for now.
     // If omitted, the bot will use memory storage and sync to this file.
     // Example: (Compatibility: https://github.com/sidorares/node-mysql2)
-    "session": {
+    "storage": {
         "type": "[["MARIADB" || "MYSQL"]]",
         "host": "[[DATABASE HOST]]",
         "database": "[[DATABASE NAME]]",
@@ -115,7 +118,7 @@ All supported configuration fields:
         ...[[OTHER DATABASE OPTIONS]],
     },
     // OR: (Compatibility: https://github.com/luin/ioredis)
-    "session": {
+    "storage": {
         "type": "REDIS",
         "host": "[[REDIS HOST]]",
         "password": "[[REDIS PASSWORD]]",
@@ -201,8 +204,10 @@ const config = {
     skillPath: [[pathToYourMiddlewares]],
 
     // OPTIONAL, object.
-    // Using customized callback as storage engine.
-    session: {
+    // Using customized storage engine.
+    // `storage` should Should be compatible with the `Map` interface:
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map
+    storage: {
         get: async (key) => { /* return session object by chatId. */ },
         set: async (key, session) => { /* save session object by chatId. */ },
     },
