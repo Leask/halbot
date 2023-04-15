@@ -1,17 +1,8 @@
 import { bot } from 'utilitas';
 
-const execPrompt = (ctx, arrLns) => ctx.context = {
-    cmd: ctx.cmd.cmd === 'lang' ? null : ctx.cmd.cmd, prompt: bot.lines(arrLns),
-};
-
-// Inspired by:
-// https://github.com/waylaidwanderer/node-chatgpt-api/blob/main/src/ChatGPTClient.js
-const promptLanguage = (ctx, lang) => execPrompt(ctx, [
-    'You are ChatGPT, a large language model trained by OpenAI. Respond conversationally.',
-    `Current date: ${new Date().toLocaleDateString(
-        'en-us', { year: 'numeric', month: 'long', day: 'numeric' }
-    )}`, ...lang ? [`Please reply in ${lang}.`] : [],
-]);
+const execPrompt = (ctx, arrLines) => ctx.collect((ctx.context = {
+    cmd: ctx.cmd.cmd, prompt: bot.lines(arrLines),
+}).prompt);
 
 // Inspired by:
 // https://github.com/yetone/bob-plugin-openai-translator/blob/main/src/main.js
@@ -36,11 +27,13 @@ const action = async (ctx, next) => {
             const cnf = {
                 ...ctx.session.config = {
                     ...ctx.session.config,
-                    ...ctx.config = { lang: ctx.cmd.args },
+                    ...ctx.config = {
+                        lang: ctx.cmd.args,
+                        hello: `Please reply in ${ctx.cmd.args}. Hello!`,
+                    },
                 }
             };
             Object.keys(ctx.config).map(x => cnf[x] += ' <-- SET');
-            promptLanguage(ctx, ctx.cmd.args);
             ctx.result = bot.map(cnf);
             ctx.hello();
             break;

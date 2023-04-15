@@ -5,7 +5,7 @@ const action = async (ctx, next) => {
         const prompt = ctx.session.prompts?.[cmd] || ctx._.prompts?.[cmd]?.prompt;
         prompt && (ctx.context = { cmd, prompt });
     }
-    ctx.context && await ctx.clear(ctx.context);
+    ctx.context && ctx.clear(ctx.context);
     await next();
 };
 

@@ -40,9 +40,7 @@ const action = async (ctx, next) => {
         pms.push((async () => {
             try {
                 const response = await ctx._.ai[n].send(ctx.prompt, {
-                    ...ctx.carry,
-                    session: ctx.session.latest[n]?.response,
-                    promptPrefix: ctx.session.context[n]?.prompt,
+                    ...ctx.carry, session: ctx.session.latest[n], // promptPrefix: '',
                 }, token => {
                     msgs[n] = `${(msgs[n] || '')}${token}`;
                     ok(onProgress);
@@ -53,10 +51,7 @@ const action = async (ctx, next) => {
                 extra.buttons = response?.suggestedResponses?.map?.(label => ({
                     label, text: `/bing@${ctx.botInfo.username} ${label}`,
                 }));
-                return ctx.session.latest[n] = {
-                    carry: ctx.carry, context: ctx.session.context[n],
-                    prompt: ctx.prompt, response,
-                };
+                return ctx.session.latest[n] = response;
             } catch (err) {
                 msgs[n] = err?.message || err;
                 tts[n] = msgs[n];

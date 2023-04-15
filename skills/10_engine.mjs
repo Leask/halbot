@@ -8,14 +8,13 @@ let configuredAi;
 const action = async (ctx, next) => {
     ctx.session.context || (ctx.session.context = {});
     ctx.session.latest || (ctx.session.latest = {});
-    ctx.hello = str => { str = str || bot.HELLO; ctx.collect(str); return str; };
     ctx.isDefaultAi = name => name === ctx.firstAi;
-    ctx.clear = async context => (ctx.selectedAi || []).map(n => {
+    ctx.clear = context => (ctx.selectedAi || []).map(n => {
         ctx._.ai[n].clear(ctx.chatId);
         delete ctx.session.context[n];
         delete ctx.session.latest[n];
         context && (ctx.session.context[n] = context);
-    }).length && await ctx.complete();
+    }) && ctx.hello(context?.prompt);
     ctx.firstAi = (configuredAi = Object.keys(ctx._.ai))[0];
     switch (ctx.session.config?.ai) {
         case '': ctx.selectedAi = [ctx.firstAi]; break;
