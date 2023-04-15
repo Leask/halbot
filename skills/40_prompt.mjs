@@ -4,27 +4,29 @@ const ACP = '[🧠 Awesome ChatGPT Prompts](https://github.com/f/awesome-chatgpt
 
 const action = async (ctx, next) => {
     ctx.session.prompts || (ctx.session.prompts = {});
-    switch (ctx.cmd.cmd) {
+    const cmd = ctx.cmd?.cmd;
+    switch (cmd) {
         case 'prompts':
             const prompts = bot.lines2(Object.keys(ctx.session.prompts || {}).map(
                 x => bot.lines([`- /${x}`, ctx.session.prompts[x]])
             ));
-            await ctx.ok(prompts || 'No custom prompts.');
-            break;
+            return await ctx.ok(prompts || 'No custom prompts.');
         case 'add':
             const arrText = (ctx.cmd.args || '').split('\n');
             const subArrText = arrText[0].split('>');
-            const cmd = utilitas.ensureString(
+            const _cmd = utilitas.ensureString(
                 subArrText[0], { case: 'SNAKE' }
             ).slice(0, bot.MAX_MENU_LENGTH);
-            const prompt = bot.lines([subArrText.slice(1).join(' '), ...arrText.slice(1)]).trim();
-            if (cmd && prompt) {
-                ctx.session.prompts[cmd] = prompt;
-                await ctx.ok(`Prompt added: /${cmd}`);
+            const _prompt = bot.lines([
+                subArrText.slice(1).join(' '), ...arrText.slice(1)
+            ]).trim();
+            if (_cmd && _prompt) {
+                ctx.session.prompts[_cmd] = _prompt;
+                await ctx.ok(`Prompt added: /${_cmd}`);
             } else {
                 await ctx.ok('Invalid command or prompt.');
             }
-            break;
+            return;
         case 'del':
             if (ctx.session.prompts[ctx.cmd.args]) {
                 delete ctx.session.prompts[ctx.cmd.args];
@@ -32,13 +34,12 @@ const action = async (ctx, next) => {
             } else {
                 await ctx.ok('Prompt not found.');
             }
-            break;
+            return;
         case 'acplist':
             const list = bot.uList(Object.keys(ctx._.prompts || {}).map(
                 x => `/${ctx._.prompts[x].command}: ${ctx._.prompts[x].act}`
             ));
-            await ctx.ok(list || 'Data not found.');
-            break;
+            return await ctx.ok(list || 'Data not found.');
         case 'acpdetail':
             const details = bot.lines2(Object.keys(ctx._.prompts || {}).map(
                 x => bot.lines([
@@ -46,18 +47,21 @@ const action = async (ctx, next) => {
                     ctx._.prompts[x].prompt
                 ])
             ));
-            await ctx.ok(details || 'Data not found.');
-            break;
+            return await ctx.ok(details || 'Data not found.');
         case 'clear':
             ctx.clear();
-            await next();
             break;
+        default:
+            const prompt = ctx.session.prompts?.[cmd] || ctx._.prompts?.[cmd]?.prompt;
+            !ctx.context && prompt && (ctx.context = { cmd, prompt });
+            ctx.context && ctx.clear(ctx.context);
     }
+    await next();
 };
 
-export const { run, priority, func, help, cmds } = {
+export const { run, priority, func, help, cmds, cmdx } = {
     run: true,
-    priority: 30,
+    priority: 40,
     func: action,
     help: bot.lines([
         '¶ Maintain custom prompts.',
@@ -73,4 +77,5 @@ export const { run, priority, func, help, cmds } = {
         acpdetail: `Show details of ${ACP}.`,
         clear: 'Clear current AI conversation session and start a new one.',
     },
+    cmdx: {},
 };

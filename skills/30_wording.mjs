@@ -49,7 +49,7 @@ const action = async (ctx, next) => {
 
 export const { run, priority, func, cmds, help } = {
     run: true,
-    priority: 40,
+    priority: 30,
     func: action,
     help: bot.lines([
         '¶ Set your default language.',
