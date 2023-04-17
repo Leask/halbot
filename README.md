@@ -39,7 +39,7 @@ alt="Halbot live demo" width="240" height="180" border="10" /></a>
 
 ## ❤️ Become a sponsor to `halbot`
 
-For `$10/month`, you can access the official `halbot` service for a month.
+[For `$10/month`, you can access the official `halbot` service for a month](https://github.com/sponsors/Leask).
 
 You don't need to pay `$20/month` for ChatGPT tokens separately.
 
