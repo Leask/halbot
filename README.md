@@ -36,6 +36,22 @@ alt="Halbot live demo" width="240" height="180" border="10" /></a>
 - Code block rendering, developers friendly.
 - ESM from the ground up
 
+## Become a sponsor to `halbot`
+
+For $10/month, you can access the official `halbot` service for a month.
+
+You don't need to pay $20/month for ChatGPT tokens separately.
+
+`halbot` is stable. It has a better user experience than the official web app. You can access `halbot` from your favourite Telegram apps on your phone, tablet and computer.
+
+Additionally, `halbot` has a lot of built-in input parsers to maximize the ChatGPT engine's power.
+
+`halbot` can now parse webpages, YouTube videos, PDFs, images, and Office Documents. And other parsers are coming soon.
+
+`halbot` also supports Text-to-Speech and Speech-to-Text. You can `talk` to the AI engines to get help with your job.
+
+And remember, you can always use the codes in this repo to build your own `halbot` instant. This project will keep open source forever.
+
 ## Basic usage
 
 ### Configuration
