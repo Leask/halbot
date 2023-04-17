@@ -39,9 +39,9 @@ alt="Halbot live demo" width="240" height="180" border="10" /></a>
 
 ## ❤️ Become a sponsor to `halbot`
 
-For $10/month, you can access the official `halbot` service for a month.
+For `$10/month`, you can access the official `halbot` service for a month.
 
-You don't need to pay $20/month for ChatGPT tokens separately.
+You don't need to pay `$20/month` for ChatGPT tokens separately.
 
 `halbot` is stable. It has a better user experience than the official web app. You can access `halbot` from your favourite Telegram apps on your phone, tablet and computer.
 
