@@ -260,3 +260,8 @@ const config = {
 
 await halbot(config);
 ```
+
+## Foundations
+
+- `halbot` uses my other project [utilitas](https://github.com/Leask/utilitas) as the basic framework to handle all the dirty work.
+- `halbot` uses [node-chatgpt-api](https://github.com/waylaidwanderer/node-chatgpt-api) to communicate with the AI engines.
