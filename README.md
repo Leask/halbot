@@ -12,14 +12,14 @@ alt="Halbot live demo" width="240" height="180" border="10" /></a>
 
 <details>
   <summary>Screenshots: 👈 Click here to see screenshots</summary>
-  <img width="768" alt="Screenshot 2023-03-12 at 10 59 59 AM" src="https://user-images.githubusercontent.com/233022/224584278-9c3e3374-6ac2-44ca-8d35-df7747b9c1be.png">
-  <img width="768" alt="Screenshot 2023-03-12 at 11 00 34 AM" src="https://user-images.githubusercontent.com/233022/224584280-113c03af-54b8-4724-86c7-3aa975f53c9c.png">
-  <img width="768" alt="Screenshot 2023-03-12 at 11 00 17 AM" src="https://user-images.githubusercontent.com/233022/224584281-526578f9-3f0f-4bf6-a89c-56b07f97beae.png">
-  <img width="768" alt="Screenshot 2023-03-12 at 10 58 11 AM" src="https://user-images.githubusercontent.com/233022/224584282-d12dca78-1da3-4166-ba39-6d14b78ab3e2.png">
-  <img width="768" alt="Screenshot 2023-03-12 at 10 58 11 AM" src="https://user-images.githubusercontent.com/233022/232613586-78de64ef-eb53-4a8b-afac-542c9e8975b9.jpg">
-  <img width="768" alt="Screenshot 2023-03-12 at 10 58 11 AM" src="https://user-images.githubusercontent.com/233022/232613588-c0760c87-15fc-4da8-9e92-fecae8bc7bc4.jpg">
-  <img width="768" alt="Screenshot 2023-03-12 at 10 58 11 AM" src="https://user-images.githubusercontent.com/233022/232613591-8b863245-ebfb-4f1d-8cb2-7e84be1a34e4.jpg">
-  <img width="768" alt="Screenshot 2023-03-12 at 10 58 11 AM" src="https://user-images.githubusercontent.com/233022/232613594-86180676-c302-4d12-a79c-b01f61cf13d8.jpg">
+  <img width="768" alt="Screenshot 1" src="https://user-images.githubusercontent.com/233022/224584278-9c3e3374-6ac2-44ca-8d35-df7747b9c1be.png">
+  <img width="768" alt="Screenshot 2" src="https://user-images.githubusercontent.com/233022/224584280-113c03af-54b8-4724-86c7-3aa975f53c9c.png">
+  <img width="768" alt="Screenshot 3" src="https://user-images.githubusercontent.com/233022/224584281-526578f9-3f0f-4bf6-a89c-56b07f97beae.png">
+  <img width="768" alt="Screenshot 4" src="https://user-images.githubusercontent.com/233022/224584282-d12dca78-1da3-4166-ba39-6d14b78ab3e2.png">
+  <img width="768" alt="Screenshot 5" src="https://user-images.githubusercontent.com/233022/232613586-78de64ef-eb53-4a8b-afac-542c9e8975b9.jpg">
+  <img width="768" alt="Screenshot 6" src="https://user-images.githubusercontent.com/233022/232613588-c0760c87-15fc-4da8-9e92-fecae8bc7bc4.jpg">
+  <img width="768" alt="Screenshot 7" src="https://user-images.githubusercontent.com/233022/232613591-8b863245-ebfb-4f1d-8cb2-7e84be1a34e4.jpg">
+  <img width="768" alt="Screenshot 8" src="https://user-images.githubusercontent.com/233022/232613594-86180676-c302-4d12-a79c-b01f61cf13d8.jpg">
 </details>
 
 ## Features
@@ -265,3 +265,7 @@ await halbot(config);
 
 - `halbot` uses my other project [utilitas](https://github.com/Leask/utilitas) as the basic framework to handle all the dirty work.
 - `halbot` uses [node-chatgpt-api](https://github.com/waylaidwanderer/node-chatgpt-api) to communicate with the AI engines.
+
+## Contact me
+
+<img width="320" alt="IMG_2289" src="https://user-images.githubusercontent.com/233022/232649734-ff356d76-1bd6-41b2-ad78-27b62e6a9020.JPG">
