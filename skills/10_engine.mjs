@@ -36,7 +36,7 @@ const validateAi = val => {
 
 const validateTone = val => {
     val = utilitas.trim(val, { case: 'LOW' });
-    assert([...bingTones.includes(val), ''], 'Unsupported tone-style.');
+    assert([...bingTones, ''].includes(val), 'Unsupported tone-style.');
     return val;
 };
 
