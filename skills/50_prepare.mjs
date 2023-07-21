@@ -1,7 +1,8 @@
 import { bot, utilitas } from 'utilitas';
 
 // https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them
-const countTokens = text => text.split(/[^a-z0-9]/i).length;
+const countTokens = text => Math.ceil(text.split(/[^a-z0-9]/i).length * 100 / 75);
+const maxTokens = Math.floor(8192 * 0.6); // remaining 40% for response
 
 const action = async (ctx, next) => {
     // avatar
@@ -23,7 +24,7 @@ const action = async (ctx, next) => {
         x => x.content
     ).join('\n').split(' ') : [];
     ctx.prompt = (ctx.text || '') + '\n\n';
-    while (countTokens(ctx.prompt) < 2250 && additionInfo.length) {
+    while (countTokens(ctx.prompt) < maxTokens && additionInfo.length) {
         ctx.prompt += ` ${additionInfo.shift()}`;
     }
     ctx.prompt = utilitas.trim(ctx.prompt);
