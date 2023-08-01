@@ -44,7 +44,7 @@
     "office-text-extractor": "^3.0.1",
     "telegraf": "^4.12.2",
     "tesseract.js": "^4.1.1",
-    "utilitas": "^1995.0.24",
+    "utilitas": "^1995.0.46",
     "youtube-transcript": "^1.0.6"
   }
 }
