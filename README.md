@@ -12,6 +12,7 @@ alt="Halbot live demo" width="240" height="180" border="10" /></a>
 
 <details>
   <summary>Screenshots: 👈 Click here to see screenshots</summary>
+  <img width="768" alt="Screenshot 2023-11-10 at 8 37 31 AM" src="https://github.com/Leask/halbot/assets/233022/4d70aa04-49a4-4194-98f9-1a9a7c58b33c">
   <img width="768" alt="Screenshot 1" src="https://user-images.githubusercontent.com/233022/224584278-9c3e3374-6ac2-44ca-8d35-df7747b9c1be.png">
   <img width="768" alt="Screenshot 2" src="https://user-images.githubusercontent.com/233022/224584280-113c03af-54b8-4724-86c7-3aa975f53c9c.png">
   <img width="768" alt="Screenshot 3" src="https://user-images.githubusercontent.com/233022/224584281-526578f9-3f0f-4bf6-a89c-56b07f97beae.png">
@@ -20,6 +21,7 @@ alt="Halbot live demo" width="240" height="180" border="10" /></a>
   <img width="768" alt="Screenshot 6" src="https://user-images.githubusercontent.com/233022/232613588-c0760c87-15fc-4da8-9e92-fecae8bc7bc4.jpg">
   <img width="768" alt="Screenshot 7" src="https://user-images.githubusercontent.com/233022/232613591-8b863245-ebfb-4f1d-8cb2-7e84be1a34e4.jpg">
   <img width="768" alt="Screenshot 8" src="https://user-images.githubusercontent.com/233022/232613594-86180676-c302-4d12-a79c-b01f61cf13d8.jpg">
+
 </details>
 
 ## Features
