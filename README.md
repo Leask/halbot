@@ -21,7 +21,6 @@ alt="Halbot live demo" width="240" height="180" border="10" /></a>
   <img width="768" alt="Screenshot 6" src="https://user-images.githubusercontent.com/233022/232613588-c0760c87-15fc-4da8-9e92-fecae8bc7bc4.jpg">
   <img width="768" alt="Screenshot 7" src="https://user-images.githubusercontent.com/233022/232613591-8b863245-ebfb-4f1d-8cb2-7e84be1a34e4.jpg">
   <img width="768" alt="Screenshot 8" src="https://user-images.githubusercontent.com/233022/232613594-86180676-c302-4d12-a79c-b01f61cf13d8.jpg">
-
 </details>
 
 ## Features
@@ -29,8 +28,9 @@ alt="Halbot live demo" width="240" height="180" border="10" /></a>
 - [Telegram](https://telegram.org/) Bot (`Telegram Bot` token required)
 - [ChatGPT](https://openai.com/blog/chatgpt) (`OpenAI` API key required)
 - [Bing Chat](https://www.bing.com/) (`Bing Chat` user token required)
-- Speech-to-text (`Google Cloud` API key required, or your own engine)
-- Text-to-speech (`Google Cloud` API key required, or your own engine)
+- Speech-to-text (`OpenAI` or `Google Cloud` API key required, or your own engine)
+- Text-to-speech (`OpenAI` or `Google Cloud` API key required, or your own engine)
+- Text-to-image by DALL·E (`OpenAI` API key required, or your own engine)
 - OCR/OBJECT_DETECT (`Google Cloud` API key required, or your own engine)
 - Feeding webpage and [YouTube](https://www.youtube.com/) to enhance your prompt
 - Custom prompt and [🧠 Awesome ChatGPT Prompts](https://github.com/f/awesome-chatgpt-prompts) at your fingertips
@@ -70,7 +70,7 @@ Basic config demo:
 ```json
 {
     "telegramToken": "[[Telegram Bot API Token]]",
-    "chatGptKey": "[[ChatGPT API Key]]"
+    "openaiApiKey": "[[OpenAI API Key]]"
 }
 ```
 
@@ -83,12 +83,12 @@ All supported configuration fields:
     "telegramToken": "[[Telegram Bot API Token]]",
 
     // OPTIONAL, string.
-    // One of the chatGptKey or bingToken is required.
-    "chatGptKey": "[[ChatGPT API Key]]",
+    // One of the openaiApiKey or bingToken is required.
+    "openaiApiKey": "[[OpenAI API Key]]"
 
     // OPTIONAL, string.
     // How to get your bing user token: https://github.com/Leask/halbot/issues/13
-    // One of the chatGptKey or bingToken is required.
+    // One of the openaiApiKey or bingToken is required.
     "bingToken": "[[Bing Usertoken from cookies]]",
 
     // OPTIONAL, string.
@@ -200,9 +200,15 @@ const config = {
 
     // OPTIONAL, object.
     // Your own computer-vision engine.
-    vision {
+    vision: {
         see: [[ocrAndObjectDetectApi]],
         read: [[documentAnnotateApi]],
+    },
+
+    // OPTIONAL, object.
+    // Your own image-generator engine.
+    image: {
+        generate: [[textToImageApi]],
     },
 
     // OPTIONAL, string.
