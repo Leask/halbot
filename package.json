@@ -45,7 +45,7 @@
     "openai": "^4.17.3",
     "telegraf": "^4.15.0",
     "tesseract.js": "^5.0.3",
-    "utilitas": "^1995.1.14",
+    "utilitas": "^1995.1.15",
     "youtube-transcript": "^1.0.6"
   }
 }
