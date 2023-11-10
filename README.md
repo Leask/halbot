@@ -28,9 +28,9 @@ alt="Halbot live demo" width="240" height="180" border="10" /></a>
 - [Telegram](https://telegram.org/) Bot (`Telegram Bot` token required)
 - [ChatGPT](https://openai.com/blog/chatgpt) (`OpenAI` API key required)
 - [Bing Chat](https://www.bing.com/) (`Bing Chat` user token required)
-- Speech-to-text (`OpenAI` or `Google Cloud` API key required, or your own engine)
-- Text-to-speech (`OpenAI` or `Google Cloud` API key required, or your own engine)
-- Text-to-image by DALL·E (`OpenAI` API key required, or your own engine)
+- Speech-to-Text (`OpenAI` or `Google Cloud` API key required, or your own engine)
+- Text-to-Speech (`OpenAI` or `Google Cloud` API key required, or your own engine)
+- Text-to-Image by DALL·E (`OpenAI` API key required, or your own engine)
 - OCR/OBJECT_DETECT (`Google Cloud` API key required, or your own engine)
 - Feeding webpage and [YouTube](https://www.youtube.com/) to enhance your prompt
 - Custom prompt and [🧠 Awesome ChatGPT Prompts](https://github.com/f/awesome-chatgpt-prompts) at your fingertips
@@ -49,11 +49,13 @@ alt="Halbot live demo" width="240" height="180" border="10" /></a>
 
 You don't need to pay `$20/month` for ChatGPT tokens separately.
 
-`halbot` is stable. It has a better user experience than the official web app. You can access `halbot` from your favourite Telegram apps on your phone, tablet and computer.
+`halbot` is stable. It's running on top of the latest `GPT-4` model. It has a better user experience than the official web app. You can access `halbot` from your favourite Telegram apps on your phone, tablet and computer.
 
 Additionally, `halbot` has a lot of built-in input parsers to maximize the ChatGPT engine's power.
 
 `halbot` can now parse webpages, YouTube videos, PDFs, images, Office documents, code files, and text files. And other parsers are coming soon.
+
+`halbot` integrates Text-to-Image service by DALL·E 3. You can ask it to draw what you want.
 
 `halbot` also supports Text-to-Speech and Speech-to-Text. You can `talk` to the AI engines to get help with your job.
 
