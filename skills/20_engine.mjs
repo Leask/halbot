@@ -43,7 +43,7 @@ const validateTone = val => {
 export const { name, run, priority, func, help, args } = {
     name: 'Engine',
     run: true,
-    priority: 10,
+    priority: 20,
     func: action,
     help: bot.lines([
         '¶ Set initial prompt to the AI engine.',
