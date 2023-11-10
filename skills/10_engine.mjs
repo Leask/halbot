@@ -40,7 +40,8 @@ const validateTone = val => {
     return val;
 };
 
-export const { run, priority, func, help, args } = {
+export const { name, run, priority, func, help, args } = {
+    name: 'Engine',
     run: true,
     priority: 10,
     func: action,

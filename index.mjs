@@ -1,4 +1,4 @@
-import { bot, hal, shot, speech, utilitas, vision } from 'utilitas';
+import { bot, hal, image, shot, speech, utilitas, vision } from 'utilitas';
 import { parse } from 'csv-parse/sync';
 
 await utilitas.locate(utilitas.__(import.meta.url, 'package.json'));
@@ -40,9 +40,8 @@ const init = async (options) => {
         ai['ChatGPT'] = await hal.init({
             provider: 'CHATGPT', clientOptions: apiKey, cacheOptions,
         });
-        await speech.init({
-            ...apiKey, provider: 'OPENAI', ...speechOptions
-        });
+        await speech.init({ ...apiKey, provider: 'OPENAI', ...speechOptions });
+        await image.init(apiKey);
     }
     if (options?.googleApiKey) {
         const apiKey = { apiKey: options.googleApiKey };
@@ -78,6 +77,7 @@ const init = async (options) => {
     });
     _bot._.ai = ai;                                                             // Should be an array of a map of AIs.
     _bot._.lang = options?.lang || 'English';
+    _bot._.image = options?.openaiApiKey && image;
     _bot._.prompts = await fetchPrompts();
     return _bot;
 };

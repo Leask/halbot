@@ -66,7 +66,8 @@ const action = async (ctx, next) => {
     await next();
 };
 
-export const { run, priority, func } = {
+export const { name, run, priority, func } = {
+    name: 'Chat',
     run: true,
     priority: 70,
     func: action,

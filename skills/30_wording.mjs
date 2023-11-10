@@ -14,7 +14,7 @@ const promptTranslate = (ctx, lang) => execPrompt(ctx, [
 // Inspired by:
 // https://github.com/yetone/bob-plugin-openai-polisher/blob/main/src/main.js
 const promptPolish = ctx => execPrompt(ctx, [
-    'Revise all the following text I send to you to make them more clear, concise, and coherent.',
+    'Revise the following sentences to make them more clear, concise, and coherent.',
     'Please note that you need to list the changes and briefly explain why.',
 ]);
 
@@ -47,7 +47,8 @@ const action = async (ctx, next) => {
     await next();
 };
 
-export const { run, priority, func, cmds, help } = {
+export const { name, run, priority, func, cmds, help } = {
+    name: 'Wording',
     run: true,
     priority: 30,
     func: action,

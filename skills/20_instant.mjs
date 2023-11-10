@@ -22,7 +22,8 @@ const action = async (ctx, next) => {
     await next();
 };
 
-export const { run, priority, func, help, cmds } = {
+export const { name, run, priority, func, help, cmds } = {
+    name: 'Instant',
     run: true,
     priority: 20,
     func: action,

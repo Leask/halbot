@@ -34,7 +34,8 @@ const action = async (ctx, next) => {
     await next();
 };
 
-export const { run, priority, func } = {
+export const { name, run, priority, func } = {
+    name: 'Prepare',
     run: true,
     priority: 60,
     func: action,
