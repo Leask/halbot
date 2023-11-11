@@ -19,7 +19,7 @@ export const { name, run, priority, func, cmds, help } = {
     priority: 40,
     func: action,
     help: bot.lines([
-        '¶ Use DALL-E to generate images.',
+        'Use DALL-E to generate images.',
         'Example 1: /image a cat',
     ]),
     cmds: {
