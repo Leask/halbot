@@ -62,7 +62,7 @@ const action = async (ctx, next) => {
 export const { name, run, priority, func, help, cmds, cmdx } = {
     name: 'Prompt',
     run: true,
-    priority: 60,
+    priority: 50,
     func: action,
     help: bot.lines([
         '¶ Maintain custom prompts.',

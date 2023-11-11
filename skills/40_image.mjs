@@ -16,7 +16,7 @@ const action = async (ctx, next) => {
 export const { name, run, priority, func, cmds, help } = {
     name: 'Image',
     run: true,
-    priority: 50,
+    priority: 40,
     func: action,
     help: bot.lines([
         '¶ Use DALL-E to generate images.',

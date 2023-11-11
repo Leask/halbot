@@ -37,6 +37,6 @@ const action = async (ctx, next) => {
 export const { name, run, priority, func } = {
     name: 'Prepare',
     run: true,
-    priority: 70,
+    priority: 60,
     func: action,
 };

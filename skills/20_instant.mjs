@@ -25,7 +25,7 @@ const action = async (ctx, next) => {
 export const { name, run, priority, func, help, cmds } = {
     name: 'Instant',
     run: true,
-    priority: 30,
+    priority: 20,
     func: action,
     help: bot.lines([
         'Use an AI engine `temporary` without touching your settings.',
