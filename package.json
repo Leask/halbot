@@ -36,16 +36,16 @@
     "@google-cloud/vision": "^4.0.2",
     "@mozilla/readability": "^0.4.4",
     "@waylaidwanderer/chatgpt-api": "^1.37.3",
-    "csv-parse": "^5.5.2",
+    "csv-parse": "^5.5.3",
     "fluent-ffmpeg": "^2.1.2",
     "ioredis": "^5.3.2",
-    "jsdom": "^22.1.0",
+    "jsdom": "^23.0.1",
     "mysql2": "^3.6.5",
     "office-text-extractor": "^3.0.2",
-    "openai": "^4.20.0",
-    "telegraf": "^4.15.0",
+    "openai": "^4.20.1",
+    "telegraf": "^4.15.3",
     "tesseract.js": "^5.0.3",
-    "utilitas": "^1995.2.7",
+    "utilitas": "^1995.2.20",
     "youtube-transcript": "^1.0.6"
   }
 }
