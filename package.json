@@ -42,10 +42,10 @@
     "jsdom": "^23.0.1",
     "mysql2": "^3.6.5",
     "office-text-extractor": "^3.0.2",
-    "openai": "^4.20.1",
+    "openai": "^4.21.0",
     "telegraf": "^4.15.3",
     "tesseract.js": "^5.0.3",
-    "utilitas": "^1995.2.20",
+    "utilitas": "^1995.2.22",
     "youtube-transcript": "^1.0.6"
   }
 }
