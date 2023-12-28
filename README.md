@@ -3,7 +3,7 @@
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
 [![Node.js Package](https://github.com/Leask/halbot/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/Leask/halbot/actions/workflows/npm-publish.yml)
 
-Just another `ChatGPT` / `Gemini` / `Mistral(by ollama)` Telegram bob, which is simple design, easy to use, extendable and fun.
+Just another `ChatGPT` / `Gemini` / `Mistral (by ollama)` Telegram bob, which is simple design, easy to use, extendable and fun.
 
 Live demo, click to watch on YouTube:
 
@@ -27,7 +27,8 @@ alt="Halbot live demo" width="240" height="180" border="10" /></a>
 
 - [Telegram](https://telegram.org/) Bot (`Telegram Bot` token required)
 - [ChatGPT](https://openai.com/blog/chatgpt) (`OpenAI` API key required)
-- [Bing Chat](https://www.bing.com/) (`Bing Chat` user token required)
+- [Gemini](https://cloud.google.com/vertex-ai/docs/generative-ai/multimodal/overview?hl=en) (`Google Vertex AI` credentials required)
+- [Mistral](https://mistral.ai/) (Install [ollama](https://github.com/jmorganca/ollama) and enable `Mistral`)
 - Speech-to-Text (`OpenAI` or `Google Cloud` API key required, or your own engine)
 - Text-to-Speech (`OpenAI` or `Google Cloud` API key required, or your own engine)
 - Text-to-Image by DALL·E (`OpenAI` API key required, or your own engine)
