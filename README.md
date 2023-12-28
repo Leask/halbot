@@ -28,7 +28,7 @@ alt="Halbot live demo" width="240" height="180" border="10" /></a>
 - [Telegram](https://telegram.org/) Bot (`Telegram Bot` token required)
 - [ChatGPT](https://openai.com/blog/chatgpt) (`OpenAI` API key required)
 - [Gemini](https://cloud.google.com/vertex-ai/docs/generative-ai/multimodal/overview?hl=en) (`Google Vertex AI` credentials required)
-- [Mistral](https://mistral.ai/) (Install [ollama](https://github.com/jmorganca/ollama) and enable `Mistral`)
+- [Mistral](https://mistral.ai/) (Install [Ollama](https://github.com/jmorganca/ollama) and enable `Mistral`)
 - Speech-to-Text (`OpenAI` or `Google Cloud` API key required, or your own engine)
 - Text-to-Speech (`OpenAI` or `Google Cloud` API key required, or your own engine)
 - Text-to-Image by DALL·E (`OpenAI` API key required, or your own engine)
@@ -68,13 +68,18 @@ All supported configuration fields:
     "telegramToken": "[[Telegram Bot API Token]]",
 
     // OPTIONAL, string.
-    // One of the openaiApiKey or bingToken is required.
+    // Set this field if you need ChatGPT features.
     "openaiApiKey": "[[OpenAI API Key]]"
 
     // OPTIONAL, string.
-    // How to get your bing user token: https://github.com/Leask/halbot/issues/13
-    // One of the openaiApiKey or bingToken is required.
-    "bingToken": "[[Bing Usertoken from cookies]]",
+    // Set this field if you need Gemini features.
+    "googleCredentials": "[[Google Cloud Credentials]]",
+    "googleProject": "[[Google Cloud Project ID]]",
+
+    // OPTIONAL, boolean.
+    // Set this field if you need Mistral features.
+    "mistralEnabled": "[[Enable Mistral hosted by Ollama]]",
+    "mistralEndpoint": "[[Custom Mistral API endpoint]]",
 
     // OPTIONAL, string.
     // Set this field if you need TTS/STT/OCR/OBJECT_DETECT features.
