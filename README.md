@@ -177,8 +177,9 @@ const config = {
 
     // OPTIONAL, object (key renderd as name) or array (name ignored).
     ai: {
-        [[aiNameA]]: [[aiClientA]],
-        [[aiNameB]]: [[aiClientB]],
+        [[aiNameA]]: [[aiConfigA]],
+        [[aiNameB]]: [[aiConfigB]],
+        // ...
     },
 
     // OPTIONAL, object.
