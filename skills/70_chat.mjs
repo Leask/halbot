@@ -49,7 +49,9 @@ const action = async (ctx, next) => {
                 });
                 msgs[n] = ctx.session.config?.render === false
                     ? resp.text : resp.rendered;
-                tts[n] = msgs[n].split('\n').some(x => /^```/.test(x)) ? '' : resp.spoken;
+                tts[n] = ctx.selectedAi.length === 1
+                    && !msgs[n].split('\n').some(x => /^```/.test(x))
+                    ? resp.spoken : '';
                 // extra.buttons = resp?.suggestedResponses?.map?.(label => ({
                 //     label, text: `/bing@${ctx.botInfo.username} ${label}`,
                 // }));
