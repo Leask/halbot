@@ -1,5 +1,6 @@
 import { alan, bot, image, shot, speech, utilitas, vision } from 'utilitas';
 import { parse } from 'csv-parse/sync';
+import { end } from 'utilitas/lib/event.mjs';
 
 await utilitas.locate(utilitas.__(import.meta.url, 'package.json'));
 const log = content => utilitas.log(content, 'halbot');
@@ -57,6 +58,15 @@ const init = async (options) => {
         });
         ai['Gemini'] = { engine: 'VERTEX' };
         engines['VERTEX'] = {};
+    }
+    if (options?.mistralEnabled || options?.mistralEndpoint) {
+        await alan.init({
+            provider: 'OLLAMA',
+            endpoint: options?.mistralEndpoint,
+            model: options?.mistralModel,
+        });
+        ai['Mistral'] = { engine: 'OLLAMA' };
+        engines['OLLAMA'] = {};
     }
     await alan.initChat({ engines, sessions: options?.storage });
     assert(utilitas.countKeys(ai), 'No AI provider is configured.');

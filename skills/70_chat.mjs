@@ -5,7 +5,7 @@ const [joinL1, joinL2] = [a => a.join(LN2), a => a.join(LN2)];
 const enrich = name => name === 'VERTEX' ? 'Gemini' : name;
 const log = content => utilitas.log(content, import.meta.url);
 const [BOT, BOTS, LN2]
-    = [`${bot.EMOJI_BOT} `, { ChatGPT: '⚛️', Gemini: '♊️' }, '\n\n'];
+    = [`${bot.EMOJI_BOT} `, { ChatGPT: '⚛️', Gemini: '♊️', Mistral: 'Ⓜ️' }, '\n\n'];
 
 const action = async (ctx, next) => {
     if (!ctx.prompt) { return await next(); }
@@ -39,7 +39,6 @@ const action = async (ctx, next) => {
     await ok(onProgress);
     for (let n of ctx.selectedAi) {
         pms.push((async () => {
-            print(n);
             try {
                 const resp = await alan.talk(ctx.prompt, {
                     engine: ctx._.ai[n].engine, ...ctx.carry,
