@@ -1,10 +1,11 @@
-import { bot, utilitas } from 'utilitas';
+import { alan, bot, utilitas } from 'utilitas';
 
 const onProgress = { onProgress: true };
-const [BOT, LN2] = [`${bot.EMOJI_BOT} `, '\n\n'];
 const [joinL1, joinL2] = [a => a.join(LN2), a => a.join(LN2)];
-const enrich = name => name === 'Bing' ? `${name} (Sydney)` : name;
+const enrich = name => name === 'VERTEX' ? 'Gemini' : name;
 const log = content => utilitas.log(content, import.meta.url);
+const [BOT, BOTS, LN2]
+    = [`${bot.EMOJI_BOT} `, { ChatGPT: '⚛️', Gemini: '♊️' }, '\n\n'];
 
 const action = async (ctx, next) => {
     if (!ctx.prompt) { return await next(); }
@@ -17,12 +18,12 @@ const action = async (ctx, next) => {
         const pure = [];
         ctx.selectedAi.map(n => {
             const content = source[n] || '';
-            const cmd = ctx.session.context[n]?.cmd;
+            const cmd = ctx.session.context?.cmd;
             const context = cmd && ` > \`${cmd}\` (exit by /clear)` || '';
             pure.push(content);
             packed.push(joinL2([
                 ...ctx.multiAi || !ctx.isDefaultAi(n) || said || context
-                    ? [`${BOT}${enrich(n)}${context}:`] : [], content,
+                    ? [`${BOTS[n]} ${enrich(n)}${context}:`] : [], content,
             ]));
         });
         return options?.tts && !pure.join('').trim().length ? '' : joinL1(packed);
@@ -38,20 +39,22 @@ const action = async (ctx, next) => {
     await ok(onProgress);
     for (let n of ctx.selectedAi) {
         pms.push((async () => {
+            print(n);
             try {
-                const response = await ctx._.ai[n].send(ctx.prompt, {
-                    ...ctx.carry, session: ctx.session.latest[n], // promptPrefix: '',
-                }, token => {
-                    msgs[n] = `${(msgs[n] || '')}${token}`;
-                    ok(onProgress);
+                const resp = await alan.talk(ctx.prompt, {
+                    engine: ctx._.ai[n].engine, ...ctx.carry,
+                    stream: async r => {
+                        msgs[n] = r[0].text;
+                        await ok(onProgress);
+                    },
                 });
                 msgs[n] = ctx.session.config?.render === false
-                    ? response.response : response.responseRendered;
-                tts[n] = msgs[n].split('\n').some(x => /^```/.test(x)) ? '' : response.spokenText;
-                extra.buttons = response?.suggestedResponses?.map?.(label => ({
-                    label, text: `/bing@${ctx.botInfo.username} ${label}`,
-                }));
-                return ctx.session.latest[n] = response;
+                    ? resp.text : resp.rendered;
+                tts[n] = msgs[n].split('\n').some(x => /^```/.test(x)) ? '' : resp.spoken;
+                // extra.buttons = resp?.suggestedResponses?.map?.(label => ({
+                //     label, text: `/bing@${ctx.botInfo.username} ${label}`,
+                // }));
+                return resp;
             } catch (err) {
                 msgs[n] = err?.message || err;
                 tts[n] = msgs[n];

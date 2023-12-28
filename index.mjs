@@ -1,4 +1,4 @@
-import { bot, hal, image, shot, speech, utilitas, vision } from 'utilitas';
+import { alan, bot, image, shot, speech, utilitas, vision } from 'utilitas';
 import { parse } from 'csv-parse/sync';
 
 await utilitas.locate(utilitas.__(import.meta.url, 'package.json'));
@@ -29,19 +29,18 @@ const fetchPrompts = async () => {
 
 const init = async (options) => {
     assert(options?.telegramToken, 'Telegram Bot API Token is required.');
-    const [pkg, ai, _speech, speechOptions]
-        = [await utilitas.which(), {}, {}, { tts: true, stt: true }];
+    const [pkg, ai, _speech, speechOptions, engines]
+        = [await utilitas.which(), {}, {}, { tts: true, stt: true }, {}];
     const info = bot.lines([
         `[${bot.EMOJI_BOT} ${pkg.title}](${pkg.homepage})`, pkg.description
     ]);
-    const cacheOptions = options?.storage ? { store: options.storage } : null;
     if (options?.openaiApiKey) {
         const apiKey = { apiKey: options.openaiApiKey };
-        ai['ChatGPT'] = await hal.init({
-            provider: 'CHATGPT', clientOptions: apiKey, cacheOptions,
-        });
+        await alan.init({ provider: 'openai', ...apiKey });
         await speech.init({ ...apiKey, provider: 'OPENAI', ...speechOptions });
         await image.init(apiKey);
+        ai['ChatGPT'] = { engine: 'CHATGPT' };
+        engines['CHATGPT'] = {};
     }
     if (options?.googleApiKey) {
         const apiKey = { apiKey: options.googleApiKey };
@@ -50,12 +49,16 @@ const init = async (options) => {
             ...apiKey, provider: 'GOOGLE', ...speechOptions,
         });
     }
-    if (options?.bingToken) {
-        ai['Bing'] = await hal.init({
-            provider: 'BING', clientOptions: { userToken: options.bingToken },
-            cacheOptions,
+    if (options?.googleCredentials && options?.googleProject) {
+        await alan.init({
+            provider: 'VERTEX',
+            credentials: options.googleCredentials,
+            project: options.googleProject,
         });
+        ai['Gemini'] = { engine: 'VERTEX' };
+        engines['VERTEX'] = {};
     }
+    await alan.initChat({ engines, sessions: options?.storage });
     assert(utilitas.countKeys(ai), 'No AI provider is configured.');
     const _bot = await bot.init({
         args: options?.args,
@@ -83,4 +86,4 @@ const init = async (options) => {
 };
 
 export default init;
-export { bot, hal, init, speech, utilitas };
+export { alan, bot, init, speech, utilitas };

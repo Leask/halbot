@@ -17,8 +17,7 @@ let storage = {
 try {
     const { filename, config } = await _getConfig();
     assert(utilitas.countKeys(config), `Error loading config from ${filename}.`);
-    const sessionType = utilitas.trim(config.storage?.type, { case: 'UP' });
-    if (config.storage?.type) { delete config.storage.type; }
+    const sessionType = utilitas.trim(config.storage?.provider, { case: 'UP' });
     switch (sessionType) {
         case 'MARIADB': case 'MYSQL':
             await dbio.init(config.storage);

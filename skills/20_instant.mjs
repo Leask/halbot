@@ -8,14 +8,18 @@ const action = async (ctx, next) => {
             ctx.multiAi = ctx.selectedAi.length > 1;
             ctx.hello(ctx.cmd.args);
             break;
-        case 'bing':
-            assert(utilitas.insensitiveHas(allAi, 'bing'), 'Bing is not available.');
-            ctx.selectedAi = ['Bing'];
+        case 'chatgpt':
+            if (!utilitas.insensitiveHas(allAi, 'chatgpt')) {
+                return await ctx.er('ChatGPT is not available.');
+            }
+            ctx.selectedAi = ['ChatGPT'];
             ctx.hello(ctx.cmd.args);
             break;
-        case 'chatgpt':
-            assert(utilitas.insensitiveHas(allAi, 'chatgpt'), 'ChatGPT is not available.');
-            ctx.selectedAi = ['ChatGPT'];
+        case 'gemini':
+            if (!utilitas.insensitiveHas(allAi, 'gemini')) {
+                return await ctx.er('Gemini is not available.');
+            }
+            ctx.selectedAi = ['Gemini'];
             ctx.hello(ctx.cmd.args);
             break;
     }
@@ -32,7 +36,7 @@ export const { name, run, priority, func, help, cmds } = {
     ]),
     cmds: {
         all: 'Use all AI engines simultaneously: /all Say hello to all AIs!',
-        chatgpt: 'Use ChatGPT temporary: /chatgpt Say hello to ChatGPT!',
-        bing: 'Use Bing temporary: /bing Say hello to Bing!',
+        chatgpt: 'Use ⚛️ ChatGPT temporary: /chatgpt Say hello to ChatGPT!',
+        gemini: 'Use ♊️ Gemini temporary: /gemini Say hello to Gemini!',
     },
 };

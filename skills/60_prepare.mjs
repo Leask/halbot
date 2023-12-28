@@ -1,4 +1,4 @@
-import { bot, hal, utilitas } from 'utilitas';
+import { alan, bot, utilitas } from 'utilitas';
 
 const action = async (ctx, next) => {
     // avatar
@@ -16,21 +16,18 @@ const action = async (ctx, next) => {
         ctx.avatar = '😸';
     }
     // prompt
+    const maxInputTokens = alan.getMaxChatPromptLimit();
     const additionInfo = ctx.collected.length ? ctx.collected.map(
         x => x.content
     ).join('\n').split(' ') : [];
     ctx.prompt = (ctx.text || '') + '\n\n';
-    while (hal.countTokens(ctx.prompt) < hal.MAX_PROMPT_TOKENS
+    while (alan.countTokens(ctx.prompt) < maxInputTokens
         && additionInfo.length) {
         ctx.prompt += ` ${additionInfo.shift()}`;
     }
     ctx.prompt = utilitas.trim(ctx.prompt);
     additionInfo.filter(x => x).length && (ctx.prompt += '...');
     // next
-    ctx.carry = {
-        sessionId: ctx.chatId,
-        toneStyle: ctx.session.config?.tone,
-    };
     await next();
 };
 

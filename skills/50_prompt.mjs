@@ -48,13 +48,13 @@ const action = async (ctx, next) => {
                 ])
             ));
             return await ctx.ok(details || 'Data not found.');
-        case 'clear':
-            ctx.clear();
-            break;
+        // case 'clear':
+        //     await ctx.clear();
+        //     break;
         default:
             const prompt = ctx.session.prompts?.[cmd] || ctx._.prompts?.[cmd]?.prompt;
             !ctx.context && prompt && (ctx.context = { cmd, prompt });
-            ctx.context && ctx.clear(ctx.context);
+            ctx.context && await ctx.clear(ctx.context);
     }
     await next();
 };
