@@ -34,6 +34,7 @@ const init = async (options) => {
     const info = bot.lines([
         `[${bot.EMOJI_BOT} ${pkg.title}](${pkg.homepage})`, pkg.description
     ]);
+    // init ai engines
     if (options?.openaiApiKey || options?.chatGptApiKey) {
         const apiKey = { apiKey: options?.chatGptApiKey || options?.openaiApiKey };
         await alan.init({
@@ -76,20 +77,26 @@ const init = async (options) => {
             model: options?.mistralModel,
         };
     }
+    assert(utilitas.countKeys(ai), 'No AI provider is configured.');
+    await alan.initChat({ engines, sessions: options?.storage });
+    // init image, speech engines
     if (options?.openaiApiKey) {
         const apiKey = { apiKey: options.openaiApiKey };
-        await speech.init({ ...apiKey, provider: 'OPENAI', ...speechOptions });
         await image.init(apiKey);
+        await speech.init({ ...apiKey, provider: 'OPENAI', ...speechOptions });
+    } else if (options?.googleApiKey) {
+        const apiKey = { apiKey: options.googleApiKey };
+        await speech.init({ ...apiKey, provider: 'GOOGLE', ...speechOptions });
     }
+    // init vision engine
+    // const aiVision = new Set(Object.values(engines).map(
+    //     x => alan.MODELS[x.model]
+    // ).map(x => x.supportedMimeTypes || []).flat().map(x => x.toLowerCase()));
     if (options?.googleApiKey) {
         const apiKey = { apiKey: options.googleApiKey };
         await vision.init(apiKey);
-        options?.openaiApiKey || await speech.init({
-            ...apiKey, provider: 'GOOGLE', ...speechOptions,
-        });
     }
-    await alan.initChat({ engines, sessions: options?.storage });
-    assert(utilitas.countKeys(ai), 'No AI provider is configured.');
+    // init bot
     const _bot = await bot.init({
         args: options?.args,
         auth: options?.auth,
