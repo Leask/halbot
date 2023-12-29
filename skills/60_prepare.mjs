@@ -17,15 +17,16 @@ const action = async (ctx, next) => {
     }
     // prompt
     const maxInputTokens = alan.getMaxChatPromptLimit();
-    const additionInfo = ctx.collected.length ? ctx.collected.map(
-        x => x.content
-    ).join('\n').split(' ') : [];
+    const additionInfo = ctx.collected.filter(
+        x => String.isString(x.content)
+    ).map(x => x.content).join('\n').split(' ').filter(x => x);
     ctx.prompt = (ctx.text || '') + '\n\n';
     while (alan.countTokens(ctx.prompt) < maxInputTokens
         && additionInfo.length) {
         ctx.prompt += ` ${additionInfo.shift()}`;
     }
     ctx.prompt = utilitas.trim(ctx.prompt);
+    ctx.carry.attachments = ctx.collected.filter(x => x.type === 'PROMPT').map(x => x.content);
     additionInfo.filter(x => x).length && (ctx.prompt += '...');
     // next
     await next();

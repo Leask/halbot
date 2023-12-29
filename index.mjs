@@ -89,9 +89,9 @@ const init = async (options) => {
         await speech.init({ ...apiKey, provider: 'GOOGLE', ...speechOptions });
     }
     // init vision engine
-    // const aiVision = new Set(Object.values(engines).map(
-    //     x => alan.MODELS[x.model]
-    // ).map(x => x.supportedMimeTypes || []).flat().map(x => x.toLowerCase()));
+    const supportedMimeTypes = new Set(Object.values(engines).map(
+        x => alan.MODELS[x.model]
+    ).map(x => x.supportedMimeTypes || []).flat().map(x => x.toLowerCase()));
     if (options?.googleApiKey) {
         const apiKey = { apiKey: options.googleApiKey };
         await vision.init(apiKey);
@@ -114,6 +114,7 @@ const init = async (options) => {
         skillPath: options?.skillPath || skillPath,
         speech: (options?.openaiApiKey || options?.googleApiKey) && speech,
         vision: options?.googleApiKey && vision,
+        supportedMimeTypes,
     });
     _bot._.ai = ai;                                                             // Should be an array of a map of AIs.
     _bot._.lang = options?.lang || 'English';
