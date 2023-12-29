@@ -48,18 +48,6 @@ const init = async (options) => {
             model: options?.chatGptModel,
         };
     }
-    if (options?.openaiApiKey) {
-        const apiKey = { apiKey: options.openaiApiKey };
-        await speech.init({ ...apiKey, provider: 'OPENAI', ...speechOptions });
-        await image.init(apiKey);
-    }
-    if (options?.googleApiKey) {
-        const apiKey = { apiKey: options.googleApiKey };
-        await vision.init(apiKey);
-        options?.openaiApiKey || await speech.init({
-            ...apiKey, provider: 'GOOGLE', ...speechOptions,
-        });
-    }
     if (options?.googleCredentials && options?.googleProject) {
         await alan.init({
             provider: 'VERTEX',
@@ -87,6 +75,18 @@ const init = async (options) => {
             // only support custom model while prompting
             model: options?.mistralModel,
         };
+    }
+    if (options?.openaiApiKey) {
+        const apiKey = { apiKey: options.openaiApiKey };
+        await speech.init({ ...apiKey, provider: 'OPENAI', ...speechOptions });
+        await image.init(apiKey);
+    }
+    if (options?.googleApiKey) {
+        const apiKey = { apiKey: options.googleApiKey };
+        await vision.init(apiKey);
+        options?.openaiApiKey || await speech.init({
+            ...apiKey, provider: 'GOOGLE', ...speechOptions,
+        });
     }
     await alan.initChat({ engines, sessions: options?.storage });
     assert(utilitas.countKeys(ai), 'No AI provider is configured.');
