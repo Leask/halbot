@@ -43,7 +43,7 @@ const init = async (options) => {
         await speech.init({ ...apiKey, provider: 'OPENAI', ...speechOptions });
         await image.init(apiKey);
         ai['ChatGPT'] = { engine: 'CHATGPT' };
-        engines['CHATGPT'] = {};
+        engines['CHATGPT'] = { model: options?.chatGptModel };
     }
     if (options?.googleApiKey) {
         const apiKey = { apiKey: options.googleApiKey };
