@@ -67,26 +67,41 @@ All supported configuration fields:
     // REQUIRED, string.
     "telegramToken": "[[Telegram Bot API Token]]",
 
-    // OPTIONAL, string.
     // Set some of these fields if you need ChatGPT features.
-    "openaiApiKey": "[[OpenAI API Key]]",
-    "openaiEndpoint": "[[Custom OpenAI API endpoint]]",
-    "chatGptModel": "[[Custom ChatGPT Model ID]]",
-
     // OPTIONAL, string.
+    "openaiApiKey": "[[OpenAI API Key]]",
+    // OPTIONAL, string.
+    "openaiEndpoint": "[[Custom OpenAI API endpoint]]",
+    // OPTIONAL, string, default: "gpt-3.5-turbo".
+    "chatGptModel": "[[Custom ChatGPT Model ID]]",
+    // OPTIONAL, integer, default: 0.
+    "chatGptPriority": "[[Custom ChatGPT Priority]]",
+
     // Set some of these fields if you need to use custom ChatGPT API.
+    // OPTIONAL, string.
     "chatGptApiKey": "[[Custom ChatGPT API Key]]",
+    // OPTIONAL, string.
     "chatGptEndpoint": "[[Custom ChatGPT API endpoint]]",
 
-    // OPTIONAL, string.
     // Set this field if you need Gemini features.
+    // OPTIONAL, string.
     "googleCredentials": "[[Google Cloud Credentials]]",
+    // OPTIONAL, string.
     "googleProject": "[[Google Cloud Project ID]]",
+    // OPTIONAL, string, default: "gemini-pro-vision".
+    "geminiModel": "[[Custom Gemini Model ID]]",
+    // OPTIONAL, integer, default: 1.
+    "geminiPriority": "[[Custom Gemini Priority]]",
 
-    // OPTIONAL, boolean.
     // Set this field if you need Mistral features.
+    // OPTIONAL, boolean.
     "mistralEnabled": "[[Enable Mistral hosted by Ollama]]",
+    // OPTIONAL, string.
     "mistralEndpoint": "[[Custom Mistral API endpoint]]",
+    // OPTIONAL, string, default: "Mistral" (Mistral 7B).
+    "mistralModel": "[[Custom Mistral Model ID]]",
+    // OPTIONAL, integer, default: 2.
+    "mistralPriority": "[[Custom Mistral Priority]]",
 
     // OPTIONAL, string.
     // Set this field if you need TTS/STT/OCR/OBJECT_DETECT features.

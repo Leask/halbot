@@ -1,6 +1,5 @@
 import { alan, bot, image, shot, speech, utilitas, vision } from 'utilitas';
 import { parse } from 'csv-parse/sync';
-import { end } from 'utilitas/lib/event.mjs';
 
 await utilitas.locate(utilitas.__(import.meta.url, 'package.json'));
 const log = content => utilitas.log(content, 'halbot');
@@ -41,8 +40,13 @@ const init = async (options) => {
             provider: 'openai', ...apiKey,
             baseURL: options?.chatGptEndpoint || options?.openaiEndpoint,
         });
-        ai['ChatGPT'] = { engine: 'CHATGPT' };
-        engines['CHATGPT'] = { model: options?.chatGptModel };
+        ai['ChatGPT'] = {
+            engine: 'CHATGPT', priority: options?.chatGptPriority || 0,
+        };
+        engines['CHATGPT'] = {
+            // only support custom model while prompting
+            model: options?.chatGptModel,
+        };
     }
     if (options?.openaiApiKey) {
         const apiKey = { apiKey: options.openaiApiKey };
@@ -61,18 +65,28 @@ const init = async (options) => {
             provider: 'VERTEX',
             credentials: options.googleCredentials,
             project: options.googleProject,
+            // only support custom model while initiating
+            model: options?.geminiModel,
         });
-        ai['Gemini'] = { engine: 'VERTEX' };
-        engines['VERTEX'] = {};
+        ai['Gemini'] = {
+            engine: 'VERTEX', priority: options?.geminiPriority || 1,
+        };
+        engines['VERTEX'] = {
+            // save for reference not for prompting
+            model: options?.geminiModel,
+        };
     }
     if (options?.mistralEnabled || options?.mistralEndpoint) {
         await alan.init({
-            provider: 'OLLAMA',
-            endpoint: options?.mistralEndpoint,
-            model: options?.mistralModel,
+            provider: 'OLLAMA', endpoint: options?.mistralEndpoint,
         });
-        ai['Mistral'] = { engine: 'OLLAMA' };
-        engines['OLLAMA'] = {};
+        ai['Mistral'] = {
+            engine: 'OLLAMA', priority: options?.mistralPriority || 2,
+        };
+        engines['OLLAMA'] = {
+            // only support custom model while prompting
+            model: options?.mistralModel,
+        };
     }
     await alan.initChat({ engines, sessions: options?.storage });
     assert(utilitas.countKeys(ai), 'No AI provider is configured.');

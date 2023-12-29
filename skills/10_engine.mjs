@@ -4,7 +4,10 @@ let configuredAi;
 
 const action = async (ctx, next) => {
     ctx.isDefaultAi = name => name === ctx.firstAi;
-    ctx.firstAi = (configuredAi = Object.keys(ctx._.ai))[0];
+    const arrSort = (configuredAi = Object.keys(ctx._.ai)).map(
+        k => [k, ctx._.ai[k].priority]
+    ).sort((x, y) => x[1] - y[1]);
+    ctx.firstAi = arrSort[0][0];
     switch (ctx.session.config?.ai) {
         case '': ctx.selectedAi = [ctx.firstAi]; break;
         case '@': ctx.selectedAi = configuredAi; break;
