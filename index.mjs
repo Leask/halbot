@@ -35,15 +35,19 @@ const init = async (options) => {
     const info = bot.lines([
         `[${bot.EMOJI_BOT} ${pkg.title}](${pkg.homepage})`, pkg.description
     ]);
-    if (options?.openaiApiKey) {
-        const apiKey = { apiKey: options.openaiApiKey };
+    if (options?.openaiApiKey || options?.chatGptApiKey) {
+        const apiKey = { apiKey: options?.chatGptApiKey || options?.openaiApiKey };
         await alan.init({
-            provider: 'openai', ...apiKey, baseURL: options?.openaiEndpoint,
+            provider: 'openai', ...apiKey,
+            baseURL: options?.chatGptEndpoint || options?.openaiEndpoint,
         });
-        await speech.init({ ...apiKey, provider: 'OPENAI', ...speechOptions });
-        await image.init(apiKey);
         ai['ChatGPT'] = { engine: 'CHATGPT' };
         engines['CHATGPT'] = { model: options?.chatGptModel };
+    }
+    if (options?.openaiApiKey) {
+        const apiKey = { apiKey: options.openaiApiKey };
+        await speech.init({ ...apiKey, provider: 'OPENAI', ...speechOptions });
+        await image.init(apiKey);
     }
     if (options?.googleApiKey) {
         const apiKey = { apiKey: options.googleApiKey };

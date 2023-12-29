@@ -68,10 +68,15 @@ All supported configuration fields:
     "telegramToken": "[[Telegram Bot API Token]]",
 
     // OPTIONAL, string.
-    // Set this field if you need ChatGPT features.
+    // Set some of these fields if you need ChatGPT features.
     "openaiApiKey": "[[OpenAI API Key]]",
     "openaiEndpoint": "[[Custom OpenAI API endpoint]]",
     "chatGptModel": "[[Custom ChatGPT Model ID]]",
+
+    // OPTIONAL, string.
+    // Set some of these fields if you need to use custom ChatGPT API.
+    "chatGptApiKey": "[[Custom ChatGPT API Key]]",
+    "chatGptEndpoint": "[[Custom ChatGPT API endpoint]]",
 
     // OPTIONAL, string.
     // Set this field if you need Gemini features.
