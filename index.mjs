@@ -37,7 +37,9 @@ const init = async (options) => {
     ]);
     if (options?.openaiApiKey) {
         const apiKey = { apiKey: options.openaiApiKey };
-        await alan.init({ provider: 'openai', ...apiKey });
+        await alan.init({
+            provider: 'openai', ...apiKey, baseURL: options?.openaiEndpoint,
+        });
         await speech.init({ ...apiKey, provider: 'OPENAI', ...speechOptions });
         await image.init(apiKey);
         ai['ChatGPT'] = { engine: 'CHATGPT' };

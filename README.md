@@ -69,7 +69,8 @@ All supported configuration fields:
 
     // OPTIONAL, string.
     // Set this field if you need ChatGPT features.
-    "openaiApiKey": "[[OpenAI API Key]]"
+    "openaiApiKey": "[[OpenAI API Key]]",
+    "openaiEndpoint": "[[Custom OpenAI API endpoint]]",
 
     // OPTIONAL, string.
     // Set this field if you need Gemini features.
