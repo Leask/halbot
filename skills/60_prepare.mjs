@@ -21,7 +21,7 @@ const action = async (ctx, next) => {
         x => String.isString(x.content)
     ).map(x => x.content).join('\n').split(' ').filter(x => x);
     ctx.prompt = (ctx.text || '') + '\n\n';
-    while (alan.countTokens(ctx.prompt) < maxInputTokens
+    while (await alan.countTokens(ctx.prompt) < maxInputTokens
         && additionInfo.length) {
         ctx.prompt += ` ${additionInfo.shift()}`;
     }
