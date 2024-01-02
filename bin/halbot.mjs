@@ -10,6 +10,7 @@ const _getConfig = async () => await _storage.getConfig();
 const getConfig = async key => (await _getConfig())?.config?.[key];
 
 let storage = {
+    provider: 'FILE',
     get: async key => (await getConfig(MEMORY))?.[key],
     set: async (k, v) => await _storage.setConfig({ [MEMORY]: { [k]: v } }),
 };
@@ -17,14 +18,14 @@ let storage = {
 try {
     const { filename, config } = await _getConfig();
     assert(utilitas.countKeys(config), `Error loading config from ${filename}.`);
-    const sessionType = utilitas.trim(config.storage?.provider, { case: 'UP' });
-    switch (sessionType) {
-        case 'MARIADB': case 'MYSQL':
+    const provider = utilitas.trim(config.storage?.provider, { case: 'UP' });
+    switch (provider) {
+        case 'MARIADB': case 'MYSQL': case 'POSTGRESQL':
             await dbio.init(config.storage);
-            storage = await memory.init();
+            storage = { ...await memory.init(), provider, client: dbio };
             break;
         case 'REDIS':
-            storage = await cache.init(config.storage);
+            storage = { ...await cache.init(config.storage), provider };
             break;
         default:
             config.storage && utilitas.throwError('Invalid storage config.');

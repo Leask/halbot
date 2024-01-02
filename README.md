@@ -67,7 +67,7 @@ All supported configuration fields:
     // REQUIRED, string.
     "telegramToken": "[[Telegram Bot API Token]]",
 
-    // Set some of these fields if you need ChatGPT features.
+    // Set some of these fields if you need ChatGPT, Whisper, Embedding features.
     // OPTIONAL, string.
     "openaiApiKey": "[[OpenAI API Key]]",
     // OPTIONAL, string.
@@ -104,7 +104,7 @@ All supported configuration fields:
     "mistralPriority": "[[Custom Mistral Priority]]",
 
     // OPTIONAL, string.
-    // Set this field if you need TTS/STT/OCR/OBJECT_DETECT features.
+    // Set this field if you need Google's TTS/STT/OCR/OBJECT_DETECT/Embedding.
     "googleApiKey": "[[Google Cloud API Key]]",
 
     // OPTIONAL, undefined || array of string.
@@ -138,20 +138,32 @@ All supported configuration fields:
     "help": "[[help information]]",
 
     // OPTIONAL, object.
-    // Sessions/conversations storage, support MariaDB/MySQL and Redis for now.
+    // Sessions/conversations storage.
+    // support PostgreSQL, MariaDB/MySQL and Redis for now.
     // If omitted, the bot will use memory storage and sync to this file.
-    // Example: (Compatibility: https://github.com/sidorares/node-mysql2)
+    // Example: (Compatibility: https://node-postgres.com/apis/pool)
     "storage": {
-        "type": "[["MARIADB" || "MYSQL"]]",
+        "provider": "POSTGRESQL",
         "host": "[[DATABASE HOST]]",
         "database": "[[DATABASE NAME]]",
         "user": "[[DATABASE USER]]",
         "password": "[[DATABASE PASSWORD]]",
+        "vector": true, // REQUIRED
+        ...[[OTHER DATABASE OPTIONS]],
+    },
+    // OR: (Compatibility: https://github.com/sidorares/node-mysql2)
+    "storage": {
+        "provider": "[["MARIADB" || "MYSQL"]]",
+        "host": "[[DATABASE HOST]]",
+        "database": "[[DATABASE NAME]]",
+        "user": "[[DATABASE USER]]",
+        "password": "[[DATABASE PASSWORD]]",
+        "charset": "utf8mb4", // REQUIRED
         ...[[OTHER DATABASE OPTIONS]],
     },
     // OR: (Compatibility: https://github.com/luin/ioredis)
     "storage": {
-        "type": "REDIS",
+        "provider": "REDIS",
         "host": "[[REDIS HOST]]",
         "password": "[[REDIS PASSWORD]]",
         ...[[OTHER REDIS OPTIONS]],

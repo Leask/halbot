@@ -1,4 +1,4 @@
-import { alan, bot, image, shot, speech, utilitas, vision } from 'utilitas';
+import { alan, bot, dbio, image, shot, speech, utilitas, vision } from 'utilitas';
 import { parse } from 'csv-parse/sync';
 
 await utilitas.locate(utilitas.__(import.meta.url, 'package.json'));
@@ -34,13 +34,11 @@ const init = async (options) => {
     const info = bot.lines([
         `[${bot.EMOJI_BOT} ${pkg.title}](${pkg.homepage})`, pkg.description
     ]);
+    let embedding;
     // init ai engines
     if (options?.openaiApiKey || options?.chatGptApiKey) {
-        const apiKey = { apiKey: options?.chatGptApiKey || options?.openaiApiKey };
-        await alan.init({
-            provider: 'openai', ...apiKey,
-            baseURL: options?.chatGptEndpoint || options?.openaiEndpoint,
-        });
+        const apiKey = { apiKey: options?.openaiApiKey || options?.chatGptApiKey };
+        await alan.init({ provider: 'openai', ...apiKey, ...options });
         ai['ChatGPT'] = {
             engine: 'CHATGPT', priority: options?.chatGptPriority || 0,
         };
@@ -79,14 +77,16 @@ const init = async (options) => {
     }
     assert(utilitas.countKeys(ai), 'No AI provider is configured.');
     await alan.initChat({ engines, sessions: options?.storage });
-    // init image, speech engines
+    // init image, speech, embedding engines
     if (options?.openaiApiKey) {
         const apiKey = { apiKey: options.openaiApiKey };
         await image.init(apiKey);
         await speech.init({ ...apiKey, provider: 'OPENAI', ...speechOptions });
+        embedding = alan.createOpenAIEmbedding;
     } else if (options?.googleApiKey) {
         const apiKey = { apiKey: options.googleApiKey };
         await speech.init({ ...apiKey, provider: 'GOOGLE', ...speechOptions });
+        embedding = alan.createVertexEmbedding;
     }
     // init vision engine
     const supportedMimeTypes = new Set(Object.values(engines).map(
@@ -103,6 +103,8 @@ const init = async (options) => {
         botToken: options?.telegramToken,
         chatType: options?.chatType,
         cmds: options?.cmds,
+        database: options?.storage?.client && options?.storage,
+        embedding, supportedMimeTypes,
         hello: options?.hello,
         help: options?.help,
         homeGroup: options?.homeGroup,
@@ -114,7 +116,6 @@ const init = async (options) => {
         skillPath: options?.skillPath || skillPath,
         speech: (options?.openaiApiKey || options?.googleApiKey) && speech,
         vision: options?.googleApiKey && vision,
-        supportedMimeTypes,
     });
     _bot._.ai = ai;                                                             // Should be an array of a map of AIs.
     _bot._.lang = options?.lang || 'English';
