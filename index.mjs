@@ -38,7 +38,7 @@ const init = async (options) => {
     // init ai engines
     if (options?.openaiApiKey || options?.chatGptApiKey) {
         const apiKey = { apiKey: options?.openaiApiKey || options?.chatGptApiKey };
-        await alan.init({ provider: 'openai', ...apiKey, ...options });
+        await alan.init({ ...apiKey, ...options, provider: 'openai' });
         ai['ChatGPT'] = {
             engine: 'CHATGPT', priority: options?.chatGptPriority || 0,
         };
