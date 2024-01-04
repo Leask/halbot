@@ -259,9 +259,21 @@ const config = {
     // `storage` should Should be compatible with the `Map` interface:
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map
     storage: {
-        get: async (key) => { /* return session object by chatId. */ },
-        set: async (key, session) => { /* save session object by chatId. */ },
+        provider: [[POSTGRESQL || MARIADB || MYSQL || REDIS]],
+        get: async (key) => { /* Return session object by chatId. */ },
+        set: async (key, session) => { /* Save session object by chatId. */ },
+        query: async (topic) => { /* Search history and session by topic. */ },
+        upsert: async (event) => { /* Save event for history and session. */ },
     },
+
+    // OPTIONAL, function.
+    // Using customized embedding engine for history and session search.
+    embedding: async (text) => { /* Return vector embedding of the text. */ },
+
+    // OPTIONAL, array of string.
+    // Supported mime types of your vision-enabled AI models.
+    // If omitted, bot will use standard OCR and Object Detect to handle images.
+    supportedMimeTypes: [...[[mimeTypes]]],
 
     // OPTIONAL, object.
     // Adding extra commands.
