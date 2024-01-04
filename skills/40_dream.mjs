@@ -23,6 +23,6 @@ export const { name, run, priority, func, cmds, help } = {
         'Example: /dream a cat',
     ]),
     cmds: {
-        image: 'Use DALL-E to generate images: /dream `PROMPT`',
+        dream: 'Use DALL-E to generate images: /dream `PROMPT`',
     },
 };
