@@ -262,8 +262,10 @@ const config = {
         provider: [[POSTGRESQL || MARIADB || MYSQL || REDIS]],
         get: async (key) => { /* Return session object by chatId. */ },
         set: async (key, session) => { /* Save session object by chatId. */ },
-        query: async (topic) => { /* Search history and session by topic. */ },
-        upsert: async (event) => { /* Save event for history and session. */ },
+        client: { /* Customized database client / pool. */ },
+            query: async (topic) => { /* Search history and session by topic. */ },
+            upsert: async (event) => { /* Save event for history and session. */ },
+        },
     },
 
     // OPTIONAL, function.
