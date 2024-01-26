@@ -44,6 +44,7 @@
     "jsdom": "^24.0.0",
     "mysql2": "^3.9.0",
     "office-text-extractor": "^3.0.2",
+    "ollama": "^0.4.3",
     "openai": "^4.26.0",
     "pg": "^8.11.3",
     "pgvector": "^0.1.7",
