@@ -1,7 +1,7 @@
 {
   "name": "halbot",
   "description": "Just another `ChatGPT` / `Gemini` / `Mistral (by ollama)` Telegram bob, which is simple design, easy to use, extendable and fun.",
-  "version": "1991.1.12",
+  "version": "1991.1.13",
   "private": false,
   "homepage": "https://github.com/Leask/halbot",
   "type": "module",
