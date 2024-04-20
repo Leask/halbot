@@ -4,14 +4,14 @@ const action = async (ctx, next) => {
     // avatar
     if (ctx.result) {
         ctx.avatar = '⚙️';
-    } else if (ctx.msg?.voice) {
-        ctx.avatar = bot.EMOJI_SPEECH; ctx.result = utilitas.trim(ctx.text);
-    } else if (ctx.msg?.data) {
-        ctx.avatar = '🔘'; ctx.result = utilitas.trim(ctx.text);
-    } else if (ctx.msg?.poll) {
+    } else if (ctx.m?.voice) {
+        ctx.avatar = bot.EMOJI_SPEECH; ctx.result = utilitas.trim(ctx.txt);
+    } else if (ctx.m?.data) {
+        ctx.avatar = '🔘'; ctx.result = utilitas.trim(ctx.txt);
+    } else if (ctx.m?.poll) {
         ctx.avatar = '📊';
     } else if (ctx.cmd?.cmd && ctx.cmd?.cmd !== 'clear') {
-        ctx.avatar = '🚀'; ctx.result = utilitas.trim(ctx.text);
+        ctx.avatar = '🚀'; ctx.result = utilitas.trim(ctx.txt);
     } else {
         ctx.avatar = '😸';
     }
@@ -20,7 +20,7 @@ const action = async (ctx, next) => {
     const additionInfo = ctx.collected.filter(
         x => String.isString(x.content)
     ).map(x => x.content).join('\n').split(' ').filter(x => x);
-    ctx.prompt = (ctx.text || '') + '\n\n';
+    ctx.prompt = (ctx.txt || '') + '\n\n';
     while (await alan.countTokens(ctx.prompt) < maxInputTokens
         && additionInfo.length) {
         ctx.prompt += ` ${additionInfo.shift()}`;
