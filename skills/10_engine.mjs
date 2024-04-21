@@ -52,7 +52,7 @@ export const { name, run, priority, func, help, args } = {
             validate: validateAi,
         },
         render: {
-            type: 'string', short: 'r', default: bot.BINARY_STRINGS[1],
+            type: 'string', short: 'r', default: bot.BINARY_STRINGS[0],
             desc: `\`(${bot.BINARY_STRINGS.join(', ')})\` Enable/Disable enhanced output rendering.`,
             validate: utilitas.humanReadableBoolean,
         },

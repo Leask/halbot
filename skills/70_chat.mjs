@@ -47,8 +47,8 @@ const action = async (ctx, next) => {
                         await ok(onProgress);
                     },
                 });
-                msgs[n] = ctx.session.config?.render === false
-                    ? resp.text : resp.rendered;
+                msgs[n] = ctx.session.config?.render === true
+                    ? resp.rendered : resp.text;
                 tts[n] = ctx.selectedAi.length === 1
                     && !msgs[n].split('\n').some(x => /^```/.test(x))
                     ? resp.spoken : '';
