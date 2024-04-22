@@ -42,7 +42,7 @@
     "ioredis": "^5.4.1",
     "js-tiktoken": "^1.0.11",
     "jsdom": "^24.0.0",
-    "mysql2": "^3.9.6",
+    "mysql2": "^3.9.7",
     "office-text-extractor": "^3.0.3",
     "ollama": "^0.5.0",
     "openai": "^4.38.2",
@@ -50,7 +50,7 @@
     "pgvector": "^0.1.8",
     "telegraf": "^4.16.3",
     "tesseract.js": "^5.0.5",
-    "utilitas": "^1995.3.11",
-    "youtube-transcript": "^1.1.0"
+    "utilitas": "^1995.3.16",
+    "youtube-transcript": "^1.2.1"
   }
 }
