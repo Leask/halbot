@@ -16,7 +16,12 @@ const action = async (ctx, next) => {
         ctx.avatar = '😸';
     }
     // prompt
-    const maxInputTokens = alan.getMaxChatPromptLimit();
+    ctx.carry.attachments = ctx.collected.filter(
+        x => x.type === 'PROMPT'
+    ).map(x => x.content);
+    const maxInputTokens = alan.getMaxChatPromptLimit()
+        - alan.ATTACHMENT_TOKEN_COST * ctx.carry.attachments.length;
+    print(maxInputTokens);
     const additionInfo = ctx.collected.filter(
         x => String.isString(x.content)
     ).map(x => x.content).join('\n').split(' ').filter(x => x);
@@ -26,7 +31,6 @@ const action = async (ctx, next) => {
         ctx.prompt += ` ${additionInfo.shift()}`;
     }
     ctx.prompt = utilitas.trim(ctx.prompt);
-    ctx.carry.attachments = ctx.collected.filter(x => x.type === 'PROMPT').map(x => x.content);
     additionInfo.filter(x => x).length && (ctx.prompt += '...');
     // next
     await next();

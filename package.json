@@ -34,7 +34,7 @@
     "@google-cloud/aiplatform": "^3.21.0",
     "@google-cloud/speech": "^6.6.0",
     "@google-cloud/text-to-speech": "^5.3.0",
-    "@google-cloud/vertexai": "^1.1.0",
+    "@google-cloud/vertexai": "^1.2.0",
     "@google-cloud/vision": "^4.3.0",
     "@mozilla/readability": "^0.5.0",
     "csv-parse": "^5.5.6",
@@ -50,7 +50,7 @@
     "pgvector": "^0.1.8",
     "telegraf": "^4.16.3",
     "tesseract.js": "^5.1.0",
-    "utilitas": "^1995.3.19",
+    "utilitas": "^1995.3.23",
     "youtube-transcript": "^1.2.1"
   }
 }
