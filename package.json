@@ -42,6 +42,7 @@
     "ioredis": "^5.4.1",
     "js-tiktoken": "^1.0.12",
     "jsdom": "^24.0.0",
+    "mime-types": "^2.1.35",
     "mysql2": "^3.9.7",
     "office-text-extractor": "^3.0.3",
     "ollama": "^0.5.1",
