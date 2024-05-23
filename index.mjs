@@ -38,11 +38,11 @@ const init = async (options) => {
     // init ai engines
     if (options?.openaiApiKey || options?.chatGptApiKey) {
         const apiKey = { apiKey: options?.openaiApiKey || options?.chatGptApiKey };
-        await alan.init({ ...apiKey, ...options, provider: 'openai' });
+        await alan.init({ ...apiKey, ...options, provider: 'OPENAI' });
         ai['ChatGPT'] = {
-            engine: 'CHATGPT', priority: options?.chatGptPriority || 0,
+            engine: 'ASSISTANT', priority: options?.chatGptPriority || 0,
         };
-        engines['CHATGPT'] = {
+        engines['ASSISTANT'] = {
             // only support custom model while prompting
             model: options?.chatGptModel,
         };

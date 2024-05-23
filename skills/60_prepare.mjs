@@ -21,7 +21,6 @@ const action = async (ctx, next) => {
     ).map(x => x.content);
     const maxInputTokens = alan.getMaxChatPromptLimit()
         - alan.ATTACHMENT_TOKEN_COST * ctx.carry.attachments.length;
-    print(maxInputTokens);
     const additionInfo = ctx.collected.filter(
         x => String.isString(x.content)
     ).map(x => x.content).join('\n').split(' ').filter(x => x);
