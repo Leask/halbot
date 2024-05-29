@@ -50,7 +50,7 @@ const action = async (ctx, next) => {
                 msgs[n] = ctx.session.config?.render === true
                     ? resp.rendered : resp.text;
                 tts[n] = ctx.selectedAi.length === 1
-                    && !msgs[n].split('\n').some(x => /^```/.test(x))
+                    && !msgs[n].split('\n').some(x => /^\s*```/.test(x))
                     ? resp.spoken : '';
                 return resp;
             } catch (err) {
