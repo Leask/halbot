@@ -9,7 +9,7 @@ const action = async (ctx, next) => {
     await ctx.deleteMessage(objMsg.message_id);
     for (let image of images) {
         await ctx.image(image.url, { caption: image.revised_prompt });
-        await ctx.speech(image.revised_prompt);
+        await ctx.shouldSpeech(image.revised_prompt)
     }
 };
 
