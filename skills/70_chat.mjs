@@ -18,12 +18,10 @@ const action = async (ctx, next) => {
         const pure = [];
         ctx.selectedAi.map(n => {
             const content = source[n] || '';
-            const cmd = ctx.session.context?.cmd;
-            const context = cmd && ` > \`${cmd}\` (exit by /clear)` || '';
             pure.push(content);
             packed.push(joinL2([
-                ...ctx.multiAi || !ctx.isDefaultAi(n) || said || context
-                    ? [`${BOTS[n]} ${enrich(n)}${context}:`] : [], content,
+                ...(ctx.multiAi || !ctx.isDefaultAi(n) || said) && !options?.tts
+                    ? [`${BOTS[n]} ${enrich(n)}:`] : [], content
             ]));
         });
         return options?.tts && !pure.join('').trim().length ? '' : joinL1(packed);
@@ -34,6 +32,10 @@ const action = async (ctx, next) => {
             curTime - lastSent < ctx.limit || lastMsg === curMsg
         )) { return; }
         [lastSent, lastMsg] = [curTime, curMsg];
+        const cmd = ctx.session.context?.cmd;
+        if (options?.final && cmd) {
+            extra.buttons = [{ label: `End context: \`${cmd}\``, text: '/clear' }];
+        };
         return await ctx.ok(curMsg, { md: true, ...options || {}, ...extra });
     };
     await ok(onProgress);
@@ -61,8 +63,7 @@ const action = async (ctx, next) => {
         })());
     }
     await Promise.all(pms);
-    await ok();
-    // ctx.responses = msgs; // save responses-to-user for next middleware
+    await ok({ final: true });
     ctx.tts = packMsg({ tts: true });
     await next();
 };
