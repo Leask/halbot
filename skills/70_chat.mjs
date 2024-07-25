@@ -33,9 +33,9 @@ const action = async (ctx, next) => {
         )) { return; }
         [lastSent, lastMsg] = [curTime, curMsg];
         const cmd = ctx.session.context?.cmd;
-        if (options?.final && cmd) {
-            extra.buttons = [{ label: `End context: \`${cmd}\``, text: '/clear' }];
-        };
+        options?.final && cmd && (extra.buttons = [{
+            label: `❎ End context: \`${cmd}\``, text: '/clear',
+        }]);
         return await ctx.ok(curMsg, { md: true, ...options || {}, ...extra });
     };
     await ok(onProgress);
