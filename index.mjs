@@ -1,4 +1,4 @@
-import { alan, bot, dbio, image, shot, speech, utilitas, vision } from 'utilitas';
+import { alan, bot, image, shot, speech, utilitas, vision } from 'utilitas';
 import { parse } from 'csv-parse/sync';
 
 await utilitas.locate(utilitas.__(import.meta.url, 'package.json'));
