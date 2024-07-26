@@ -46,12 +46,12 @@
     "mysql2": "^3.10.3",
     "office-text-extractor": "^3.0.3",
     "ollama": "^0.5.6",
-    "openai": "^4.53.1",
+    "openai": "^4.53.2",
     "pg": "^8.12.0",
     "pgvector": "^0.2.0",
     "telegraf": "^4.16.3",
     "tesseract.js": "^5.1.0",
-    "utilitas": "^1996.1.33",
+    "utilitas": "^1996.1.34",
     "youtube-transcript": "^1.2.1"
   }
 }
