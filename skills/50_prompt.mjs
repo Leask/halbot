@@ -73,7 +73,6 @@ export const { name, run, priority, func, help, cmds, cmdx } = {
         del: 'Delete a custom prompt: /del `COMMAND`.',
         acplist: `List prompts from ${ACP}.`,
         acpdetail: `Show details of ${ACP}.`,
-        clear: 'Clear current AI conversation session and start a new one.',
     },
     cmdx: {},
 };

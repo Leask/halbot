@@ -10,7 +10,7 @@ const action = async (ctx, next) => {
         ctx.avatar = '🔘'; ctx.result = utilitas.trim(ctx.txt);
     } else if (ctx.m?.poll) {
         ctx.avatar = '📊';
-    } else if (ctx.cmd?.cmd && ctx.cmd?.cmd !== 'clear') {
+    } else if (ctx.cmd?.cmd && !ctx.cmd?.ignored) {
         ctx.avatar = '🚀'; ctx.result = utilitas.trim(ctx.txt);
     } else {
         ctx.avatar = '😸';

@@ -36,7 +36,7 @@ const action = async (ctx, next) => {
         options?.final && cmd && (extra.buttons = [{
             label: `❎ End context: \`${cmd}\``, text: '/clear',
         }]);
-        return await ctx.ok(curMsg, { md: true, ...options || {}, ...extra });
+        return await ctx.ok(curMsg, { md: true, ...extra, ...options || {} });
     };
     await ok(onProgress);
     for (let n of ctx.selectedAi) {
