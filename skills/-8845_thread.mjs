@@ -93,7 +93,7 @@ const action = async (ctx, next) => {
     });
     const sendList = async (names, lastMsgId) => {
         lastMsgId = lastMsgId || ctx.update?.callback_query?.message?.message_id;
-        const message = `{THREAD} Thread${ctx.session.sessions.length > 0 ? 's' : ''}:`;
+        const message = `${THREAD} Thread${ctx.session.sessions.length > 0 ? 's' : ''}:`;
         const buttons = ctx.session.sessions.map((x, i) => {
             names?.[x.id]
                 && (ctx.session.sessions[i].label = names[x.id])
