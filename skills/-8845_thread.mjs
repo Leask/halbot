@@ -3,7 +3,7 @@ import { alan, bot, uoid, utilitas } from 'utilitas';
 const [EMIJI_FINISH, END, NEW, THREAD, CLR] = ['☑️', '❎', '✨', '🧵', '🆑'];
 
 const [CREATED, SWITCHED] = [
-    `{NEW} Thread created: `, `${EMIJI_FINISH} Thread switched: `
+    `${NEW} Thread created: `, `${EMIJI_FINISH} Thread switched: `
 ];
 
 // moved to help and configs
