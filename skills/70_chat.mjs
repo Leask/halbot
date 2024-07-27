@@ -13,7 +13,9 @@ const action = async (ctx, next) => {
     let [lastMsg, lastSent] = [null, 0];
     const packMsg = options => {
         const said = !options?.tts && ctx.result ? ctx.result : '';
-        const packed = [...said ? [joinL2([YOU, said])] : []];
+        const packed = [
+            ...ctx.carry?.threadInfo, ...said ? [joinL2([YOU, said])] : [],
+        ];
         const source = options?.tts ? tts : msgs;
         const pure = [];
         ctx.selectedAi.map(n => {
@@ -36,9 +38,12 @@ const action = async (ctx, next) => {
         options?.final && cmd && (extra.buttons = [{
             label: `❎ End context: \`${cmd}\``, text: '/clear',
         }]);
-        return await ctx.ok(curMsg, { md: true, ...extra, ...options || {} });
+        return await ctx.ok(curMsg, {
+            ...ctx.carry.keyboards ? { keyboards: ctx.carry.keyboards } : {},
+            md: true, ...extra, ...options || {},
+        });
     };
-    await ok(onProgress);
+    ctx.carry.threadInfo.length || await ok(onProgress);
     for (let n of ctx.selectedAi) {
         pms.push((async () => {
             try {
@@ -46,7 +51,7 @@ const action = async (ctx, next) => {
                     engine: ctx._.ai[n].engine, ...ctx.carry,
                     stream: async r => {
                         msgs[n] = r[0].text;
-                        await ok(onProgress);
+                        ctx.carry.threadInfo.length || await ok(onProgress);
                     },
                 });
                 msgs[n] = ctx.session.config?.render === true

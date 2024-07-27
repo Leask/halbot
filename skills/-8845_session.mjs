@@ -4,16 +4,18 @@ const EMIJI_FINISH = '☑️';
 
 // moved to help and configs
 const keyboards = [[
-    { text: '/clear this thread 🆑' },
-    { text: '/clearall threads 🔄' }
+    { text: '/clear 🆑' },
+    { text: '/end ❎' },
+    { text: '/list 🧵' },
+    { text: '/new ✨' },
 ], [
-    { text: '/end this thread ❎' },
-    { text: '/list threads 🧵' },
-    { text: '/new thread ✨' },
+    { text: '/polish ❇️' },
+    { text: '/translate 🇨🇳' },
+    { text: '/translate 🇺🇸' },
 ], [
     { text: '/help 🛟' },
-    { text: '/ttsoff 🔇' },
-    { text: '/ttson 🔊' },
+    { text: '/set --tts=🔇' },
+    { text: '/set --tts=🔊' },
 ]];
 
 const action = async (ctx, next) => {
@@ -24,42 +26,12 @@ const action = async (ctx, next) => {
     const resetSessions = () => ctx.session.sessions = [];
     const resetContext = context => ctx.session.context = context || {};
     const now = Date.now();
-    ctx.session.sessionId || resetSession();
+    const preSessionId = ctx.session.sessionId || resetSession();
     ctx.session.sessions || resetSessions();
     ctx.session.context || resetContext();
+    ctx.carry || (ctx.carry = {});
+    ctx.carry.threadInfo || (ctx.carry.threadInfo = []);
     // load functions
-    const switchSession = async () => {
-        let resp;
-        for (const session of ctx.session.sessions) {
-            if (session.id === ctx.session.sessionId) {
-                ctx.session.sessionId = session.id;
-                ctx.session.context = session.context;
-                session.touchedAt = now;
-                resp = session;
-                break;
-            }
-        }
-        if (!resp) {
-            ctx.session.sessions.push(resp = {
-                id: resetSession(),
-                createdAt: now, touchedAt: now, context: {},
-            });
-            await ctx.clear();
-        }
-        ctx.carry = { sessionId: ctx.session.sessionId };
-        return resp;
-    };
-    const defauleTitle = i => (ctx.session.sessions[i]?.context?.cmd
-        ? `\`${ctx.session.sessions[i].context.cmd}\` ` : 'Untitled thread '
-    ) + `(${new Date(ctx.session.sessions[i].createdAt).toLocaleString()})`;
-    const getLabel = i => ctx.session.sessions[i].label || defauleTitle(i);
-    const findSession = id => {
-        for (let i = 0; i < ctx.session.sessions.length; i++) {
-            if (ctx.session.sessions[i].id === utilitas.trim(id)) {
-                return i;
-            }
-        }
-    };
     ctx.clear = async context => {
         await alan.resetSession(
             ctx.session.sessionId,
@@ -73,10 +45,48 @@ const action = async (ctx, next) => {
         );
         ctx.hello(context?.prompt);
     };
+    const switchSession = async () => {
+        let resp;
+        for (const session of ctx.session.sessions) {
+            if (session.id === ctx.session.sessionId) {
+                ctx.session.sessionId = session.id;
+                ctx.session.context = session.context;
+                session.touchedAt = now;
+                resp = session;
+                preSessionId !== ctx.session.sessionId
+                    && ctx.carry.threadInfo.push(`${EMIJI_FINISH} Thread switched: `
+                        + `\`${getLabel(findSession(ctx.session.sessionId))}\``);
+                break;
+            }
+        }
+        if (!resp) {
+            ctx.session.sessions.push(resp = {
+                id: resetSession(),
+                createdAt: now, touchedAt: now, context: {},
+            });
+            ctx.carry.threadInfo.push(`✨ Thread created: `
+                + `\`${getLabel(findSession(ctx.session.sessionId))}\``);
+            await ctx.clear();
+        }
+        ctx.carry.sessionId = ctx.session.sessionId;
+        ctx.carry.threadInfo.length && (ctx.carry.keyboards = keyboards);
+        return resp;
+    };
+    const defauleTitle = i => (ctx.session.sessions[i]?.context?.cmd
+        ? `\`${ctx.session.sessions[i].context.cmd}\` ` : 'Untitled thread '
+    ) + `(${new Date(ctx.session.sessions[i].createdAt).toLocaleString()})`;
+    const getLabel = i => ctx.session.sessions[i].label || defauleTitle(i);
+    const findSession = id => {
+        for (let i = 0; i < ctx.session.sessions.length; i++) {
+            if (ctx.session.sessions[i].id === utilitas.trim(id)) {
+                return i;
+            }
+        }
+    };
     const ok = async (message, options) => await ctx.ok(message, {
-        ...options || {}, ...options?.buttons ? {} : { keyboards }
+        ...options || {},
+        ...options?.buttons ? {} : (options?.keyboards || { keyboards }),
     });
-    // handle commands
     const sendList = async (names, lastMsgId) => {
         lastMsgId = lastMsgId || ctx.update?.callback_query?.message?.message_id;
         const message = `🧵 Thread${ctx.session.sessions.length > 0 ? 's' : ''}:`;
@@ -92,14 +102,29 @@ const action = async (ctx, next) => {
         });
         return await ok(message, { lastMessageId: lastMsgId, buttons });
     };
-    const switched = async preTitle => await ok(
-        `${preTitle ? `❎ Thread ended: \`${preTitle}\`.\n\n` : ''}` +
-        `${EMIJI_FINISH} Thread switched: \`${getLabel(findSession(ctx.session.sessionId))}\`.`
+    const switched = async (preTitle, newThread) => await ok(
+        `${preTitle ? `❎ Thread ended: \`${preTitle}\`\n\n` : ''}` + (newThread
+            ? '✨ Thread created' : `${EMIJI_FINISH} Thread switched`
+        ) + `: \`${getLabel(findSession(ctx.session.sessionId))}\``,
+        { pageBreak: true }
     );
+    // handle commands
     switch (ctx.cmd?.cmd) {
-        case 'clear': await ctx.clear(); break;
-        case 'clearall': resetSessions(); break;
-        case 'new': resetSession(); break;
+        case 'clearkb':
+            return await ok(EMIJI_FINISH, { keyboards: [] });
+        case 'clear':
+            ctx.carry.threadInfo.push(
+                `🆑 Thread cleared: \`${getLabel(findSession(ctx.session.sessionId))}\``
+            );
+            await ctx.clear();
+            break;
+        case 'clearall':
+            ctx.carry.threadInfo.push(`🔄 All threads have been cleared.`);
+            resetSessions();
+            break;
+        case 'new':
+            resetSession();
+            break;
         case 'list':
             const resp = await sendList();
             utilitas.ignoreErrFunc(async () => {
@@ -119,16 +144,18 @@ const action = async (ctx, next) => {
             let preTitle = '';
             ctx.session.sessions?.[id] && (preTitle = getLabel(id))
                 && (ctx.session.sessions.splice(id, 1));
+            const newThread = ctx.session.sessions.length === 0
             const sorted = ctx.session.sessions.slice().sort(
                 (x, y) => y.touchedAt - x.touchedAt
             );
             ctx.session.sessionId = sorted?.[0]?.id;
             await switchSession();
-            return await switched(preTitle);
+            return await switched(preTitle, newThread);
         case 'switch':
             ctx.session.sessionId = utilitas.trim(ctx.cmd.args);
             await switchSession();
-            return await sendList();
+            await sendList();
+            return await switched();
         case 'factory':
         case 'reset':
             await alan.resetSession(ctx.session.sessionId);
@@ -143,13 +170,13 @@ export const { name, run, priority, func, help, cmds, cmdx } = {
     run: true,
     priority: -8845,
     func: action,
-    help: '',
+    help: 'Thread management.',
     cmdx: {
-        new: 'Add a session.',
-        end: 'Delete a session.',
-        switch: 'Switch to a session.',
-        clear: 'Clear current AI conversation session and start a new one.',
-        clearall: 'Clear all AI conversation sessions.',
-        list: 'List all AI conversation sessions.',
+        new: 'Create a new thread.',
+        end: 'End current thread.',
+        switch: 'Switch to a thread. Usage: /switch `THREAD_ID`.',
+        clear: 'Clear current thread.',
+        clearall: 'Clear all threads.',
+        list: 'List all threads.',
     },
 };
