@@ -1,13 +1,17 @@
 import { alan, bot, uoid, utilitas } from 'utilitas';
 
-const EMIJI_FINISH = '☑️';
+const [EMIJI_FINISH, END, NEW, THREAD, CLR] = ['☑️', '❎', '✨', '🧵', '🆑'];
+
+const [CREATED, SWITCHED] = [
+    `{NEW} Thread created: `, `${EMIJI_FINISH} Thread switched: `
+];
 
 // moved to help and configs
 const keyboards = [[
-    { text: '/clear 🆑' },
-    { text: '/end ❎' },
-    { text: '/list 🧵' },
-    { text: '/new ✨' },
+    { text: `/clear ${CLR}` },
+    { text: `/end ${END}` },
+    { text: `/list ${THREAD}` },
+    { text: `/new ${NEW}` },
 ], [
     { text: '/polish ❇️' },
     { text: '/translate 🇨🇳' },
@@ -54,8 +58,8 @@ const action = async (ctx, next) => {
                 session.touchedAt = now;
                 resp = session;
                 preSessionId !== ctx.session.sessionId
-                    && ctx.carry.threadInfo.push(`${EMIJI_FINISH} Thread switched: `
-                        + `\`${getLabel(findSession(ctx.session.sessionId))}\``);
+                    && ctx.carry.threadInfo.push(SWITCHED
+                        + getLabel(findSession(ctx.session.sessionId)));
                 break;
             }
         }
@@ -64,8 +68,8 @@ const action = async (ctx, next) => {
                 id: resetSession(),
                 createdAt: now, touchedAt: now, context: {},
             });
-            ctx.carry.threadInfo.push(`✨ Thread created: `
-                + `\`${getLabel(findSession(ctx.session.sessionId))}\``);
+            ctx.carry.threadInfo.push(CREATED
+                + getLabel(findSession(ctx.session.sessionId)));
             await ctx.clear();
         }
         ctx.carry.sessionId = ctx.session.sessionId;
@@ -89,7 +93,7 @@ const action = async (ctx, next) => {
     });
     const sendList = async (names, lastMsgId) => {
         lastMsgId = lastMsgId || ctx.update?.callback_query?.message?.message_id;
-        const message = `🧵 Thread${ctx.session.sessions.length > 0 ? 's' : ''}:`;
+        const message = `{THREAD} Thread${ctx.session.sessions.length > 0 ? 's' : ''}:`;
         const buttons = ctx.session.sessions.map((x, i) => {
             names?.[x.id]
                 && (ctx.session.sessions[i].label = names[x.id])
@@ -102,20 +106,17 @@ const action = async (ctx, next) => {
         });
         return await ok(message, { lastMessageId: lastMsgId, buttons });
     };
-    const switched = async (preTitle, newThread) => await ok(
-        `${preTitle ? `❎ Thread ended: \`${preTitle}\`\n\n` : ''}` + (newThread
-            ? '✨ Thread created' : `${EMIJI_FINISH} Thread switched`
-        ) + `: \`${getLabel(findSession(ctx.session.sessionId))}\``,
-        { pageBreak: true }
-    );
+    const switched = async (preTitle, newThread) => await ok(`${preTitle
+        ? `${END} Thread ended: \`${preTitle}\`\n\n` : ''}`
+        + (newThread ? CREATED : SWITCHED)
+        + getLabel(findSession(ctx.session.sessionId)), { pageBreak: true });
     // handle commands
     switch (ctx.cmd?.cmd) {
         case 'clearkb':
             return await ok(EMIJI_FINISH, { keyboards: [] });
         case 'clear':
-            ctx.carry.threadInfo.push(
-                `🆑 Thread cleared: \`${getLabel(findSession(ctx.session.sessionId))}\``
-            );
+            ctx.carry.threadInfo.push(`${CLR} Thread cleared: `
+                + getLabel(findSession(ctx.session.sessionId)));
             await ctx.clear();
             break;
         case 'clearall':
@@ -166,7 +167,7 @@ const action = async (ctx, next) => {
 };
 
 export const { name, run, priority, func, help, cmds, cmdx } = {
-    name: 'session',
+    name: 'Thread',
     run: true,
     priority: -8845,
     func: action,
