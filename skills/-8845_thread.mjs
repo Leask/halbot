@@ -43,7 +43,7 @@ const action = async (ctx, next) => {
         );
         resetContext(context);
         const id = findSession(ctx.session.sessionId);
-        ctx.cmd.ignored = true;
+        ctx.cmd && (ctx.cmd.ignored = true);
         ctx.session.sessions?.[id] && (
             ctx.session.sessions[id].context = ctx.session.context
         );
