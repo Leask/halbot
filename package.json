@@ -43,7 +43,7 @@
     "js-tiktoken": "^1.0.12",
     "jsdom": "^24.1.1",
     "mime": "^4.0.4",
-    "mysql2": "^3.10.3",
+    "mysql2": "^3.11.0",
     "office-text-extractor": "^3.0.3",
     "ollama": "^0.5.6",
     "openai": "^4.53.2",
@@ -51,7 +51,7 @@
     "pgvector": "^0.2.0",
     "telegraf": "^4.16.3",
     "tesseract.js": "^5.1.0",
-    "utilitas": "^1997.1.4",
+    "utilitas": "^1997.1.6",
     "youtube-transcript": "^1.2.1"
   }
 }
