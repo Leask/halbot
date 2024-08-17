@@ -69,7 +69,7 @@ const action = async (ctx, next) => {
                 createdAt: now, touchedAt: now, context: {},
             });
             ctx.carry.threadInfo.push(CREATED
-                + getLabel(findSession(ctx.session.sessionId)));
+                + `\`${getLabel(findSession(ctx.session.sessionId))}\``);
             await ctx.clear();
         }
         ctx.carry.sessionId = ctx.session.sessionId;
@@ -106,17 +106,19 @@ const action = async (ctx, next) => {
         });
         return await ok(message, { lastMessageId: lastMsgId, buttons });
     };
-    const switched = async (preTitle, newThread) => await ok(`${preTitle
-        ? `${END} Thread ended: \`${preTitle}\`\n\n` : ''}`
+    const switched = async (preTitle, newThread) => await ok(
+        `${preTitle ? `${END} Thread ended: \`${preTitle}\`\n\n` : ''}`
         + (newThread ? CREATED : SWITCHED)
-        + getLabel(findSession(ctx.session.sessionId)), { pageBreak: true });
+        + `\`${getLabel(findSession(ctx.session.sessionId))}\``,
+        { pageBreak: true }
+    );
     // handle commands
     switch (ctx.cmd?.cmd) {
         case 'clearkb':
             return await ok(EMIJI_FINISH, { keyboards: [] });
         case 'clear':
-            ctx.carry.threadInfo.push(`${CLR} Thread cleared: `
-                + getLabel(findSession(ctx.session.sessionId)));
+            ctx.carry.threadInfo.push(`${CLR} Thread cleared: \``
+                + `${getLabel(findSession(ctx.session.sessionId))}\``);
             await ctx.clear();
             break;
         case 'clearall':
