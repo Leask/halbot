@@ -12,7 +12,7 @@ const action = async (ctx, next) => {
     if (!ctx.prompt && !ctx.carry.attachments.length) { return await next(); }
     const [YOU, msgs, tts, pms, extra]
         = [`${ctx.avatar} You:`, {}, {}, [], { buttons: [] }];
-    let [lastMsg, lastSent, references] = [null, 0, null];
+    let [lastMsg, lastSent, references, audio] = [null, 0, null, null];
     const packMsg = options => {
         const said = !options?.tts && ctx.result ? ctx.result : '';
         const packed = [
@@ -62,6 +62,7 @@ const action = async (ctx, next) => {
                     },
                 });
                 references = resp.references;
+                audio = resp.audio?.[0];
                 msgs[n] = ctx.session.config?.render === false
                     ? resp.text : resp.rendered;
                 tts[n] = ctx.selectedAi.length === 1
@@ -77,7 +78,7 @@ const action = async (ctx, next) => {
     }
     await Promise.all(pms);
     await ok({ final: true });
-    ctx.tts = packMsg({ tts: true });
+    ctx.tts = audio || packMsg({ tts: true });
     await next();
 };
 
