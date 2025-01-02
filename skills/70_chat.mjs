@@ -2,15 +2,17 @@ import { alan, bot, utilitas } from 'utilitas';
 
 const onProgress = { onProgress: true };
 const [joinL1, joinL2] = [a => a.join(LN2), a => a.join(LN2)];
-const enrich = name => name === 'VERTEX' ? 'Gemini' : name;
+const enrich = name => name; // Human readable name, eg: 'VERTEX' => 'Gemini'
 const log = content => utilitas.log(content, import.meta.url);
-const [BOT, BOTS, LN2]
-    = [`${bot.EMOJI_BOT} `, { ChatGPT: '⚛️', Gemini: '♊️', Mistral: 'Ⓜ️' }, '\n\n'];
+const [BOT, BOTS, LN2] = [`${bot.EMOJI_BOT} `, {
+    ChatGPT: '⚛️', Gemini: '♊️', Claude: '✴️', Mistral: 'Ⓜ️',
+}, '\n\n'];
 
 const action = async (ctx, next) => {
     if (!ctx.prompt) { return await next(); }
-    const [YOU, msgs, tts, pms, extra] = [`${ctx.avatar} You:`, {}, {}, [], {}];
-    let [lastMsg, lastSent] = [null, 0];
+    const [YOU, msgs, tts, pms, extra]
+        = [`${ctx.avatar} You:`, {}, {}, [], { buttons: [] }];
+    let [lastMsg, lastSent, references] = [null, 0, null];
     const packMsg = options => {
         const said = !options?.tts && ctx.result ? ctx.result : '';
         const packed = [
@@ -35,9 +37,14 @@ const action = async (ctx, next) => {
         )) { return; }
         [lastSent, lastMsg] = [curTime, curMsg];
         const cmd = ctx.session.context?.cmd;
-        options?.final && cmd && (extra.buttons = [{
-            label: `❎ End context: \`${cmd}\``, text: '/clear',
-        }]);
+        if (options?.final) {
+            (references?.links || []).map((x, i) => extra.buttons.push({
+                label: `${i + 1}. ${x.title}`, url: x.uri,
+            }));
+            cmd && (extra.buttons.push({
+                label: `❎ End context: \`${cmd}\``, text: '/clear',
+            }));
+        }
         return await ctx.ok(curMsg, {
             ...ctx.carry.keyboards ? { keyboards: ctx.carry.keyboards } : {},
             md: true, ...extra, ...options || {},
@@ -54,8 +61,9 @@ const action = async (ctx, next) => {
                         ctx.carry.threadInfo.length || await ok(onProgress);
                     },
                 });
-                msgs[n] = ctx.session.config?.render === true
-                    ? resp.rendered : resp.text;
+                references = resp.references;
+                msgs[n] = ctx.session.config?.render === false
+                    ? resp.text : resp.rendered;
                 tts[n] = ctx.selectedAi.length === 1
                     && !msgs[n].split('\n').some(x => /^\s*```/.test(x))
                     ? resp.spoken : '';

@@ -48,7 +48,7 @@ export const { name, run, priority, func, help, args } = {
         },
         ai: {
             type: 'string', short: 'a', default: '',
-            desc: "`(ChatGPT, Gemini, Mistral, @)` Select AI engine.",
+            desc: "`(ChatGPT, Gemini, Claude, Mistral, @)` Select AI engine.",
             validate: validateAi,
         },
         render: {

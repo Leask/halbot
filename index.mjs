@@ -37,30 +37,44 @@ const init = async (options) => {
     let embedding;
     // init ai engines
     if (options?.openaiApiKey || options?.chatGptApiKey) {
-        const apiKey = { apiKey: options?.openaiApiKey || options?.chatGptApiKey };
-        await alan.init({ ...apiKey, ...options, provider: 'OPENAI' });
+        await alan.init({
+            provider: 'OPENAI',
+            apiKey: options?.openaiApiKey || options?.chatGptApiKey,
+            ...options || {},
+        });
         ai['ChatGPT'] = {
-            engine: 'CHATGPT', priority: options?.chatGptPriority || 0, // ASSISTANT
+            engine: 'CHATGPT', priority: options?.chatGptPriority || 0,
         };
-        engines['CHATGPT'] = { // ASSISTANT
+        engines['CHATGPT'] = {
             // only support custom model while prompting
             model: options?.chatGptModel,
         };
     }
-    if (options?.googleCredentials && options?.googleProject) {
+    if (options?.googleApiKey) {
         await alan.init({
-            provider: 'VERTEX',
-            credentials: options.googleCredentials,
-            project: options.googleProject,
-            // only support custom model while initiating
-            model: options?.geminiModel,
+            provider: 'GEMINI', apiKey: options?.googleApiKey,
+            model: options?.geminiModel, // only support custom model while initiating
+            ...options || {},
         });
         ai['Gemini'] = {
-            engine: 'VERTEX', priority: options?.geminiPriority || 1,
+            engine: 'GEMINI', priority: options?.geminiPriority || 1,
         };
-        engines['VERTEX'] = {
+        engines['GEMINI'] = {
             // save for reference not for prompting
             model: options?.geminiModel,
+        };
+    }
+    if (options?.claudeApiKey) {
+        await alan.init({
+            provider: 'CLAUDE', apiKey: options?.claudeApiKey,
+            ...options || {},
+        });
+        ai['Claude'] = {
+            engine: 'CLAUDE', priority: options?.claudePriority || 2,
+        };
+        engines['CLAUDE'] = {
+            // only support custom model while prompting
+            model: options?.claudeModel,
         };
     }
     if (options?.mistralEnabled || options?.mistralEndpoint) {
@@ -68,7 +82,7 @@ const init = async (options) => {
             provider: 'OLLAMA', endpoint: options?.mistralEndpoint,
         });
         ai['Mistral'] = {
-            engine: 'OLLAMA', priority: options?.mistralPriority || 2,
+            engine: 'OLLAMA', priority: options?.mistralPriority || 3,
         };
         engines['OLLAMA'] = {
             // only support custom model while prompting
@@ -86,7 +100,7 @@ const init = async (options) => {
     } else if (options?.googleApiKey) {
         const apiKey = { apiKey: options.googleApiKey };
         await speech.init({ ...apiKey, provider: 'GOOGLE', ...speechOptions });
-        embedding = alan.createVertexEmbedding;
+        embedding = alan.createGeminiEmbedding;
     }
     // init vision engine
     const supportedMimeTypes = new Set(Object.values(engines).map(
