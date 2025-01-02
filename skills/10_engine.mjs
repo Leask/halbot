@@ -1,4 +1,4 @@
-import { bot, utilitas } from 'utilitas';
+import { alan, bot, utilitas } from 'utilitas';
 
 let configuredAi;
 
@@ -9,10 +9,31 @@ const action = async (ctx, next) => {
     ).sort((x, y) => x[1] - y[1]);
     ctx.firstAi = arrSort[0][0];
     switch (ctx.session.config?.ai) {
-        case '': ctx.selectedAi = [ctx.firstAi]; break;
         case '@': ctx.selectedAi = configuredAi; break;
-        default: ctx.selectedAi = [configuredAi.includes(ctx.session.config?.ai)
-            ? ctx.session.config?.ai : ctx.firstAi];
+        default:
+            ctx.selectedAi = [ctx.session.config?.ai];
+            const foundAi = configuredAi.includes(ctx.session.config?.ai);
+            if (foundAi) {
+            } else if (!ctx.collected?.length) {
+                ctx.selectedAi = [ctx.firstAi];
+            } else {
+                const supported = {};
+                for (const i of configuredAi) {
+                    const supportedMimeTypes = [
+                        ...alan.MODELS[ctx._.ai[i].model]?.supportedMimeTypes || [],
+                        ...alan.MODELS[ctx._.ai[i].model]?.supportedAudioTypes || [],
+                    ];
+                    for (const j of ctx.collected) {
+                        if (supportedMimeTypes.includes(j?.content?.mime_type)) {
+                            supported[i] || (supported[i] = 0);
+                            supported[i]++;
+                        }
+                    }
+                }
+                ctx.selectedAi = [Object.keys(supported).sort(
+                    (x, y) => supported[y] - supported[x]
+                )?.[0] || ctx.firstAi];
+            }
     }
     ctx.multiAi = ctx.selectedAi.length > 1;
     await next();

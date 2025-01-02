@@ -9,7 +9,7 @@ const [BOT, BOTS, LN2] = [`${bot.EMOJI_BOT} `, {
 }, '\n\n'];
 
 const action = async (ctx, next) => {
-    if (!ctx.prompt) { return await next(); }
+    if (!ctx.prompt && !ctx.carry.attachments.length) { return await next(); }
     const [YOU, msgs, tts, pms, extra]
         = [`${ctx.avatar} You:`, {}, {}, [], { buttons: [] }];
     let [lastMsg, lastSent, references] = [null, 0, null];

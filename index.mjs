@@ -91,6 +91,7 @@ const init = async (options) => {
     }
     assert(utilitas.countKeys(ai), 'No AI provider is configured.');
     await alan.initChat({ engines, sessions: options?.storage });
+    for (const i in ai) { ai[i].model = engines[ai[i].engine].model; }
     // init image, speech, embedding engines
     if (options?.openaiApiKey) {
         const apiKey = { apiKey: options.openaiApiKey };
@@ -102,10 +103,12 @@ const init = async (options) => {
         await speech.init({ ...apiKey, provider: 'GOOGLE', ...speechOptions });
         embedding = alan.createGeminiEmbedding;
     }
-    // init vision engine
+    // init vision / audio engine
     const supportedMimeTypes = new Set(Object.values(engines).map(
         x => alan.MODELS[x.model]
-    ).map(x => x.supportedMimeTypes || []).flat().map(x => x.toLowerCase()));
+    ).map(x => [
+        ...x.supportedMimeTypes || [], ...x.supportedAudioTypes || [],
+    ]).flat().map(x => x.toLowerCase()));
     if (options?.googleApiKey) {
         const apiKey = { apiKey: options.googleApiKey };
         await vision.init(apiKey);

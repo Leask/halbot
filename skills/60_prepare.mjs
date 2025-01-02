@@ -25,8 +25,9 @@ const action = async (ctx, next) => {
         x => String.isString(x.content)
     ).map(x => x.content).join('\n').split(' ').filter(x => x);
     ctx.prompt = (ctx.txt || '') + '\n\n';
-    while (await alan.countTokens(ctx.prompt) < maxInputTokens
-        && additionInfo.length) {
+    while (await alan.countTokens(
+        `${ctx.prompt}${additionInfo?.[0] || ''}`
+    ) < maxInputTokens && additionInfo.length) {
         ctx.prompt += ` ${additionInfo.shift()}`;
     }
     ctx.prompt = utilitas.trim(ctx.prompt);
