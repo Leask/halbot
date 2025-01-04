@@ -42,7 +42,7 @@ alt="Halbot live demo" width="240" height="180" border="10" /></a>
 - Realtime stream-style response, no more waiting.
 - Multimodal support for all supported models.
 - Audio input and output support for supported models, not just TTS.
-- Google `Search as a tool` support for Gemini 2.0.
+- Google `Search as a tool` support for [Gemini 2.0](https://ai.google.dev/gemini-api/docs/models/gemini-v2).
 - Markdown rendering
 - Reference rendering
 - Code block rendering, developers friendly.
@@ -72,14 +72,22 @@ All supported configuration fields:
     // REQUIRED, string.
     "telegramToken": "[[Telegram Bot API Token]]",
 
-    // Set some of these fields if you need ChatGPT, Whisper, Embedding features.
+    // Set some of these fields if you need Google's Gemini, TTS, STT, OCR, OBJECT_DETECT, Embedding features.
+    // OPTIONAL, string.
+    "googleApiKey": "[[Google Cloud / Gemini API Key]]",
+    // OPTIONAL, string, default: "gemini-pro-vision".
+    "geminiModel": "[[Custom Gemini Model ID]]",
+    // OPTIONAL, integer, default: 0.
+    "geminiPriority": "[[Custom Gemini Priority]]",
+
+    // Set some of these fields if you need OpenAI's ChatGPT, Whisper, Embedding features.
     // OPTIONAL, string.
     "openaiApiKey": "[[OpenAI API Key]]",
     // OPTIONAL, string.
     "openaiEndpoint": "[[Custom OpenAI API endpoint]]",
     // OPTIONAL, string, default: "gpt-3.5-turbo".
     "chatGptModel": "[[Custom ChatGPT Model ID]]",
-    // OPTIONAL, integer, default: 0.
+    // OPTIONAL, integer, default: 1.
     "chatGptPriority": "[[Custom ChatGPT Priority]]",
 
     // Set some of these fields if you need to use custom ChatGPT API.
@@ -88,29 +96,23 @@ All supported configuration fields:
     // OPTIONAL, string.
     "chatGptEndpoint": "[[Custom ChatGPT API endpoint]]",
 
-    // Set this field if you need Gemini features.
+    // Set some of these fields if you need Anthropic's Claude features.
     // OPTIONAL, string.
-    "googleCredentials": "[[Google Cloud Credentials]]",
-    // OPTIONAL, string.
-    "googleProject": "[[Google Cloud Project ID]]",
-    // OPTIONAL, string, default: "gemini-pro-vision".
-    "geminiModel": "[[Custom Gemini Model ID]]",
-    // OPTIONAL, integer, default: 1.
-    "geminiPriority": "[[Custom Gemini Priority]]",
+    "claudeApiKey": "[[Anthropic API Key]]",
+    // OPTIONAL, string, default: "claude".
+    "claudeModel": "[[Custom Claude Model ID]]",
+    // OPTIONAL, integer, default: 2.
+    "claudePriority": "[[Custom Claude Priority]]",
 
-    // Set this field if you need Mistral features.
+    // Set some of these fields if you need Mistral features.
     // OPTIONAL, boolean.
     "mistralEnabled": "[[Enable Mistral hosted by Ollama]]",
     // OPTIONAL, string.
     "mistralEndpoint": "[[Custom Mistral API endpoint]]",
     // OPTIONAL, string, default: "Mistral" (Mistral 7B).
     "mistralModel": "[[Custom Mistral Model ID]]",
-    // OPTIONAL, integer, default: 2.
+    // OPTIONAL, integer, default: 3.
     "mistralPriority": "[[Custom Mistral Priority]]",
-
-    // OPTIONAL, string.
-    // Set this field if you need Google's TTS/STT/OCR/OBJECT_DETECT/Embedding.
-    "googleApiKey": "[[Google Cloud API Key]]",
 
     // OPTIONAL, undefined || array of string.
     // To open the bot to PUBLIC, DO NOT set this field;
@@ -118,7 +120,7 @@ All supported configuration fields:
     "private": ["[[CHAT_ID]]", "[[GROUP_ID]]", "[[CHANNEL_ID]]", ...],
 
     // OPTIONAL, string.
-    // Set this field if you want to use a `magic word` to authenticate the bot.
+    // Set some of these fields if you want to use a `magic word` to authenticate the bot.
     "magicWord": "[[Your Magic Word here]]",
 
     // OPTIONAL, string.
@@ -147,6 +149,7 @@ All supported configuration fields:
     // support PostgreSQL, MariaDB/MySQL and Redis for now.
     // If omitted, the bot will use memory storage and sync to this file.
     // Example: (Compatibility: https://node-postgres.com/apis/pool)
+    // PostgreSQL is recommended for vector storage.
     "storage": {
         "provider": "POSTGRESQL",
         "host": "[[DATABASE HOST]]",
@@ -312,24 +315,6 @@ const config = {
 
 await halbot(config);
 ```
-
-## ❤️ Become a sponsor to `halbot`
-
-[For `$10/month`, you can access the official `halbot` service for a month](https://github.com/sponsors/Leask).
-
-You don't need to pay `$20/month` for ChatGPT tokens separately.
-
-`halbot` is stable. It's running on top of the latest `GPT-4` model. It has a better user experience than the official web app. You can access `halbot` from your favourite Telegram apps on your phone, tablet and computer.
-
-Additionally, `halbot` has a lot of built-in input parsers to maximize the ChatGPT engine's power.
-
-`halbot` can now parse webpages, YouTube videos, PDFs, images, Office documents, code files, and text files. And other parsers are coming soon.
-
-`halbot` integrates Text-to-Image service by DALL·E 3. You can ask it to draw what you want.
-
-`halbot` also supports Text-to-Speech and Speech-to-Text. You can `talk` to the AI engines to get help with your job.
-
-And remember, you can always use the codes in this repo to build your own `halbot` instant. This project will keep open source forever.
 
 ## Foundations
 
