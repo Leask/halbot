@@ -36,20 +36,6 @@ const init = async (options) => {
     ]);
     let embedding;
     // init ai engines
-    if (options?.openaiApiKey || options?.chatGptApiKey) {
-        await alan.init({
-            provider: 'OPENAI',
-            apiKey: options?.openaiApiKey || options?.chatGptApiKey,
-            ...options || {},
-        });
-        ai['ChatGPT'] = {
-            engine: 'CHATGPT', priority: options?.chatGptPriority || 0,
-        };
-        engines['CHATGPT'] = {
-            // only support custom model while prompting
-            model: options?.chatGptModel,
-        };
-    }
     if (options?.googleApiKey) {
         await alan.init({
             provider: 'GEMINI', apiKey: options?.googleApiKey,
@@ -57,11 +43,25 @@ const init = async (options) => {
             ...options || {},
         });
         ai['Gemini'] = {
-            engine: 'GEMINI', priority: options?.geminiPriority || 1,
+            engine: 'GEMINI', priority: options?.geminiPriority || 0,
         };
         engines['GEMINI'] = {
             // save for reference not for prompting
             model: options?.geminiModel,
+        };
+    }
+    if (options?.openaiApiKey || options?.chatGptApiKey) {
+        await alan.init({
+            provider: 'OPENAI',
+            apiKey: options?.openaiApiKey || options?.chatGptApiKey,
+            ...options || {},
+        });
+        ai['ChatGPT'] = {
+            engine: 'CHATGPT', priority: options?.chatGptPriority || 1,
+        };
+        engines['CHATGPT'] = {
+            // only support custom model while prompting
+            model: options?.chatGptModel,
         };
     }
     if (options?.claudeApiKey) {

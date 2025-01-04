@@ -57,14 +57,14 @@ const action = async (ctx, next) => {
                 const resp = await alan.talk(ctx.prompt, {
                     engine: ctx._.ai[n].engine, ...ctx.carry,
                     stream: async r => {
-                        msgs[n] = r[0].text;
+                        msgs[n] = r.text;
                         ctx.carry.threadInfo.length || await ok(onProgress);
                     },
                 });
                 references = resp.references;
-                audio = resp.audio?.[0];
+                audio = resp.audio;
                 msgs[n] = ctx.session.config?.render === false
-                    ? resp.text : resp.rendered;
+                    ? resp.text : resp.richText;
                 tts[n] = ctx.selectedAi.length === 1
                     && !msgs[n].split('\n').some(x => /^\s*```/.test(x))
                     ? resp.spoken : '';
