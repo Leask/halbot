@@ -41,7 +41,7 @@ alt="Halbot live demo" width="240" height="180" border="10" /></a>
 - Built-in support parsing webpages, `YouTube` videos, PDFs, images, Office documents, code files, text files...
 - Realtime stream-style response, no more waiting.
 - Multimodal support for all supported models.
-- automatically selects the optimal model for the task.
+- Automatically selects the optimal model for the task.
 - Audio input and output support for supported models, not just TTS.
 - Google `Search as a tool` support for [Gemini 2.0](https://ai.google.dev/gemini-api/docs/models/gemini-v2).
 - Markdown rendering
