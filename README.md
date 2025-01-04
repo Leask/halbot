@@ -320,6 +320,7 @@ await halbot(config);
 ## Foundations
 
 - `halbot` uses my other project [🧰 utilitas](https://github.com/Leask/utilitas) as the basic framework to handle all the dirty work.
+- `halbot` uses [🤖 utilitas.bot](https://github.com/Leask/utilitas/blob/master/lib/bot.mjs) as a Telegram bot engine.
 - `halbot` uses [🤖 utilitas.alan](https://github.com/Leask/utilitas/blob/master/lib/alan.mjs) to communicate with the AI engines.
 
 ## Contact me
