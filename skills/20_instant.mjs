@@ -50,8 +50,8 @@ export const { name, run, priority, func, help, cmds } = {
     ]),
     cmds: {
         all: 'Use all AI engines simultaneously: /all Say hello to all AIs!',
-        chatgpt: 'Use ⚛️ ChatGPT temporary: /chatgpt Say hello to ChatGPT!',
         gemini: 'Use ♊️ Gemini temporary: /gemini Say hello to Gemini!',
+        chatgpt: 'Use ⚛️ ChatGPT temporary: /chatgpt Say hello to ChatGPT!',
         claude: 'Use ✴️ Claude temporary: /claude Say hello to Claude!',
         mistral: 'Use Ⓜ️ Mistral temporary: /mistral Say hello to Mistral!',
     },
