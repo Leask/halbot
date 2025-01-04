@@ -24,9 +24,17 @@ const action = async (ctx, next) => {
                         ...alan.MODELS[ctx._.ai[i].model]?.supportedAudioTypes || [],
                     ];
                     for (const j of ctx.collected) {
+                        supported[i] || (supported[i] = 0);
                         if (supportedMimeTypes.includes(j?.content?.mime_type)) {
-                            supported[i] || (supported[i] = 0);
                             supported[i]++;
+                        }
+                        if (ctx.checkSpeech() && (alan.MODELS[
+                            ctx._.ai[i].model
+                        ]?.supportedAudioTypes || []).includes(j?.content?.mime_type)) {
+                            ctx.carry.audioMode = true;
+                            if (alan.MODELS[ctx._.ai[i].model]?.audio) {
+                                supported[i]++; // Priority for audio models
+                            }
                         }
                     }
                 }
