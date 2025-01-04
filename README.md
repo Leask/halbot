@@ -27,7 +27,8 @@ alt="Halbot live demo" width="240" height="180" border="10" /></a>
 
 - [Telegram](https://telegram.org/) Bot (`Telegram Bot` token required)
 - [ChatGPT](https://openai.com/blog/chatgpt) (`OpenAI` API key required)
-- [Gemini](https://cloud.google.com/vertex-ai/docs/generative-ai/multimodal/overview?hl=en) (`Google Vertex AI` credentials required)
+- [Gemini](https://ai.google.dev/gemini-api/docs) (Google `Gemini` API Key required)
+- [Claude](https://www.anthropic.com/api) (`Anthropic` API Key required)
 - [Mistral](https://mistral.ai/) (Install [Ollama](https://github.com/jmorganca/ollama) and enable `Mistral`)
 - Speech-to-Text (`OpenAI` or `Google Cloud` API key required, or your own engine)
 - Text-to-Speech (`OpenAI` or `Google Cloud` API key required, or your own engine)
@@ -39,9 +40,13 @@ alt="Halbot live demo" width="240" height="180" border="10" /></a>
 - `Middleware` style workflow, easy to extend.
 - Built-in support parsing webpages, `YouTube` videos, PDFs, images, Office documents, code files, text files...
 - Realtime stream-style response, no more waiting.
-- Markdown rendering for GhatGPT
-- Reference rendering for Bing Chat
+- Multimodal support for all supported models.
+- Audio input and output support for supported models, not just TTS.
+- Google `Search as a tool` support for Gemini 2.0.
+- Markdown rendering
+- Reference rendering
 - Code block rendering, developers friendly.
+- Threaded conversation support.
 - ESM from the ground up
 
 ## Basic usage
