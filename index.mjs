@@ -128,7 +128,7 @@ const init = async (options) => {
         info: options?.info || info,
         magicWord: options?.magicWord,
         private: options?.private,
-        provider: 'telegram',
+        botProvider: 'telegram',
         session: options?.storage,
         skillPath: options?.skillPath || skillPath,
         speech: (options?.openaiApiKey || options?.googleApiKey) && speech,
