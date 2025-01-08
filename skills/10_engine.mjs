@@ -5,6 +5,7 @@ const NAME_HACK = {
 };
 
 const NAME_HACK_REVERSE = utilitas.reverseKeyValues(NAME_HACK);
+const AI_CMD = '/set --ai=';
 
 let configuredAi;
 
@@ -14,9 +15,11 @@ const action = async (ctx, next) => {
         k => [k, ctx._.ai[k].priority]
     ).sort((x, y) => x[1] - y[1]);
     ctx.firstAi = arrSort[0][0];
-    if (ctx.carry?.keyboards?.length) {
+    if (ctx.carry?.keyboards?.length && !ctx.carry.keyboards.find(
+        x => x.find(y => y.text.includes(AI_CMD))
+    )) {
         ctx.carry.keyboards.unshift(configuredAi.slice(0, 3).map(
-            x => ({ text: `/set --ai=${NAME_HACK[x] || x}` })
+            x => ({ text: `${AI_CMD}${NAME_HACK[x] || x}` })
         ));
     }
     switch (ctx.session.config?.ai) {
