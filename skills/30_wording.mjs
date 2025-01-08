@@ -56,9 +56,7 @@ export const { name, run, priority, func, cmds, help } = {
         '¶ Set your default language.',
         'Example 1: /lang Français',
         '¶ Prompt the AI engine to translate or polish your text.',
-        'If `TO_LANG` is not specified, `config.lang` is used by default.',
-        "If `config.lang` not found, the bot's default language is used.",
-        'If bot has no default language, English is used by default.',
+        "Fallback order: `TO_LANG`, `config.lang`, `bot's lang`, `English`.",
         'Example 2: /translate Chinese',
     ]),
     cmds: {

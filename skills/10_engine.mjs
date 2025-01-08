@@ -1,5 +1,11 @@
 import { alan, bot, utilitas } from 'utilitas';
 
+const NAME_HACK = {
+    'ChatGPT': '⚛️', 'Gemini': '♊️', 'Claude': '✴️', 'Mistral': 'Ⓜ️',
+};
+
+const NAME_HACK_REVERSE = utilitas.reverseKeyValues(NAME_HACK);
+
 let configuredAi;
 
 const action = async (ctx, next) => {
@@ -8,6 +14,11 @@ const action = async (ctx, next) => {
         k => [k, ctx._.ai[k].priority]
     ).sort((x, y) => x[1] - y[1]);
     ctx.firstAi = arrSort[0][0];
+    if (ctx.carry?.keyboards?.length) {
+        ctx.carry.keyboards.unshift(configuredAi.slice(0, 3).map(
+            x => ({ text: `/set --ai=${NAME_HACK[x] || x}` })
+        ));
+    }
     switch (ctx.session.config?.ai) {
         case '@': ctx.selectedAi = configuredAi; break;
         default:
@@ -49,6 +60,7 @@ const action = async (ctx, next) => {
 
 const validateAi = val => {
     assert(configuredAi, 'Preparing data for this option. Please try later.');
+    NAME_HACK_REVERSE[val] && (val = NAME_HACK_REVERSE[val]);
     for (let name of [...configuredAi, '', '@']) {
         if (utilitas.insensitiveCompare(val, name)) { return name; }
     }
