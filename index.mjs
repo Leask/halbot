@@ -86,7 +86,7 @@ const init = async (options) => {
         };
         engines['OLLAMA'] = {
             // only support custom model while prompting
-            model: options?.ollamaModel,
+            model: options?.ollamaModel || alan.DEFAULT_MODELS['OLLAMA'],
         };
     }
     assert(utilitas.countKeys(ai), 'No AI provider is configured.');

@@ -2,11 +2,15 @@ import { alan, bot, utilitas } from 'utilitas';
 
 const onProgress = { onProgress: true };
 const [joinL1, joinL2] = [a => a.join(LN2), a => a.join(LN2)];
-const enrich = name => name; // Human readable name, eg: 'VERTEX' => 'Gemini'
 const log = content => utilitas.log(content, import.meta.url);
 const [BOT, BOTS, LN2] = [`${bot.EMOJI_BOT} `, {
-    ChatGPT: '⚛️', Gemini: '♊️', Claude: '✴️', Ollama: '🦙',
+    ChatGPT: '⚛️', Gemini: '♊️', Claude: '✴️', Ollama: '🦙', 'DeepSeek-R1': '🐬',
 }, '\n\n'];
+
+const enrich = (name, ctx) => {
+    const m = ctx._.ai[name]?.model;
+    return m ? ` | ${BOTS[m] ? `${BOTS[m]} ` : ''}${m}` : '';
+};
 
 const action = async (ctx, next) => {
     if (!ctx.prompt && !ctx.carry.attachments.length) { return await next(); }
@@ -25,7 +29,7 @@ const action = async (ctx, next) => {
             pure.push(content);
             packed.push(joinL2([
                 ...(ctx.multiAi || !ctx.isDefaultAi(n) || said) && !options?.tts
-                    ? [`${BOTS[n]} ${enrich(n)}:`] : [], content
+                    ? [`${BOTS[n]} ${n}${enrich(n, ctx)}:`] : [], content
             ]));
         });
         return options?.tts && !pure.join('').trim().length ? '' : joinL1(packed);
