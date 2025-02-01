@@ -79,7 +79,7 @@ const init = async (options) => {
     }
     if (options?.ollamaEnabled || options?.ollamaEndpoint) {
         await alan.init({
-            provider: 'OLLAMA', endpoint: options?.ollamaEndpoint,
+            provider: 'OLLAMA', host: options?.ollamaEndpoint,
         });
         ai['Ollama'] = {
             engine: 'OLLAMA', priority: options?.ollamaPriority || 3,
