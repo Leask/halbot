@@ -29,11 +29,11 @@ const action = async (ctx, next) => {
             ctx.selectedAi = ['Claude'];
             ctx.hello(ctx.cmd.args);
             break;
-        case 'mistral':
-            if (!utilitas.insensitiveHas(allAi, 'mistral')) {
-                return await ctx.er('Mistral is not available.');
+        case 'ollama':
+            if (!utilitas.insensitiveHas(allAi, 'ollama')) {
+                return await ctx.er('Ollama is not available.');
             }
-            ctx.selectedAi = ['Mistral'];
+            ctx.selectedAi = ['Ollama'];
             ctx.hello(ctx.cmd.args);
             break;
     }
@@ -53,6 +53,6 @@ export const { name, run, priority, func, help, cmds } = {
         gemini: 'Use ♊️ Gemini temporary: /gemini Say hello to Gemini!',
         chatgpt: 'Use ⚛️ ChatGPT temporary: /chatgpt Say hello to ChatGPT!',
         claude: 'Use ✴️ Claude temporary: /claude Say hello to Claude!',
-        mistral: 'Use Ⓜ️ Mistral temporary: /mistral Say hello to Mistral!',
+        ollama: 'Use 🦙 Ollama temporary: /ollama Say hello to Ollama!',
     },
 };

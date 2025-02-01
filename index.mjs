@@ -77,16 +77,16 @@ const init = async (options) => {
             model: options?.claudeModel,
         };
     }
-    if (options?.mistralEnabled || options?.mistralEndpoint) {
+    if (options?.ollamaEnabled || options?.ollamaEndpoint) {
         await alan.init({
-            provider: 'OLLAMA', endpoint: options?.mistralEndpoint,
+            provider: 'OLLAMA', endpoint: options?.ollamaEndpoint,
         });
-        ai['Mistral'] = {
-            engine: 'OLLAMA', priority: options?.mistralPriority || 3,
+        ai['Ollama'] = {
+            engine: 'OLLAMA', priority: options?.ollamaPriority || 3,
         };
         engines['OLLAMA'] = {
             // only support custom model while prompting
-            model: options?.mistralModel,
+            model: options?.ollamaModel,
         };
     }
     assert(utilitas.countKeys(ai), 'No AI provider is configured.');

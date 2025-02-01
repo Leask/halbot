@@ -3,7 +3,7 @@
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
 [![Node.js Package](https://github.com/Leask/halbot/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/Leask/halbot/actions/workflows/npm-publish.yml)
 
-Just another `Gemini` / `ChatGPT` / `Claude` / `Mistral (by ollama)` Telegram bob, which is simple design, easy to use, extendable and fun.
+Just another `Gemini` / `ChatGPT` / `Claude` / `Ollama` Telegram bob, which is simple design, easy to use, extendable and fun.
 
 Live demo, click to watch on YouTube:
 
@@ -29,7 +29,7 @@ alt="Halbot live demo" width="240" height="180" border="10" /></a>
 - [ChatGPT](https://openai.com/blog/chatgpt) (`OpenAI` API key required)
 - [Gemini](https://ai.google.dev/gemini-api/docs) (Google `Gemini` API Key required)
 - [Claude](https://www.anthropic.com/api) (`Anthropic` API Key required)
-- [Mistral](https://mistral.ai/) (Install [Ollama](https://github.com/jmorganca/ollama) and enable `Mistral`)
+- [Ollama](https://github.com/jmorganca/ollama) (Install `Ollama` and serve your model)
 - Speech-to-Text (`OpenAI` or `Google Cloud` API key required, or your own engine)
 - Text-to-Speech (`OpenAI` or `Google Cloud` API key required, or your own engine)
 - Text-to-Image by DALL·E (`OpenAI` API key required, or your own engine)
@@ -105,15 +105,15 @@ All supported configuration fields:
     // OPTIONAL, integer, default: 2.
     "claudePriority": "[[Custom Claude Priority]]",
 
-    // Set some of these fields if you need Mistral features.
+    // Set some of these fields if you need Ollama features.
     // OPTIONAL, boolean.
-    "mistralEnabled": "[[Enable Mistral hosted by Ollama]]",
+    "ollamaEnabled": "[[Enable Ollama API]]",
     // OPTIONAL, string.
-    "mistralEndpoint": "[[Custom Mistral API endpoint]]",
-    // OPTIONAL, string, default: "Mistral" (Mistral 7B).
-    "mistralModel": "[[Custom Mistral Model ID]]",
+    "ollamaEndpoint": "[[Custom Ollama API endpoint]]",
+    // OPTIONAL, string, default: "DeepSeek-R1" (DeepSeek-R1 7B).
+    "ollamaModel": "[[Custom Ollama Model ID]]",
     // OPTIONAL, integer, default: 3.
-    "mistralPriority": "[[Custom Mistral Priority]]",
+    "ollamaPriority": "[[Custom Ollama Priority]]",
 
     // OPTIONAL, undefined || array of string.
     // To open the bot to PUBLIC, DO NOT set this field;

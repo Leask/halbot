@@ -1,7 +1,7 @@
 import { alan, bot, utilitas } from 'utilitas';
 
 const NAME_HACK = {
-    'ChatGPT': '⚛️', 'Gemini': '♊️', 'Claude': '✴️', 'Mistral': 'Ⓜ️',
+    'ChatGPT': '⚛️', 'Gemini': '♊️', 'Claude': '✴️', 'Ollama': '🦙',
 };
 
 const NAME_HACK_REVERSE = utilitas.reverseKeyValues(NAME_HACK);
@@ -92,7 +92,7 @@ export const { name, run, priority, func, help, args } = {
         },
         ai: {
             type: 'string', short: 'a', default: '',
-            desc: "`(ChatGPT, Gemini, Claude, Mistral, @)` Select AI engine.",
+            desc: "`(ChatGPT, Gemini, Claude, Ollama, @)` Select AI engine.",
             validate: validateAi,
         },
         render: {

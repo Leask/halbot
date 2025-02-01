@@ -5,7 +5,7 @@ const [joinL1, joinL2] = [a => a.join(LN2), a => a.join(LN2)];
 const enrich = name => name; // Human readable name, eg: 'VERTEX' => 'Gemini'
 const log = content => utilitas.log(content, import.meta.url);
 const [BOT, BOTS, LN2] = [`${bot.EMOJI_BOT} `, {
-    ChatGPT: '⚛️', Gemini: '♊️', Claude: '✴️', Mistral: 'Ⓜ️',
+    ChatGPT: '⚛️', Gemini: '♊️', Claude: '✴️', Ollama: '🦙',
 }, '\n\n'];
 
 const action = async (ctx, next) => {
