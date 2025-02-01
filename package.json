@@ -52,7 +52,6 @@
     "pgvector": "^0.2.0",
     "telegraf": "^4.16.3",
     "tesseract.js": "^6.0.0",
-    "utilitas": "^1998.1.20",
     "youtube-transcript": "^1.2.1"
   }
 }
