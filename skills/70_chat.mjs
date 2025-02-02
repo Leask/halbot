@@ -55,29 +55,29 @@ const action = async (ctx, next) => {
     };
     ctx.carry.threadInfo.length || await ok(onProgress);
     for (let n of ctx.selectedAi) {
-        pms.push((async () => {
+        pms.push((async ai => {
             try {
                 const resp = await alan.talk(ctx.prompt, {
-                    engine: ctx._.ai[n].engine, ...ctx.carry,
+                    engine: ctx._.ai[ai].engine, ...ctx.carry,
                     stream: async r => {
-                        msgs[n] = r.text;
+                        msgs[ai] = r.text;
                         ctx.carry.threadInfo.length || await ok(onProgress);
                     },
                 });
                 references = resp.references;
                 audio = resp.audio;
-                msgs[n] = ctx.session.config?.render === false
+                msgs[ai] = ctx.session.config?.render === false
                     ? resp.text : resp.richText;
-                tts[n] = ctx.selectedAi.length === 1
-                    && !msgs[n].split('\n').some(x => /^\s*```/.test(x))
+                tts[ai] = ctx.selectedAi.length === 1
+                    && !msgs[ai].split('\n').some(x => /^\s*```/.test(x))
                     ? resp.spoken : '';
                 return resp;
             } catch (err) {
-                msgs[n] = err?.message || err;
-                tts[n] = msgs[n];
+                msgs[ai] = err?.message || err;
+                tts[ai] = msgs[ai];
                 log(err);
             }
-        })());
+        })(n));
     }
     await Promise.all(pms);
     await ok({ final: true });
