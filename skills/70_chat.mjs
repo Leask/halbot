@@ -9,7 +9,7 @@ const [BOT, BOTS, LN2] = [`${bot.EMOJI_BOT} `, {
 
 const enrich = (name, ctx) => {
     const m = ctx._.ai[name]?.model;
-    return m ? ` | ${BOTS[m] ? `${BOTS[m]} ` : ''}${m}` : '';
+    return m ? ` ${BOTS[m] ? `| ${BOTS[m]} ${m}` : `(${m})`}` : '';
 };
 
 const action = async (ctx, next) => {
@@ -27,12 +27,11 @@ const action = async (ctx, next) => {
         ctx.selectedAi.map(n => {
             const content = source[n] || '';
             pure.push(content);
-            packed.push(joinL2([
-                ...(ctx.multiAi || !ctx.isDefaultAi(n) || said) && !options?.tts
-                    ? [`${BOTS[n]} ${n}${enrich(n, ctx)}:`] : [], content
-            ]));
+            packed.push(joinL2([...options?.tts ? [] : [
+                `${BOTS[n]} ${n}${enrich(n, ctx)}:`
+            ], content]));
         });
-        return options?.tts && !pure.join('').trim().length ? '' : joinL1(packed);
+        return pure.join('').trim().length ? joinL1(packed) : '';
     };
     const ok = async options => {
         const [curTime, curMsg] = [Date.now(), packMsg(options)];
