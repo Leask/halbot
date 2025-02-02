@@ -5,7 +5,8 @@ const action = async (ctx, next) => {
     switch (ctx.cmd.cmd) {
         case 'all':
             ctx.selectedAi = allAi;
-            ctx.multiAi = ctx.selectedAi.length > 1;
+            // grep 'ctx.multiAi' before uncommenting the following line
+            // ctx.multiAi = ctx.selectedAi.length > 1;
             ctx.hello(ctx.cmd.args);
             break;
         case 'chatgpt':

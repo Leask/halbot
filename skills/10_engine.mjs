@@ -57,7 +57,8 @@ const action = async (ctx, next) => {
                 )?.[0] || ctx.firstAi];
             }
     }
-    ctx.multiAi = ctx.selectedAi.length > 1;
+    // grep 'ctx.multiAi' before uncommenting the following line
+    // ctx.multiAi = ctx.selectedAi.length > 1;
     await next();
 };
 
