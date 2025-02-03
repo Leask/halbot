@@ -33,7 +33,7 @@ alt="Halbot live demo" width="240" height="180" border="10" /></a>
 - Speech-to-Text (`OpenAI` or `Google Cloud` API key required, or your own engine)
 - Text-to-Speech (`OpenAI` or `Google Cloud` API key required, or your own engine)
 - Text-to-Image by DALL·E (`OpenAI` API key required, or your own engine)
-- OCR/OBJECT_DETECT (`Google Cloud` API key required, or your own engine)
+- OCR/OBJECT_DETECT (`OpenAI` or `Google Cloud` API key required, or your own engine)
 - Feeding webpage and [YouTube](https://www.youtube.com/) to enhance your prompt
 - Custom prompt and [🧠 Awesome ChatGPT Prompts](https://github.com/f/awesome-chatgpt-prompts) at your fingertips
 - Support `private` and `public` mode, with multiple authenticate methods.
