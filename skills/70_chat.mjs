@@ -3,19 +3,16 @@ import { alan, bot, utilitas } from 'utilitas';
 const onProgress = { onProgress: true };
 const [joinL1, joinL2] = [a => a.join(LN2), a => a.join(LN2)];
 const log = content => utilitas.log(content, import.meta.url);
+const enrich = m => m ? ` ${BOTS[m] ? `| ${BOTS[m]} ${m}` : `(${m})`}` : '';
 const [BOT, BOTS, LN2] = [`${bot.EMOJI_BOT} `, {
     ChatGPT: '⚛️', Gemini: '♊️', Claude: '✴️', Ollama: '🦙', 'DeepSeek-R1': '🐳',
 }, '\n\n'];
 
-const enrich = (name, ctx) => {
-    const m = ctx._.ai[name]?.model;
-    return m ? ` ${BOTS[m] ? `| ${BOTS[m]} ${m}` : `(${m})`}` : '';
-};
 
 const action = async (ctx, next) => {
     if (!ctx.prompt && !ctx.carry.attachments.length) { return await next(); }
-    const [YOU, msgs, tts, pms, extra]
-        = [`${ctx.avatar} You:`, {}, {}, [], { buttons: [] }];
+    const [YOU, msgs, tts, rsm, pms, extra]
+        = [`${ctx.avatar} You:`, {}, {}, {}, [], { buttons: [] }];
     let [lastMsg, lastSent, references, audio] = [null, 0, null, null];
     const packMsg = options => {
         const said = !options?.tts && ctx.result ? ctx.result : '';
@@ -28,7 +25,7 @@ const action = async (ctx, next) => {
             const content = source[n] || '';
             pure.push(content);
             packed.push(joinL2([...options?.tts ? [] : [
-                `${BOTS[n]} ${n}${enrich(n, ctx)}:`
+                `${BOTS[n]} ${n}${enrich(rsm[n])}:`
             ], content]));
         });
         return pure.join('').trim().length ? joinL1(packed) : '';
@@ -54,7 +51,7 @@ const action = async (ctx, next) => {
         });
     };
     ctx.carry.threadInfo.length || await ok(onProgress);
-    for (let n of ctx.selectedAi) {
+    for (const n of ctx.selectedAi) {
         pms.push((async ai => {
             try {
                 const resp = await alan.talk(ctx.prompt, {
@@ -71,10 +68,12 @@ const action = async (ctx, next) => {
                 tts[ai] = ctx.selectedAi.length === 1
                     && !msgs[ai].split('\n').some(x => /^\s*```/.test(x))
                     ? resp.spoken : '';
+                rsm[ai] = resp.model;
                 return resp;
             } catch (err) {
-                msgs[ai] = err?.message || err;
-                tts[ai] = msgs[ai];
+                msgs[ai] = `⚠️ ${err?.message || err}`;
+                tts[ai] = null;
+                rsm[ai] = null;
                 log(err);
             }
         })(n));
