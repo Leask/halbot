@@ -1,4 +1,4 @@
-import { alan, bot, image, shot, speech, utilitas, vision } from 'utilitas';
+import { alan, bot, image, shot, speech, utilitas } from 'utilitas';
 import { parse } from 'csv-parse/sync';
 
 await utilitas.locate(utilitas.__(import.meta.url, 'package.json'));
@@ -29,40 +29,51 @@ const fetchPrompts = async () => {
 
 const init = async (options) => {
     assert(options?.telegramToken, 'Telegram Bot API Token is required.');
-    const [pkg, ai, _speech, speechOptions, engines]
-        = [await utilitas.which(), {}, {}, { tts: true, stt: true }, {}];
+    const [pkg, ai, _speech, speechOptions, engines, vision]
+        = [await utilitas.which(), {}, {}, { tts: true, stt: true }, {}, {}];
     const info = bot.lines([
         `[${bot.EMOJI_BOT} ${pkg.title}](${pkg.homepage})`, pkg.description
     ]);
     let embedding;
     // init ai engines
-    if (options?.openaiApiKey || options?.chatGptApiKey) {
-        await alan.init({
-            provider: 'OPENAI',
-            apiKey: options?.openaiApiKey || options?.chatGptApiKey,
-            ...options || {},
-        });
+    // use AI vision, AI stt if ChatGPT or Gemini is enabled
+    if (options?.openaiApiKey || options?.googleApiKey) {
+        vision.read = alan.distillFile;
+        vision.see = alan.distillFile;
+        _speech.stt = alan.distillFile;
+    }
+    // use openai embedding, dall-e, tts if openai is enabled
+    if (options?.openaiApiKey) {
+        const apiKey = { apiKey: options.openaiApiKey };
+        await alan.init({ provider: 'OPENAI', ...apiKey, ...options || {} });
         ai['ChatGPT'] = {
             engine: 'CHATGPT', priority: options?.chatGptPriority || 0,
-        };
-        engines['CHATGPT'] = {
-            // only support custom model while prompting
-            model: options?.chatGptModel,
-        };
+        }; // only support custom model while prompting:
+        engines['CHATGPT'] = { model: options?.chatGptModel, };
+        embedding = alan.createOpenAIEmbedding;
+        await image.init(apiKey);
+        await speech.init({ ...apiKey, provider: 'OPENAI', ...speechOptions });
+        _speech.tts = speech.tts;
     }
+    // use gemini embedding if gemini is enabled and chatgpt is not enabled
+    // use google tts if google api key is ready
     if (options?.googleApiKey) {
-        await alan.init({
-            provider: 'GEMINI', apiKey: options?.googleApiKey,
-            model: options?.geminiModel, // only support custom model while initiating
-            ...options || {},
+        const apiKey = { apiKey: options.googleApiKey };
+        await alan.init({ // only support custom model while initiating:
+            provider: 'GEMINI', ...apiKey,
+            model: options?.geminiModel, ...options || {},
         });
         ai['Gemini'] = {
             engine: 'GEMINI', priority: options?.geminiPriority || 1,
-        };
-        engines['GEMINI'] = {
-            // save for reference not for prompting
-            model: options?.geminiModel,
-        };
+        }; // save for reference not for prompting:
+        engines['GEMINI'] = { model: options?.geminiModel };
+        embedding || (embedding = alan.createGeminiEmbedding);
+        if (!_speech.tts) {
+            await speech.init({
+                ...apiKey, provider: 'GOOGLE', ...speechOptions,
+            });
+            _speech.tts = speech.tts;
+        }
     }
     if (options?.claudeApiKey) {
         await alan.init({
@@ -71,11 +82,8 @@ const init = async (options) => {
         });
         ai['Claude'] = {
             engine: 'CLAUDE', priority: options?.claudePriority || 2,
-        };
-        engines['CLAUDE'] = {
-            // only support custom model while prompting
-            model: options?.claudeModel,
-        };
+        }; // only support custom model while prompting:
+        engines['CLAUDE'] = { model: options?.claudeModel };
     }
     if (options?.ollamaEnabled || options?.ollamaEndpoint) {
         await alan.init({
@@ -92,27 +100,12 @@ const init = async (options) => {
     assert(utilitas.countKeys(ai), 'No AI provider is configured.');
     await alan.initChat({ engines, sessions: options?.storage });
     for (const i in ai) { ai[i].model = engines[ai[i].engine].model; }
-    // init image, speech, embedding engines
-    if (options?.openaiApiKey) {
-        const apiKey = { apiKey: options.openaiApiKey };
-        await image.init(apiKey);
-        await speech.init({ ...apiKey, provider: 'OPENAI', ...speechOptions });
-        embedding = alan.createOpenAIEmbedding;
-    } else if (options?.googleApiKey) {
-        const apiKey = { apiKey: options.googleApiKey };
-        await speech.init({ ...apiKey, provider: 'GOOGLE', ...speechOptions });
-        embedding = alan.createGeminiEmbedding;
-    }
-    // init vision / audio engine
+    // config multimodal engines
     const supportedMimeTypes = new Set(Object.values(engines).map(
         x => alan.MODELS[x.model]
     ).map(x => [
         ...x.supportedMimeTypes || [], ...x.supportedAudioTypes || [],
     ]).flat().map(x => x.toLowerCase()));
-    if (options?.googleApiKey) {
-        const apiKey = { apiKey: options.googleApiKey };
-        await vision.init(apiKey);
-    }
     // init bot
     const _bot = await bot.init({
         args: options?.args,
@@ -131,8 +124,7 @@ const init = async (options) => {
         botProvider: 'telegram',
         session: options?.storage,
         skillPath: options?.skillPath || skillPath,
-        speech: (options?.openaiApiKey || options?.googleApiKey) && speech,
-        vision: options?.googleApiKey && vision,
+        speech: _speech, vision,
     });
     _bot._.ai = ai;                                                             // Should be an array of a map of AIs.
     _bot._.lang = options?.lang || 'English';

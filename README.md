@@ -91,12 +91,6 @@ All supported configuration fields:
     // OPTIONAL, integer, default: 1.
     "chatGptPriority": "[[Custom ChatGPT Priority]]",
 
-    // Set some of these fields if you need to use custom ChatGPT API.
-    // OPTIONAL, string.
-    "chatGptApiKey": "[[Custom ChatGPT API Key]]",
-    // OPTIONAL, string.
-    "chatGptEndpoint": "[[Custom ChatGPT API endpoint]]",
-
     // Set some of these fields if you need Anthropic's Claude features.
     // OPTIONAL, string.
     "claudeApiKey": "[[Anthropic API Key]]",
