@@ -3,11 +3,11 @@ import { alan, bot, utilitas } from 'utilitas';
 const onProgress = { onProgress: true };
 const [joinL1, joinL2] = [a => a.join(LN2), a => a.join(LN2)];
 const log = content => utilitas.log(content, import.meta.url);
-const enrich = m => m ? ` ${BOTS[m] ? `| ${BOTS[m]} ${m}` : `(${m})`}` : '';
+const enrich = m => m ? ` ${BOTS[m.split(':')[0]]
+    ? `| ${BOTS[m.split(':')[0]]} ${m}` : `(${m})`}` : '';
 const [BOT, BOTS, LN2] = [`${bot.EMOJI_BOT} `, {
-    ChatGPT: '⚛️', Gemini: '♊️', Claude: '✴️', Ollama: '🦙', 'DeepSeek-R1': '🐳',
+    ChatGPT: '⚛️', Gemini: '♊️', Claude: '✴️', Ollama: '🦙', 'deepseek-r1': '🐳',
 }, '\n\n'];
-
 
 const action = async (ctx, next) => {
     if (!ctx.prompt && !ctx.carry.attachments.length) { return await next(); }
