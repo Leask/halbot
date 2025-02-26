@@ -1,5 +1,5 @@
-import { alan, bot, image, shot, speech, utilitas } from 'utilitas';
 import { parse } from 'csv-parse/sync';
+import { alan, bot, image, shot, speech, utilitas } from 'utilitas';
 
 await utilitas.locate(utilitas.__(import.meta.url, 'package.json'));
 const log = content => utilitas.log(content, 'halbot');
@@ -75,15 +75,26 @@ const init = async (options) => {
             _speech.tts = speech.tts;
         }
     }
-    if (options?.claudeApiKey) {
+    if (options?.claudeApiKey || (options?.claudeCredentials && options?.claudeProjectId)) {
         await alan.init({
             provider: 'CLAUDE', apiKey: options?.claudeApiKey,
-            ...options || {},
+            credentials: options?.claudeCredentials,
+            projectId: options?.claudeProjectId, ...options || {},
         });
         ai['Claude'] = {
             engine: 'CLAUDE', priority: options?.claudePriority || 2,
         }; // only support custom model while prompting:
         engines['CLAUDE'] = { model: options?.claudeModel };
+    }
+    if (options?.azureApiKey && options?.azureEndpoint) {
+        await alan.init({
+            provider: 'Azure', apiKey: options?.azureApiKey,
+            baseURL: options?.azureEndpoint, ...options || {},
+        });
+        ai['Azure'] = {
+            engine: 'AZURE', priority: options?.azurePriority || 3,
+        }; // only support custom model while prompting:
+        engines['AZURE'] = { model: options?.azureModel };
     }
     if (options?.ollamaEnabled || options?.ollamaEndpoint) {
         await alan.init({

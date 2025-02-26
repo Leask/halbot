@@ -5,8 +5,6 @@ const action = async (ctx, next) => {
     switch (ctx.cmd.cmd) {
         case 'all':
             ctx.selectedAi = allAi;
-            // grep 'ctx.multiAi' before uncommenting the following line
-            // ctx.multiAi = ctx.selectedAi.length > 1;
             ctx.hello(ctx.cmd.args);
             break;
         case 'chatgpt':
@@ -28,6 +26,13 @@ const action = async (ctx, next) => {
                 return await ctx.er('Claude is not available.');
             }
             ctx.selectedAi = ['Claude'];
+            ctx.hello(ctx.cmd.args);
+            break;
+        case 'azure':
+            if (!utilitas.insensitiveHas(allAi, 'azure')) {
+                return await ctx.er('Azure is not available.');
+            }
+            ctx.selectedAi = ['Azure'];
             ctx.hello(ctx.cmd.args);
             break;
         case 'ollama':
@@ -54,6 +59,7 @@ export const { name, run, priority, func, help, cmds } = {
         gemini: 'Use ♊️ Gemini temporary: /gemini Say hello to Gemini!',
         chatgpt: 'Use ⚛️ ChatGPT temporary: /chatgpt Say hello to ChatGPT!',
         claude: 'Use ✴️ Claude temporary: /claude Say hello to Claude!',
+        azure: 'Use ☁️ Azure temporary: /azure Say hello to Azure!',
         ollama: 'Use 🦙 Ollama temporary: /ollama Say hello to Ollama!',
     },
 };

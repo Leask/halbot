@@ -7,6 +7,7 @@ const enrich = m => m ? ` ${BOTS[m.split(':')[0]]
     ? `| ${BOTS[m.split(':')[0]]} ${m}` : `(${m})`}` : '';
 const [BOT, BOTS, LN2] = [`${bot.EMOJI_BOT} `, {
     ChatGPT: '⚛️', Gemini: '♊️', Claude: '✴️', Ollama: '🦙', 'deepseek-r1': '🐳',
+    Azure: '☁️',
 }, '\n\n'];
 
 const action = async (ctx, next) => {

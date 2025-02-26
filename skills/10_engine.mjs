@@ -1,7 +1,7 @@
 import { alan, bot, utilitas } from 'utilitas';
 
 const NAME_HACK = {
-    'ChatGPT': '⚛️', 'Gemini': '♊️', 'Claude': '✴️', 'Ollama': '🦙',
+    'ChatGPT': '⚛️', 'Gemini': '♊️', 'Claude': '✴️', 'Ollama': '🦙', 'Azure': '☁️',
 };
 
 const NAME_HACK_REVERSE = utilitas.reverseKeyValues(NAME_HACK);
@@ -57,8 +57,6 @@ const action = async (ctx, next) => {
                 )?.[0] || ctx.firstAi];
             }
     }
-    // grep 'ctx.multiAi' before uncommenting the following line
-    // ctx.multiAi = ctx.selectedAi.length > 1;
     await next();
 };
 
@@ -93,7 +91,7 @@ export const { name, run, priority, func, help, args } = {
         },
         ai: {
             type: 'string', short: 'a', default: '',
-            desc: "`(ChatGPT, Gemini, Claude, Ollama, @)` Select AI engine.",
+            desc: "`(ChatGPT, Gemini, Claude, Azure, Ollama, @)` Select AI engine.",
             validate: validateAi,
         },
         render: {
