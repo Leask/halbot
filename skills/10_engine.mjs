@@ -80,9 +80,6 @@ export const { name, run, priority, func, help, args } = {
         '¶ Select between AI engines.',
         "Tip 2: Set `ai=''` to use default AI engine.",
         'Tip 3: Set `ai=@` to use all AI engines simultaneously.',
-        '¶ Tweak enhanced output rendering.',
-        'Example 1: /set --render on',
-        'Example 2: /set --render off',
     ]),
     args: {
         hello: {
@@ -93,11 +90,6 @@ export const { name, run, priority, func, help, args } = {
             type: 'string', short: 'a', default: '',
             desc: "`(ChatGPT, Gemini, Claude, Azure, Ollama, @)` Select AI engine.",
             validate: validateAi,
-        },
-        render: {
-            type: 'string', short: 'r', default: bot.BINARY_STRINGS[0],
-            desc: `\`(${bot.BINARY_STRINGS.join(', ')})\` Enable/Disable enhanced output rendering.`,
-            validate: utilitas.humanReadableBoolean,
         },
     },
 };

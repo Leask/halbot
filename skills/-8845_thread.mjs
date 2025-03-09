@@ -39,7 +39,7 @@ const action = async (ctx, next) => {
     ctx.clear = async context => {
         await alan.resetSession(
             ctx.session.sessionId,
-            // { systemPrompt: context?.prompt } // @todo: switch to real system prompt
+            { systemPrompt: context?.prompt } // @todo: switch to real system prompt
         );
         resetContext(context);
         const id = findSession(ctx.session.sessionId);
@@ -47,7 +47,7 @@ const action = async (ctx, next) => {
         ctx.session.sessions?.[id] && (
             ctx.session.sessions[id].context = ctx.session.context
         );
-        ctx.hello(context?.prompt);
+        ctx.hello();
     };
     const switchSession = async () => {
         let resp;

@@ -64,8 +64,7 @@ const action = async (ctx, next) => {
                 });
                 references = resp.references;
                 audio = resp.audio;
-                msgs[ai] = ctx.session.config?.render === false
-                    ? resp.text : resp.richText;
+                msgs[ai] = resp.text;
                 tts[ai] = ctx.selectedAi.length === 1
                     && !msgs[ai].split('\n').some(x => /^\s*```/.test(x))
                     ? resp.spoken : '';
