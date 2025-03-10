@@ -74,6 +74,9 @@ const init = async (options) => {
             });
             _speech.tts = speech.tts;
         }
+        options?.googleCx && await shot.initSearch({
+            apiKey: options.googleApiKey, cx: options.googleCx
+        });
     }
     if (options?.claudeApiKey || (options?.claudeCredentials && options?.claudeProjectId)) {
         await alan.init({
