@@ -12,8 +12,8 @@ const [BOT, BOTS, LN2] = [`${bot.EMOJI_BOT} `, {
 
 const action = async (ctx, next) => {
     if (!ctx.prompt && !ctx.carry.attachments.length) { return await next(); }
-    const [YOU, msgs, tts, rsm, pms, extra]
-        = [`${ctx.avatar} You:`, {}, {}, {}, [], { buttons: [] }];
+    const [YOU, msgs, tts, rsm, pms, extra, firstResp]
+        = [`${ctx.avatar} You:`, {}, {}, {}, [], { buttons: [] }, Date.now()];
     let [lastMsg, lastSent, references, audio] = [null, 0, null, null];
     const packMsg = options => {
         const said = !options?.tts && ctx.result ? ctx.result : '';
@@ -33,9 +33,9 @@ const action = async (ctx, next) => {
     };
     const ok = async options => {
         const [curTime, curMsg] = [Date.now(), packMsg(options)];
-        if (options?.onProgress && (
-            curTime - lastSent < ctx.limit || lastMsg === curMsg
-        )) { return; }
+        if (options?.onProgress && (curTime - lastSent < (
+            ctx.limit * (curTime - firstResp > 1000 * 60 ? 2 : 1)
+        ) || lastMsg === curMsg)) { return; }
         [lastSent, lastMsg] = [curTime, curMsg];
         const cmd = ctx.session.context?.cmd;
         if (options?.final) {
