@@ -73,14 +73,6 @@ All supported configuration fields:
     // REQUIRED, string.
     "telegramToken": "[[Telegram Bot API Token]]",
 
-    // Set some of these fields if you need Google's Gemini, TTS, STT, OCR, OBJECT_DETECT, Embedding features.
-    // OPTIONAL, string.
-    "googleApiKey": "[[Google Cloud / Gemini API Key]]",
-    // OPTIONAL, string, default: "gemini-pro-vision".
-    "geminiModel": "[[Custom Gemini Model ID]]",
-    // OPTIONAL, integer, default: 0.
-    "geminiPriority": "[[Custom Gemini Priority]]",
-
     // Set some of these fields if you need OpenAI's ChatGPT, Whisper, Embedding features.
     // OPTIONAL, string.
     "openaiApiKey": "[[OpenAI API Key]]",
@@ -88,16 +80,38 @@ All supported configuration fields:
     "openaiEndpoint": "[[Custom OpenAI API endpoint]]",
     // OPTIONAL, string, default: "gpt-3.5-turbo".
     "chatGptModel": "[[Custom ChatGPT Model ID]]",
-    // OPTIONAL, integer, default: 1.
+    // OPTIONAL, integer.
     "chatGptPriority": "[[Custom ChatGPT Priority]]",
+
+    // Set some of these fields if you need Google's Gemini, TTS, STT, OCR, OBJECT_DETECT, Embedding features.
+    // OPTIONAL, string.
+    "googleApiKey": "[[Google Cloud / Gemini API Key]]",
+    // OPTIONAL, string, default: "gemini-pro-vision".
+    "geminiModel": "[[Custom Gemini Model ID]]",
+    // OPTIONAL, integer
+    "geminiPriority": "[[Custom Gemini Priority]]",
 
     // Set some of these fields if you need Anthropic's Claude features.
     // OPTIONAL, string.
     "claudeApiKey": "[[Anthropic API Key]]",
-    // OPTIONAL, string, default: "claude".
+    // OPTIONAL, string.
+    "credentials": "[[Vertex Anthropic Credentials]]",
+    // OPTIONAL, string.
+    "projectId": "[[Vertex Anthropic Credentials]]",
+    // OPTIONAL, string, default: `latest claude model`.
     "claudeModel": "[[Custom Claude Model ID]]",
-    // OPTIONAL, integer, default: 2.
+    // OPTIONAL, integer.
     "claudePriority": "[[Custom Claude Priority]]",
+
+    // Set some of these fields if you need Azure's AI features.
+    // OPTIONAL, string.
+    "azureApiKey": "[[Azure API Key]]",
+    // OPTIONAL, string.
+    "azureEndpoint": "[[Azure API Endpoint]]",
+    // OPTIONAL, string.
+    "azureModel": "[[Custom Azure Model ID]]",
+    // OPTIONAL, integer.
+    "azurePriority": "[[Custom Azure Priority]]",
 
     // Set some of these fields if you need Ollama features.
     // OPTIONAL, boolean.
@@ -106,8 +120,12 @@ All supported configuration fields:
     "ollamaEndpoint": "[[Custom Ollama API endpoint]]",
     // OPTIONAL, string, default: "DeepSeek-R1" (DeepSeek-R1 7B).
     "ollamaModel": "[[Custom Ollama Model ID]]",
-    // OPTIONAL, integer, default: 3.
+    // OPTIONAL, integer.
     "ollamaPriority": "[[Custom Ollama Priority]]",
+
+    // OPTIONAL, string.
+    // Using this option along with `googleApiKey` to enable Google Search as a tool.
+    "googleCx": "[[Google Search Engine ID]]",
 
     // OPTIONAL, undefined || array of string.
     // To open the bot to PUBLIC, DO NOT set this field;
