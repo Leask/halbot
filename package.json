@@ -47,7 +47,6 @@
     "mime": "^4.0.6",
     "mysql2": "^3.13.0",
     "office-text-extractor": "^3.0.3",
-    "ollama": "^0.5.14",
     "openai": "^4.87.3",
     "pg": "^8.14.0",
     "pgvector": "^0.2.0",
