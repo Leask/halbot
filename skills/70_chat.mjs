@@ -57,7 +57,7 @@ const action = async (ctx, next) => {
         pms.push((async ai => {
             try {
                 const resp = await alan.talk(ctx.prompt, {
-                    id: ai, ...ctx.carry, stream: async r => {
+                    aiId: ai, ...ctx.carry, stream: async r => {
                         msgs[ai] = r.text;
                         ctx.carry.threadInfo.length || ok(onProgress);
                     },
