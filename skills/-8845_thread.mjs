@@ -137,7 +137,7 @@ const action = async (ctx, next) => {
                     ).map(x => x.id), { ignoreRequest: bot.HELLO }
                 );
                 return await sendList(sNames, resp[0]?.message_id);
-            });
+            }, { log: true });
             return resp;
         case 'end':
             const id = findSession(
