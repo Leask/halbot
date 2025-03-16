@@ -27,30 +27,29 @@ const fetchPrompts = async () => {
     return prompts;
 };
 
-const init = async (options) => {
-    assert(options?.telegramToken, 'Telegram Bot API Token is required.');
-    const [pkg, ai, _speech, speechOptions, engines, vision]
-        = [await utilitas.which(), {}, {}, { tts: true, stt: true }, {}, {}];
+const init = async (options = {}) => {
+    assert(options.telegramToken, 'Telegram Bot API Token is required.');
+    const [pkg, _speech, speechOptions, vision]
+        = [await utilitas.which(), {}, { tts: true, stt: true }, {}];
     const info = bot.lines([
         `[${bot.EMOJI_BOT} ${pkg.title}](${pkg.homepage})`, pkg.description
     ]);
     let embedding;
     // init ai engines
     // use AI vision, AI stt if ChatGPT or Gemini is enabled
-    if (options?.openaiApiKey || options?.googleApiKey) {
+    if (options.openaiApiKey || options.googleApiKey) {
         vision.read = alan.distillFile;
         vision.see = alan.distillFile;
         _speech.stt = alan.distillFile;
     }
     // use openai embedding, dall-e, tts if openai is enabled
-    if (options?.openaiApiKey) {
+    if (options.openaiApiKey) {
         const apiKey = { apiKey: options.openaiApiKey };
-        await alan.init({ provider: 'OPENAI', ...apiKey, ...options || {} });
-        ai['ChatGPT'] = {
-            engine: 'CHATGPT', priority: options?.chatGptPriority || 0,
-        }; // only support custom model while prompting:
-        engines['CHATGPT'] = { model: options?.chatGptModel, };
-        embedding = alan.createOpenAIEmbedding;
+        const ai = await alan.init({
+            id: 'ChatGPT', provider: 'OPENAI', model: options?.chatGptModel,
+            ...apiKey, priority: options?.chatGptPriority || 0, ...options
+        });
+        embedding = ai.embedding;
         await image.init(apiKey);
         await speech.init({ ...apiKey, provider: 'OPENAI', ...speechOptions });
         _speech.tts = speech.tts;
@@ -59,15 +58,11 @@ const init = async (options) => {
     // use google tts if google api key is ready
     if (options?.googleApiKey) {
         const apiKey = { apiKey: options.googleApiKey };
-        await alan.init({ // only support custom model while initiating:
-            provider: 'GEMINI', ...apiKey,
-            model: options?.geminiModel, ...options || {},
+        const ai = await alan.init({
+            id: 'Gemini', provider: 'GEMINI', model: options?.geminiModel,
+            ...apiKey, priority: options?.geminiPriority || 1, ...options
         });
-        ai['Gemini'] = {
-            engine: 'GEMINI', priority: options?.geminiPriority || 1,
-        }; // save for reference not for prompting:
-        engines['GEMINI'] = { model: options?.geminiModel };
-        embedding || (embedding = alan.createGeminiEmbedding);
+        embedding || (embedding = ai.embedding);
         if (!_speech.tts) {
             await speech.init({
                 ...apiKey, provider: 'GOOGLE', ...speechOptions,
@@ -78,45 +73,34 @@ const init = async (options) => {
             apiKey: options.googleApiKey, cx: options.googleCx
         });
     }
-    if (options?.claudeApiKey || (options?.claudeCredentials && options?.claudeProjectId)) {
+    if (options?.anthropicApiKey
+        || (options?.anthropicCredentials && options?.anthropicProjectId)) {
         await alan.init({
-            provider: 'CLAUDE', apiKey: options?.claudeApiKey,
+            id: 'Claude', provider: 'CLAUDE', model: options?.claudeModel,
+            apiKey: options?.claudeApiKey,
             credentials: options?.claudeCredentials,
-            projectId: options?.claudeProjectId, ...options || {},
+            projectId: options?.claudeProjectId,
+            priority: options?.claudePriority || 2, ...options
         });
-        ai['Claude'] = {
-            engine: 'CLAUDE', priority: options?.claudePriority || 2,
-        }; // only support custom model while prompting:
-        engines['CLAUDE'] = { model: options?.claudeModel };
     }
     if (options?.azureApiKey && options?.azureEndpoint) {
         await alan.init({
-            provider: 'Azure', apiKey: options?.azureApiKey,
-            baseURL: options?.azureEndpoint, ...options || {},
+            id: 'Azure', provider: 'AZURE', model: options?.azureModel,
+            apiKey: options?.azureApiKey, priority: options?.azurePriority || 3,
+            baseURL: options?.azureEndpoint, ...options
         });
-        ai['Azure'] = {
-            engine: 'AZURE', priority: options?.azurePriority || 3,
-        }; // only support custom model while prompting:
-        engines['AZURE'] = { model: options?.azureModel };
     }
     if (options?.ollamaEnabled || options?.ollamaEndpoint) {
         await alan.init({
-            provider: 'OLLAMA', host: options?.ollamaEndpoint,
+            id: 'Ollama', provider: 'OLLAMA', model: options?.ollamaModel,
+            priority: options?.ollamaPriority || 99,
+            host: options?.ollamaEndpoint, ...options
         });
-        ai['Ollama'] = {
-            engine: 'OLLAMA', priority: options?.ollamaPriority || 3,
-        };
-        engines['OLLAMA'] = {
-            // only support custom model while prompting
-            model: options?.ollamaModel || alan.DEFAULT_MODELS['OLLAMA'],
-        };
     }
-    assert(utilitas.countKeys(ai), 'No AI provider is configured.');
-    await alan.initChat({ engines, sessions: options?.storage });
-    for (const i in ai) { ai[i].model = engines[ai[i].engine].model; }
+    const { ais } = await alan.initChat({ sessions: options?.storage });
     // config multimodal engines
-    const supportedMimeTypes = new Set(Object.values(engines).map(
-        x => alan.MODELS[x.model]
+    const supportedMimeTypes = new Set(Object.values(ais).map(
+        x => x.model
     ).map(x => [
         ...x.supportedMimeTypes || [], ...x.supportedAudioTypes || [],
     ]).flat().map(x => x.toLowerCase()));
@@ -140,7 +124,6 @@ const init = async (options) => {
         skillPath: options?.skillPath || skillPath,
         speech: _speech, vision,
     });
-    _bot._.ai = ai;                                                             // Should be an array of a map of AIs.
     _bot._.lang = options?.lang || 'English';
     _bot._.image = options?.openaiApiKey && image;
     _bot._.prompts = await fetchPrompts();
