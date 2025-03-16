@@ -1,7 +1,8 @@
-import { bot, utilitas } from 'utilitas';
+import { alan, bot, utilitas } from 'utilitas';
 
 const action = async (ctx, next) => {
-    const allAi = Object.keys(ctx._.ai);
+    const ais = await alan.getAi(null, { all: true });
+    const allAi = ais.map(x => x.id);
     switch (ctx.cmd.cmd) {
         case 'all':
             ctx.selectedAi = allAi;

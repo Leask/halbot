@@ -2,13 +2,15 @@ import { alan, bot, utilitas } from 'utilitas';
 
 const checkUnsupportedMimeType = async ctx => {
     ctx.carry.attachments = [];
+    const ais = await alan.getAi(null, { all: true });
     for (const x of ctx.collected.filter(x => x.type === 'PROMPT')) {
         let notSupported = false;
         ctx.selectedAi.map(y => {
+            const ai = ais.find(z => z.id === y);
             if (![
-                ...alan.MODELS[ctx._.ai[y].model]?.supportedMimeTypes || [],
-                ...alan.MODELS[ctx._.ai[y].model]?.supportedAudioTypes || [],
-            ].includes(y?.content?.mime_type)) { notSupported = true; }
+                ...ai.model.supportedMimeTypes || [],
+                ...ai.model.supportedAudioTypes || [],
+            ].includes(x?.content?.mime_type)) { notSupported = true; }
         });
         notSupported ? await x.content.analyze() : ctx.carry.attachments.push({
             ...x.content, analyze: undefined,

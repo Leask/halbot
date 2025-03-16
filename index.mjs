@@ -52,11 +52,11 @@ const init = async (options = {}) => {
     if (options?.anthropicApiKey
         || (options?.anthropicCredentials && options?.anthropicProjectId)) {
         await alan.init({
-            id: 'Claude', provider: 'CLAUDE', model: options?.claudeModel,
-            apiKey: options?.claudeApiKey,
-            credentials: options?.claudeCredentials,
-            projectId: options?.claudeProjectId,
-            priority: options?.claudePriority || 2, ...options
+            id: 'Claude', provider: 'VERTEX ANTHROPIC', model: options?.anthropicModel,
+            apiKey: options?.anthropicApiKey,
+            credentials: options?.anthropicCredentials,
+            projectId: options?.anthropicProjectId,
+            priority: options?.anthropicPriority || 2, ...options
         });
     }
     if (options?.azureApiKey && options?.azureEndpoint) {

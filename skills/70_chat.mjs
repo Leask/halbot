@@ -33,9 +33,10 @@ const action = async (ctx, next) => {
     };
     const ok = async options => {
         const [curTime, curMsg] = [Date.now(), packMsg(options)];
-        if (options?.onProgress && (curTime - lastSent < (
-            ctx.limit * (curTime - firstResp > 1000 * 60 ? 2 : 1)
-        ) || lastMsg === curMsg)) { return; }
+        if (options?.onProgress && (
+            (curTime - lastSent) < (ctx.limit * (curTime - firstResp > 1000 * 60 ? 2 : 1))
+            || lastMsg === curMsg
+        )) { return; }
         [lastSent, lastMsg] = [curTime, curMsg];
         const cmd = ctx.session.context?.cmd;
         if (options?.final) {
@@ -56,10 +57,9 @@ const action = async (ctx, next) => {
         pms.push((async ai => {
             try {
                 const resp = await alan.talk(ctx.prompt, {
-                    engine: ctx._.ai[ai].engine, ...ctx.carry,
-                    stream: async r => {
+                    id: ai, ...ctx.carry, stream: async r => {
                         msgs[ai] = r.text;
-                        ctx.carry.threadInfo.length || await ok(onProgress);
+                        ctx.carry.threadInfo.length || ok(onProgress);
                     },
                 });
                 references = resp.references;

@@ -7,63 +7,56 @@ const NAME_HACK = {
 const NAME_HACK_REVERSE = utilitas.reverseKeyValues(NAME_HACK);
 const AI_CMD = '/set --ai=';
 
-let configuredAi;
-
 const action = async (ctx, next) => {
-    ctx.isDefaultAi = name => name === ctx.firstAi;
-    const arrSort = (configuredAi = Object.keys(ctx._.ai)).map(
-        k => [k, ctx._.ai[k].priority]
-    ).sort((x, y) => x[1] - y[1]);
-    ctx.firstAi = arrSort[0][0];
+    const ais = await alan.getAi(null, { all: true });
     if (ctx.carry?.keyboards?.length && !ctx.carry.keyboards.find(
         x => x.find(y => y.text.includes(AI_CMD))
     )) {
-        ctx.carry.keyboards.unshift(configuredAi.slice(0, 3).map(
-            x => ({ text: `${AI_CMD}${NAME_HACK[x] || x}` })
+        ctx.carry.keyboards.unshift(ais.slice(0, 3).map(
+            x => ({ text: `${AI_CMD}${NAME_HACK[x.id] || x.id}` })
         ));
     }
     switch (ctx.session.config?.ai) {
-        case '@': ctx.selectedAi = configuredAi; break;
+        case '@': ctx.selectedAi = ais.map(x => x.id); break;
         default:
             ctx.selectedAi = [ctx.session.config?.ai];
-            const foundAi = configuredAi.includes(ctx.session.config?.ai);
+            const foundAi = ais.map(x => x.id).includes(ctx.session.config?.ai);
             if (foundAi) {
             } else if (!ctx.collected?.length) {
-                ctx.selectedAi = [ctx.firstAi];
+                ctx.selectedAi = [ais[0].id];
             } else {
                 const supported = {};
-                for (const i of configuredAi) {
+                for (const x of ais) {
                     const supportedMimeTypes = [
-                        ...alan.MODELS[ctx._.ai[i].model]?.supportedMimeTypes || [],
-                        ...alan.MODELS[ctx._.ai[i].model]?.supportedAudioTypes || [],
+                        ...x.model.supportedMimeTypes || [],
+                        ...x.model.supportedAudioTypes || [],
                     ];
-                    for (const j of ctx.collected) {
-                        supported[i] || (supported[i] = 0);
-                        if (supportedMimeTypes.includes(j?.content?.mime_type)) {
-                            supported[i]++;
+                    for (const i of ctx.collected) {
+                        supported[x.id] || (supported[x.id] = 0);
+                        if (supportedMimeTypes.includes(i?.content?.mime_type)) {
+                            supported[x.id]++;
                         }
-                        if (ctx.checkSpeech() && (alan.MODELS[
-                            ctx._.ai[i].model
-                        ]?.supportedAudioTypes || []).includes(j?.content?.mime_type)) {
+                        if (ctx.checkSpeech() && (
+                            x.model.supportedAudioTypes || []
+                        ).includes(i?.content?.mime_type)) {
                             ctx.carry.audioMode = true;
-                            if (alan.MODELS[ctx._.ai[i].model]?.audio) {
-                                supported[i]++; // Priority for audio models
-                            }
+                            x.model.audio && (supported[x.id]++); // Priority for audio models
                         }
                     }
                 }
                 ctx.selectedAi = [Object.keys(supported).sort(
                     (x, y) => supported[y] - supported[x]
-                )?.[0] || ctx.firstAi];
+                )?.[0] || ais[0].id];
             }
     }
     await next();
 };
 
-const validateAi = val => {
-    assert(configuredAi, 'Preparing data for this option. Please try later.');
+const validateAi = async val => {
     NAME_HACK_REVERSE[val] && (val = NAME_HACK_REVERSE[val]);
-    for (let name of [...configuredAi, '', '@']) {
+    for (let name of [...(
+        await alan.getAi(null, { all: true })
+    ).map(x => x.id), '', '@']) {
         if (utilitas.insensitiveCompare(val, name)) { return name; }
     }
     utilitas.throwError('No AI engine matched.');
