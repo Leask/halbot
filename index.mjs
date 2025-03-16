@@ -1,31 +1,7 @@
-import { parse } from 'csv-parse/sync';
 import { alan, bot, image, shot, speech, utilitas } from 'utilitas';
 
 await utilitas.locate(utilitas.__(import.meta.url, 'package.json'));
-const log = content => utilitas.log(content, 'halbot');
 const skillPath = utilitas.__(import.meta.url, 'skills');
-
-const promptSource = new Set([
-    // 'https://raw.githubusercontent.com/f/awesome-chatgpt-prompts/main/prompts.csv',
-    'https://raw.githubusercontent.com/f/awesome-chatgpt-prompts/82f15563c9284c01ca54f0b915ae1aeda5a0fc3a/prompts.csv'
-]);
-
-const fetchPrompts = async () => {
-    const prompts = {};
-    for (let source of promptSource) {
-        try {
-            const resp = (await shot.get(source)).content;
-            const pmts = parse(resp, { columns: true, skip_empty_lines: true });
-            assert(pmts?.length, `Failed to load external prompts: ${source}.`);
-            pmts.filter(x => x.act && x.prompt).map(x => {
-                const { command, description } = bot.newCommand(x.act, x.act);
-                prompts[command] = { ...x, command, act: description };
-            });
-        } catch (err) { log(err?.message || err); }
-    }
-    log(`Awesome ChatGPT Prompts: fetch ${utilitas.countKeys(prompts)} items.`);
-    return prompts;
-};
 
 const init = async (options = {}) => {
     assert(options.telegramToken, 'Telegram Bot API Token is required.');
@@ -126,7 +102,6 @@ const init = async (options = {}) => {
     });
     _bot._.lang = options?.lang || 'English';
     _bot._.image = options?.openaiApiKey && image;
-    _bot._.prompts = await fetchPrompts();
     return _bot;
 };
 
