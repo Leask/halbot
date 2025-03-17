@@ -12,8 +12,9 @@ const [BOT, BOTS, LN2] = [`${bot.EMOJI_BOT} `, {
 
 const action = async (ctx, next) => {
     if (!ctx.prompt && !ctx.carry.attachments.length) { return await next(); }
-    const [YOU, msgs, tts, rsm, pms, extra, firstResp, images] = [
-        `${ctx.avatar} You:`, {}, {}, {}, [], { buttons: [] }, Date.now(), []
+    const [YOU, msgs, tts, rsm, pms, extra, firstResp, lock] = [
+        `${ctx.avatar} You:`, {}, {}, {}, [], { buttons: [] }, Date.now(),
+        1000 * 5
     ];
     let [lastMsg, lastSent, references, audio] = [null, 0, null, null];
     const packMsg = options => {
@@ -35,10 +36,9 @@ const action = async (ctx, next) => {
     const ok = async options => {
         const [curTime, curMsg] = [Date.now(), packMsg(options)];
         if (options?.onProgress && (
-            (curTime - lastSent) < (ctx.limit * (curTime - firstResp > 1000 * 60 ? 2 : 1))
-            || lastMsg === curMsg
+            curTime - lastSent < ctx.limit || lastMsg === curMsg
         )) { return; }
-        [lastSent, lastMsg] = [curTime, curMsg];
+        [lastSent, lastMsg] = [curTime + lock, curMsg];
         const cmd = ctx.session.context?.cmd;
         if (options?.final) {
             (references?.links || []).map((x, i) => extra.buttons.push({
@@ -48,10 +48,12 @@ const action = async (ctx, next) => {
                 label: `❎ End context: \`${cmd}\``, text: '/clear',
             }));
         }
-        return await ctx.ok(curMsg, {
+        const resp = await ctx.ok(curMsg, {
             ...ctx.carry.keyboards ? { keyboards: ctx.carry.keyboards } : {},
             md: true, ...extra, ...options || {},
         });
+        lastSent = curTime;
+        return resp;
     };
     ctx.carry.threadInfo.length || await ok(onProgress);
     for (const n of ctx.selectedAi) {
