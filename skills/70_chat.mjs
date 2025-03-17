@@ -1,4 +1,4 @@
-import { alan, bot, utilitas } from 'utilitas';
+import { alan, bot, storage, utilitas } from 'utilitas';
 
 const onProgress = { onProgress: true };
 const [joinL1, joinL2] = [a => a.join(LN2), a => a.join(LN2)];
@@ -12,8 +12,9 @@ const [BOT, BOTS, LN2] = [`${bot.EMOJI_BOT} `, {
 
 const action = async (ctx, next) => {
     if (!ctx.prompt && !ctx.carry.attachments.length) { return await next(); }
-    const [YOU, msgs, tts, rsm, pms, extra, firstResp]
-        = [`${ctx.avatar} You:`, {}, {}, {}, [], { buttons: [] }, Date.now()];
+    const [YOU, msgs, tts, rsm, pms, extra, firstResp, images] = [
+        `${ctx.avatar} You:`, {}, {}, {}, [], { buttons: [] }, Date.now(), []
+    ];
     let [lastMsg, lastSent, references, audio] = [null, 0, null, null];
     const packMsg = options => {
         const said = !options?.tts && ctx.result ? ctx.result : '';
@@ -69,6 +70,10 @@ const action = async (ctx, next) => {
                     && !msgs[ai].split('\n').some(x => /^\s*```/.test(x))
                     ? resp.spoken : '';
                 rsm[ai] = resp.model;
+                for (let img of resp?.images || []) {
+                    await ctx.image(img.data, { caption: `🎨 by ${resp.model}` });
+                    await ctx.timeout();
+                }
                 return resp;
             } catch (err) {
                 msgs[ai] = `⚠️ ${err?.message || err}`;
