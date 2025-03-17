@@ -12,10 +12,8 @@ const [BOT, BOTS, LN2] = [`${bot.EMOJI_BOT} `, {
 
 const action = async (ctx, next) => {
     if (!ctx.prompt && !ctx.carry.attachments.length) { return await next(); }
-    const [YOU, msgs, tts, rsm, pms, extra, firstResp, lock] = [
-        `${ctx.avatar} You:`, {}, {}, {}, [], { buttons: [] }, Date.now(),
-        1000 * 5
-    ];
+    const [YOU, msgs, tts, rsm, pms, extra, lock]
+        = [`${ctx.avatar} You:`, {}, {}, {}, [], { buttons: [] }, 1000 * 5];
     let [lastMsg, lastSent, references, audio] = [null, 0, null, null];
     const packMsg = options => {
         const said = !options?.tts && ctx.result ? ctx.result : '';
