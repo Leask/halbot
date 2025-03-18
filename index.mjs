@@ -1,4 +1,4 @@
-import { alan, bot, image, shot, speech, utilitas } from 'utilitas';
+import { alan, bot, image, web, speech, utilitas } from 'utilitas';
 
 await utilitas.locate(utilitas.__(import.meta.url, 'package.json'));
 const skillPath = utilitas.__(import.meta.url, 'skills');
@@ -41,11 +41,12 @@ const init = async (options = {}) => {
         embedding || (embedding = ai.embedding);
         if (!_speech.tts) {
             await speech.init({
-                ...apiKey, provider: 'GOOGLE', ...speechOptions,
+                provider: 'GOOGLE', ...apiKey, ...speechOptions,
             });
             _speech.tts = speech.tts;
         }
-        options?.googleCx && await shot.initSearch({
+        options?.googleCx && await web.initSearch({
+            provider: 'GOOGLE',
             apiKey: options.googleApiKey, cx: options.googleCx
         });
     }
