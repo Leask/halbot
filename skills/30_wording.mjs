@@ -37,7 +37,7 @@ const action = async (ctx, next) => {
             ctx.result = bot.map(cnf);
             ctx.hello();
             break;
-        case 'translate': promptTranslate(ctx, ctx.cmd.args || ctx.session.config?.lang || ctx._.lang); break;
+        case 'to': promptTranslate(ctx, ctx.cmd.args || ctx.session.config?.lang || ctx._.lang); break;
         case 'polish': promptPolish(ctx); break;
         case 'toen': promptTranslate(ctx, 'English'); break;
         case 'tofr': promptTranslate(ctx, 'French'); break;

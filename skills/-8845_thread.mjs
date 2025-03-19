@@ -1,6 +1,6 @@
 import { alan, bot, uoid, utilitas } from 'utilitas';
 
-const [EMIJI_FINISH, END, NEW, THREAD, CLR] = ['☑️', '❎', '✨', '🧵', '🆑'];
+const [EMIJI_FINISH, END, NEW, THREAD] = ['☑️', '❎', '✨', '🧵'];
 
 const [CREATED, SWITCHED] = [
     `${NEW} Thread created: `, `${EMIJI_FINISH} Thread switched: `
@@ -8,14 +8,14 @@ const [CREATED, SWITCHED] = [
 
 // moved to help and configs
 const keyboards = [[
-    { text: `/clear ${CLR}` },
+    { text: `/ai ${bot.EMOJI_BOT}` },
+    { text: `/new ${NEW}` },
     { text: `/end ${END}` },
     { text: `/list ${THREAD}` },
-    { text: `/new ${NEW}` },
 ], [
     { text: '/polish ❇️' },
-    { text: '/translate 🇨🇳' },
-    { text: '/translate 🇺🇸' },
+    { text: '/to 🇨🇳' },
+    { text: '/to 🇺🇸' },
 ], [
     { text: '/help 🛟' },
     { text: '/set --tts=🔇' },
@@ -91,7 +91,7 @@ const action = async (ctx, next) => {
         ...options || {},
         ...options?.buttons ? {} : (options?.keyboards || { keyboards }),
     });
-    const sendList = async (names, lastMsgId) => {
+    const listThreads = async (names, lastMsgId) => {
         lastMsgId = lastMsgId || ctx.update?.callback_query?.message?.message_id;
         const message = `${THREAD} Thread${ctx.session.sessions.length > 0 ? 's' : ''}:`;
         const buttons = ctx.session.sessions.map((x, i) => {
@@ -121,7 +121,7 @@ const action = async (ctx, next) => {
                 + `${getLabel(findSession(ctx.session.sessionId))}\``);
             await ctx.clear();
             break;
-        case 'clearall':
+        case 'endall':
             ctx.carry.threadInfo.push(`🔄 All threads have been cleared.`);
             resetSessions();
             break;
@@ -129,14 +129,14 @@ const action = async (ctx, next) => {
             resetSession();
             break;
         case 'list':
-            const resp = await sendList();
+            const resp = await listThreads();
             utilitas.ignoreErrFunc(async () => {
                 const sNames = await alan.analyzeSessions(
                     ctx.session.sessions.filter(
                         x => (x.labelUpdatedAt || 0) < x.touchedAt
                     ).map(x => x.id), { ignoreRequest: bot.HELLO }
                 );
-                return await sendList(sNames, resp[0]?.message_id);
+                return await listThreads(sNames, resp[0]?.message_id);
             }, { log: true });
             return resp;
         case 'end':
@@ -157,7 +157,7 @@ const action = async (ctx, next) => {
         case 'switch':
             ctx.session.sessionId = utilitas.trim(ctx.cmd.args);
             await switchSession();
-            await sendList();
+            await listThreads();
             return await switched();
         case 'factory':
         case 'reset':
@@ -168,18 +168,18 @@ const action = async (ctx, next) => {
     await next();
 };
 
-export const { name, run, priority, func, help, cmds, cmdx } = {
+export const { name, run, priority, func, help, cmdx } = {
     name: 'Thread',
     run: true,
     priority: -8845,
     func: action,
     help: 'Thread management.',
     cmdx: {
-        new: 'Create a new thread.',
-        end: 'End current thread.',
-        switch: 'Switch to a thread. Usage: /switch `THREAD_ID`.',
         clear: 'Clear current thread.',
-        clearall: 'Clear all threads.',
+        end: 'End current thread.',
+        endall: 'End all threads.',
         list: 'List all threads.',
+        new: 'Create a new thread.',
+        switch: 'Switch to a thread. Usage: /switch `THREAD_ID`.',
     },
 };

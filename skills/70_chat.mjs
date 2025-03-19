@@ -1,16 +1,12 @@
-import { alan, bot, storage, utilitas } from 'utilitas';
+import { alan, utilitas } from 'utilitas';
 
 const onProgress = { onProgress: true };
+const LN2 = '\n\n';
 const [joinL1, joinL2] = [a => a.join(LN2), a => a.join(LN2)];
 const log = content => utilitas.log(content, import.meta.url);
-const enrich = m => m ? ` ${BOTS[m.split(':')[0]]
-    ? `| ${BOTS[m.split(':')[0]]} ${m}` : `(${m})`}` : '';
-const [BOT, BOTS, LN2] = [`${bot.EMOJI_BOT} `, {
-    ChatGPT: '⚛️', Gemini: '♊️', Claude: '✴️', Ollama: '🦙', 'deepseek-r1': '🐳',
-    Azure: '☁️',
-}, '\n\n'];
 
 const action = async (ctx, next) => {
+    const ais = await alan.getAi(null, { all: true });
     if (!ctx.prompt && !ctx.carry.attachments.length) { return await next(); }
     const [YOU, msgs, tts, rsm, pms, extra, lock]
         = [`${ctx.avatar} You:`, {}, {}, {}, [], { buttons: [] }, 1000 * 5];
@@ -26,7 +22,7 @@ const action = async (ctx, next) => {
             const content = source[n] || '';
             pure.push(content);
             packed.push(joinL2([...options?.tts ? [] : [
-                `${BOTS[n]} ${n}${enrich(rsm[n])}:`
+                `${ais.find(x => x.id === n).name}:`
             ], content]));
         });
         return pure.join('').trim().length ? joinL1(packed) : '';
@@ -69,7 +65,6 @@ const action = async (ctx, next) => {
                 tts[ai] = ctx.selectedAi.length === 1
                     && !msgs[ai].split('\n').some(x => /^\s*```/.test(x))
                     ? resp.spoken : '';
-                rsm[ai] = resp.model;
                 for (let img of resp?.images || []) {
                     await ctx.image(img.data, { caption: `🎨 by ${resp.model}` });
                     await ctx.timeout();

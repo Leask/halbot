@@ -10,7 +10,6 @@ const init = async (options = {}) => {
     const info = bot.lines([
         `[${bot.EMOJI_BOT} ${pkg.title}](${pkg.homepage})`, pkg.description
     ]);
-    let embedding;
     // init ai engines
     // use AI vision, AI stt if ChatGPT or Gemini is enabled
     if (options.openaiApiKey || options.googleApiKey) {
@@ -21,56 +20,74 @@ const init = async (options = {}) => {
     // use openai embedding, dall-e, tts if openai is enabled
     if (options.openaiApiKey) {
         const apiKey = { apiKey: options.openaiApiKey };
-        const ai = await alan.init({
-            id: 'ChatGPT', provider: 'OPENAI', model: options?.chatGptModel,
-            ...apiKey, priority: options?.chatGptPriority || 0, ...options
+        await alan.init({
+            provider: 'OPENAI', model: options.openaiModel || '*',
+            ...apiKey, priority: options.openaiPriority, ...options
         });
-        embedding = ai.embedding;
         await image.init(apiKey);
         await speech.init({ ...apiKey, provider: 'OPENAI', ...speechOptions });
         _speech.tts = speech.tts;
     }
     // use gemini embedding if gemini is enabled and chatgpt is not enabled
     // use google tts if google api key is ready
-    if (options?.googleApiKey) {
+    if (options.googleApiKey) {
         const apiKey = { apiKey: options.googleApiKey };
-        const ai = await alan.init({
-            id: 'Gemini', provider: 'GEMINI', model: options?.geminiModel,
-            ...apiKey, priority: options?.geminiPriority || 1, ...options
+        await alan.init({
+            provider: 'GEMINI', model: options.geminiModel || '*',
+            ...apiKey, priority: options.geminiPriority, ...options
         });
-        embedding || (embedding = ai.embedding);
         if (!_speech.tts) {
             await speech.init({
                 provider: 'GOOGLE', ...apiKey, ...speechOptions,
             });
             _speech.tts = speech.tts;
         }
-        options?.googleCx && await web.initSearch({
-            provider: 'GOOGLE',
-            apiKey: options.googleApiKey, cx: options.googleCx
+        options.googleCx && await web.initSearch({
+            provider: 'GOOGLE', ...apiKey, cx: options.googleCx
         });
     }
-    if (options?.anthropicApiKey
-        || (options?.anthropicCredentials && options?.anthropicProjectId)) {
+    if (options.anthropicApiKey) {
         await alan.init({
-            id: 'Claude', provider: 'VERTEX ANTHROPIC', model: options?.anthropicModel,
-            apiKey: options?.anthropicApiKey,
-            credentials: options?.anthropicCredentials,
-            projectId: options?.anthropicProjectId,
-            priority: options?.anthropicPriority || 2, ...options
+            provider: 'ANTHROPIC', model: options.anthropicModel || '*',
+            apiKey: options.anthropicApiKey,
+            priority: options.anthropicPriority, ...options
         });
     }
-    if (options?.azureApiKey && options?.azureEndpoint) {
+    if (options.anthropicCredentials && options.anthropicProjectId) {
         await alan.init({
-            id: 'Azure', provider: 'AZURE', model: options?.azureModel,
-            apiKey: options?.azureApiKey, priority: options?.azurePriority || 3,
-            baseURL: options?.azureEndpoint, ...options
+            provider: 'VERTEX ANTHROPIC', model: options.anthropicModel || '*',
+            credentials: options.anthropicCredentials,
+            projectId: options.anthropicProjectId,
+            priority: options.anthropicPriority, ...options
+        });
+    }
+    if (options.jinaApiKey) {
+        const apiKey = { apiKey: options.jinaApiKey };
+        await alan.init({
+            provider: 'JINA', model: options.jinaModel || '*',
+            ...apiKey, priority: options.jinaPriority, ...options
+        });
+        await web.initSearch({ provider: 'Jina', ...apiKey });
+    }
+    if (options.azureApiKey && options.azureEndpoint) {
+        await alan.init({
+            provider: 'AZURE', model: options.azureModel,
+            apiKey: options.azureApiKey, priority: options.azurePriority,
+            baseURL: options.azureEndpoint, ...options
+        });
+    }
+    if (options.azureOpenaiApiKey && options.azureOpenaiEndpoint) {
+        await alan.init({
+            provider: 'AZURE OPENAI', model: options.azureOpenaiModel,
+            apiKey: options.azureOpenaiApiKey,
+            priority: options.azureOpenaiPriority,
+            endpoint: options.azureOpenaiEndpoint, ...options
         });
     }
     if (options?.ollamaEnabled || options?.ollamaEndpoint) {
         await alan.init({
-            id: 'Ollama', provider: 'OLLAMA', model: options?.ollamaModel,
-            priority: options?.ollamaPriority || 99,
+            provider: 'OLLAMA', model: options?.ollamaModel || '*',
+            priority: options?.ollamaPriority,
             host: options?.ollamaEndpoint, ...options
         });
     }
@@ -89,7 +106,8 @@ const init = async (options = {}) => {
         chatType: options?.chatType,
         cmds: options?.cmds,
         database: options?.storage?.client && options?.storage,
-        embedding, supportedMimeTypes,
+        embedding: ais.find(x => x.embedding)?.embedding,
+        supportedMimeTypes,
         hello: options?.hello,
         help: options?.help,
         homeGroup: options?.homeGroup,
