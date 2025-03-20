@@ -1,26 +1,25 @@
 import { alan, bot, utilitas } from 'utilitas';
 
+const ais = await alan.getAi(null, { all: true });
 const EMIJI_FINISH = '☑️';
 
+const listAIs = async ctx => {
+    const lastMessageId = ctx?.update?.callback_query?.message?.message_id;
+    const message = `Features:\n`
+        + bot.uList(Object.entries(alan.FEATURE_ICONS).map(
+            x => `${x[1]} ${x[0]}`
+        )) + `\n\nAI${ais.length > 0 ? 's' : ''}:\n`;
+    const buttons = ais.map(x => ({
+        label: `${ctx.session.config?.ai === x.id
+            ? `${EMIJI_FINISH} ` : ''}${x.name}: ${x.features}`,
+        text: `/set --ai=${x.id}`,
+    }));
+    return await ctx.ok(message, { lastMessageId, buttons });
+};
+
 const action = async (ctx, next) => {
-    const ais = await alan.getAi(null, { all: true });
-    const listAIs = async () => {
-        const lastMessageId = ctx.update?.callback_query?.message?.message_id;
-        const message = `${bot.EMOJI_BOT} AI${ais.length > 0 ? 's' : ''}:`;
-        const buttons = ais.map(x => ({
-            label: `${ctx.session.config?.ai === x.id
-                ? `${EMIJI_FINISH} ` : ''}${x.name}: ${x.features}`,
-            text: `/ai ${x.id}`,
-        }));
-        return await ctx.ok(message, { lastMessageId, buttons });
-    };
     switch (ctx.cmd?.cmd) {
-        case 'ai':
-            const aiId = utilitas.trim(ctx.cmd.args);
-            if (!aiId || aiId === bot.EMOJI_BOT) { return await listAIs(); }
-            assert(ais.find(x => x.id === aiId), 'No AI engine matched.');
-            ctx.session.config.ai = aiId;
-            return await listAIs();
+        case 'ai': return await listAIs(ctx);
     }
     switch (ctx.session.config?.ai) {
         case '@': ctx.selectedAi = ais.map(x => x.id); break;
@@ -58,6 +57,16 @@ const action = async (ctx, next) => {
     await next();
 };
 
+const validateAi = async (val, ctx) => {
+    for (let name of [...ais.map(x => x.id), '', '@']) {
+        if (utilitas.insensitiveCompare(val, name)) {
+            ctx && (ctx.sendConfig = async (_c, _o, ctx) => await listAIs(ctx));
+            return name;
+        }
+    }
+    utilitas.throwError('No AI engine matched.');
+};
+
 export const { name, run, priority, func, help, args, cmdx } = {
     name: 'AI',
     run: true,
@@ -66,11 +75,20 @@ export const { name, run, priority, func, help, args, cmdx } = {
     help: bot.lines([
         '¶ Set initial prompt to the AI engine.',
         "Tip 1: Set `hello=''` to reset to default initial prompt.",
+        '¶ Select between AI engines.',
+        "Tip 2: Set `ai=''` to use default AI engine.",
+        'Tip 3: Set `ai=[AI_ID]` to use specific AI engine.',
+        'Tip 4: Set `ai=@` to use all AI engines simultaneously.',
     ]),
     args: {
         hello: {
-            type: 'string', short: 's', default: 'You are a helpful assistant.',
+            type: 'string', short: 's', default: 'Hello!',
             desc: "Change initial prompt: /set --hello 'Bonjour!'",
+        },
+        ai: {
+            type: 'string', short: 'a', default: '',
+            desc: "`(AI_ID, ..., @)` Select AI engine.",
+            validate: validateAi,
         },
     },
     cmdx: {
