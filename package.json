@@ -46,7 +46,7 @@
     "mime": "^4.0.6",
     "mysql2": "^3.14.0",
     "office-text-extractor": "^3.0.3",
-    "openai": "^4.88.0",
+    "openai": "^4.89.0",
     "pg": "^8.14.1",
     "pgvector": "^0.2.0",
     "telegraf": "^4.16.3",
