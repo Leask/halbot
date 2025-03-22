@@ -6,11 +6,14 @@ const [joinL1, joinL2] = [a => a.join(LN2), a => a.join(LN2)];
 const log = content => utilitas.log(content, import.meta.url);
 
 const action = async (ctx, next) => {
-    const ais = await alan.getAi(null, { all: true });
     if (!ctx.prompt && !ctx.carry.attachments.length) { return await next(); }
-    const [YOU, msgs, tts, rsm, pms, extra, lock]
-        = [`${ctx.avatar} You:`, {}, {}, {}, [], { buttons: [] }, 1000 * 5];
-    let [lastMsg, lastSent, references, audio] = [null, 0, null, null];
+    let [
+        ais, YOU, msgs, tts, rsm, pms, extra, lock, sResp, lastMsg, lastSent,
+        references, audio
+    ] = [
+            await alan.getAi(null, { all: true }), `${ctx.avatar} You:`, {}, {},
+            {}, [], { buttons: [] }, 1000 * 5, null, null, 0, null, null,
+        ];
     const packMsg = options => {
         const said = !options?.tts && ctx.result ? ctx.result : '';
         const packed = [
@@ -42,12 +45,12 @@ const action = async (ctx, next) => {
                 label: `❎ End context: \`${cmd}\``, text: '/clear',
             }));
         }
-        const resp = await ctx.ok(curMsg, {
+        sResp = await ctx.ok(curMsg, {
             ...ctx.carry.keyboards ? { keyboards: ctx.carry.keyboards } : {},
             md: true, ...extra, ...options || {},
         });
         lastSent = curTime;
-        return resp;
+        return sResp;
     };
     ctx.carry.threadInfo.length || await ok(onProgress);
     for (const n of ctx.selectedAi) {
@@ -79,7 +82,8 @@ const action = async (ctx, next) => {
         })(n));
     }
     await Promise.all(pms);
-    await ok({ final: true });
+    if (Object.values(msgs).join('').trim()) { await ok({ final: true }); }
+    else { await ctx.deleteMessage(sResp[0].message_id); }
     ctx.tts = audio || packMsg({ tts: true });
     await next();
 };
