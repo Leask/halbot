@@ -38,6 +38,7 @@ alt="Halbot live demo" width="240" height="180" border="10" /></a>
 - OCR/OBJECT_DETECT (`OpenAI` or Google `Gemini` API key required, or your own engine)
 - DeepSearch (`Jina` API Key required)
 - Feeding webpage and [YouTube](https://www.youtube.com/) to enhance your prompt
+- Support Tools (Function Calls)
 - Custom prompt at your fingertips
 - Support `private` and `public` mode, with multiple authenticate methods.
 - `Middleware` style workflow, easy to extend.
