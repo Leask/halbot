@@ -3,7 +3,7 @@
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
 [![Node.js Package](https://github.com/Leask/halbot/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/Leask/halbot/actions/workflows/npm-publish.yml)
 
-Just another `Gemini` / `ChatGPT` / `Claude` / `Ollama` Telegram bob, which is simple design, easy to use, extendable and fun.
+Just another `ChatGPT` / `Gemini` / `Claude` / `Azure` / `Jina` / `Ollama` Telegram bob, which is simple design, easy to use, extendable and fun.
 
 Live demo, click to watch on YouTube:
 
@@ -28,12 +28,15 @@ alt="Halbot live demo" width="240" height="180" border="10" /></a>
 - [Telegram](https://telegram.org/) Bot (`Telegram Bot` token required)
 - [ChatGPT](https://openai.com/blog/chatgpt) (`OpenAI` API key required)
 - [Gemini](https://ai.google.dev/gemini-api/docs) (Google `Gemini` API Key required)
-- [Claude](https://www.anthropic.com/api) (`Anthropic` API Key required)
+- [Claude](https://www.anthropic.com/api) (`Anthropic` or Google `Vextex` API Key required)
+- [Azure](https://azure.microsoft.com/en-us/solutions/ai) (`Azure` API Key required)
+- [Jina](https://jina.ai/api-dashboard/deepsearch) (`Jina` API Key required)
 - [Ollama](https://github.com/jmorganca/ollama) (Install `Ollama` and serve your model)
 - Speech-to-Text (`OpenAI` or `Google Cloud` API key required, or your own engine)
 - Text-to-Speech (`OpenAI` or `Google Cloud` API key required, or your own engine)
-- Text-to-Image by DALL·E (`OpenAI` API key required, or your own engine)
-- OCR/OBJECT_DETECT (`OpenAI` or `Google Cloud` API key required, or your own engine)
+- Text-to-Image by DALL·E or Imagen (`OpenAI` or Google `Gemini` API key required, or your own engine)
+- OCR/OBJECT_DETECT (`OpenAI` or Google `Gemini` API key required, or your own engine)
+- DeepSearch (`Jina` API Key required)
 - Feeding webpage and [YouTube](https://www.youtube.com/) to enhance your prompt
 - Custom prompt at your fingertips
 - Support `private` and `public` mode, with multiple authenticate methods.
