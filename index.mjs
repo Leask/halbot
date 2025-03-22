@@ -19,31 +19,30 @@ const init = async (options = {}) => {
     }
     // use openai embedding, dall-e, tts if openai is enabled
     if (options.openaiApiKey) {
-        const apiKey = { apiKey: options.openaiApiKey };
+        const apiKey = { apiKey: options.openaiApiKey, provider: 'OPENAI' };
         await alan.init({
-            provider: 'OPENAI', model: options.openaiModel || '*',
-            ...apiKey, priority: options.openaiPriority, ...options
+            ...apiKey, model: options.openaiModel || '*',
+            priority: options.openaiPriority, ...options
         });
         await image.init(apiKey);
-        await speech.init({ ...apiKey, provider: 'OPENAI', ...speechOptions });
+        await speech.init({ ...apiKey, ...speechOptions });
         _speech.tts = speech.tts;
     }
     // use gemini embedding if gemini is enabled and chatgpt is not enabled
     // use google tts if google api key is ready
     if (options.googleApiKey) {
-        const apiKey = { apiKey: options.googleApiKey };
+        const apiKey = { apiKey: options.googleApiKey, provider: 'GOOGLE' };
         await alan.init({
-            provider: 'GEMINI', model: options.geminiModel || '*',
-            ...apiKey, priority: options.geminiPriority, ...options
+            ...apiKey, provider: 'GEMINI', model: options.geminiModel || '*',
+            priority: options.geminiPriority, ...options
         });
+        await image.init({ ...apiKey, provider: 'GEMINI' });
         if (!_speech.tts) {
-            await speech.init({
-                provider: 'GOOGLE', ...apiKey, ...speechOptions,
-            });
+            await speech.init({ ...apiKey, ...speechOptions });
             _speech.tts = speech.tts;
         }
         options.googleCx && await web.initSearch({
-            provider: 'GOOGLE', ...apiKey, cx: options.googleCx
+            ...apiKey, cx: options.googleCx,
         });
     }
     if (options.anthropicApiKey) {
@@ -92,10 +91,13 @@ const init = async (options = {}) => {
         });
     }
     const { ais } = await alan.initChat({ sessions: options?.storage });
+    const cmds = options?.cmds || [];
     // config multimodal engines
-    const supportedMimeTypes = new Set(Object.values(ais).map(
-        x => x.model
-    ).map(x => [
+    const supportedMimeTypes = new Set(Object.values(ais).map(x => {
+        // init instant ai selection
+        cmds.push(bot.newCommand(`ai_${x.id}`, `${x.name}: ${x.features}`));
+        return x.model;
+    }).map(x => [
         ...x.supportedMimeTypes || [], ...x.supportedAudioTypes || [],
     ]).flat().map(x => x.toLowerCase()));
     // init bot
@@ -104,7 +106,7 @@ const init = async (options = {}) => {
         auth: options?.auth,
         botToken: options?.telegramToken,
         chatType: options?.chatType,
-        cmds: options?.cmds,
+        cmds,
         database: options?.storage?.client && options?.storage,
         embedding: ais.find(x => x.embedding)?.embedding,
         supportedMimeTypes,
