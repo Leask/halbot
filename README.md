@@ -83,9 +83,9 @@ All supported configuration fields:
     // OPTIONAL, string.
     "openaiEndpoint": "[[Custom OpenAI API endpoint]]",
     // OPTIONAL, string, default: "gpt-3.5-turbo".
-    "chatGptModel": "[[Custom ChatGPT Model ID]]",
+    "openaiModel": "[[Custom OpenAI Model ID]]",
     // OPTIONAL, integer.
-    "chatGptPriority": "[[Custom ChatGPT Priority]]",
+    "openaiPriority": "[[Custom OpenAI Priority]]",
 
     // Set some of these fields if you need Google's Gemini, TTS, STT, OCR, OBJECT_DETECT, Embedding features.
     // OPTIONAL, string.
@@ -97,15 +97,23 @@ All supported configuration fields:
 
     // Set some of these fields if you need Anthropic's Claude features.
     // OPTIONAL, string.
-    "claudeApiKey": "[[Anthropic API Key]]",
+    "anthropicApiKey": "[[Anthropic API Key]]",
     // OPTIONAL, string.
-    "credentials": "[[Vertex Anthropic Credentials]]",
+    "anthropicCredentials": "[[Vertex Anthropic Credentials]]",
     // OPTIONAL, string.
-    "projectId": "[[Vertex Anthropic Credentials]]",
+    "anthropicProjectId": "[[Vertex Anthropic Project Id]]",
     // OPTIONAL, string, default: `latest claude model`.
-    "claudeModel": "[[Custom Claude Model ID]]",
+    "anthropicModel": "[[Custom Anthropic Model ID]]",
     // OPTIONAL, integer.
-    "claudePriority": "[[Custom Claude Priority]]",
+    "anthropicPriority": "[[Custom Anthropic Priority]]",
+
+    // Set some of these fields if you need Jina's DeepSearch features.
+    // OPTIONAL, string.
+    "jinaApiKey": "[[Jina API Key]]",
+    // OPTIONAL, string.
+    "jinaModel": "[[Custom Jina Model ID]]",
+    // OPTIONAL, integer.
+    "jinaPriority": "[[Custom Jina Priority]]",
 
     // Set some of these fields if you need Azure's AI features.
     // OPTIONAL, string.
@@ -116,6 +124,16 @@ All supported configuration fields:
     "azureModel": "[[Custom Azure Model ID]]",
     // OPTIONAL, integer.
     "azurePriority": "[[Custom Azure Priority]]",
+
+    // Set some of these fields if you nee Azure OpenAI's AI features.
+    // OPTIONAL, string.
+    "azureOpenaiApiKey": "[[Azure OpenAI API Key]]",
+    // OPTIONAL, string.
+    "azureOpenaiEndpoint": "[[Azure OpenAI API Endpoint]]",
+    // OPTIONAL, string.
+    "azureOpenaiModel": "[[Custom Azure OpenAI Model ID]]",
+    // OPTIONAL, integer.
+    "azureOpenaiPriority": "[[Custom Azure OpenAI Priority]]",
 
     // Set some of these fields if you need Ollama features.
     // OPTIONAL, boolean.
