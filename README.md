@@ -107,6 +107,14 @@ All supported configuration fields:
     // OPTIONAL, integer.
     "anthropicPriority": "[[Custom Anthropic Priority]]",
 
+    // Set some of these fields if you need SiliconFlow's DeepSearch features.
+    // OPTIONAL, string.
+    "siliconflowApiKey": "[[SiliconFlow API Key]]",
+    // OPTIONAL, string.
+    "siliconflowModel": "[[Custom SiliconFlow Model ID]]",
+    // OPTIONAL, integer.
+    "siliconflowPriority": "[[Custom SiliconFlow Priority]]",
+
     // Set some of these fields if you need Jina's DeepSearch features.
     // OPTIONAL, string.
     "jinaApiKey": "[[Jina API Key]]",

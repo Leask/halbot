@@ -60,6 +60,13 @@ const init = async (options = {}) => {
             priority: options.anthropicPriority, ...options
         });
     }
+    if (options.siliconflowApiKey) {
+        await alan.init({
+            provider: 'SILICONFLOW', model: options.siliconflowModel || '*',
+            apiKey: options.siliconflowApiKey,
+            priority: options.siliconflowPriority, ...options
+        });
+    }
     if (options.jinaApiKey) {
         const apiKey = { apiKey: options.jinaApiKey };
         await alan.init({
