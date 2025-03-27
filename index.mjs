@@ -123,7 +123,7 @@ const init = async (options = {}) => {
         info: options?.info || info,
         magicWord: options?.magicWord,
         private: options?.private,
-        botProvider: 'telegram',
+        provider: 'telegram',
         session: options?.storage,
         skillPath: options?.skillPath || skillPath,
         speech: _speech, vision,
