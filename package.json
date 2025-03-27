@@ -46,12 +46,12 @@
     "mime": "^4.0.6",
     "mysql2": "^3.14.0",
     "office-text-extractor": "^3.0.3",
-    "openai": "^4.89.0",
+    "openai": "^4.89.1",
     "pg": "^8.14.1",
     "pgvector": "^0.2.0",
     "telegraf": "^4.16.3",
     "tesseract.js": "^6.0.0",
-    "utilitas": "^1999.1.43",
+    "utilitas": "^1999.1.45",
     "youtube-transcript": "^1.2.1"
   }
 }
