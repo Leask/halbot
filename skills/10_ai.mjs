@@ -21,38 +21,37 @@ const action = async (ctx, next) => {
     switch (ctx.cmd?.cmd) {
         case 'ai': return await listAIs(ctx);
     }
-    switch (ctx.session.config?.ai) {
-        case '@': ctx.selectedAi = ais.map(x => x.id); break;
-        default:
-            ctx.selectedAi = [ctx.session.config?.ai];
-            const foundAi = ais.map(x => x.id).includes(ctx.session.config?.ai);
-            if (foundAi) {
-            } else if (!ctx.collected?.length) {
-                ctx.selectedAi = [ais[0].id];
-            } else {
-                const supported = {};
-                for (const x of ais) {
-                    const supportedMimeTypes = [
-                        ...x.model.supportedMimeTypes || [],
-                        ...x.model.supportedAudioTypes || [],
-                    ];
-                    for (const i of ctx.collected) {
-                        supported[x.id] || (supported[x.id] = 0);
-                        if (supportedMimeTypes.includes(i?.content?.mime_type)) {
-                            supported[x.id]++;
-                        }
-                        if (ctx.checkSpeech() && (
-                            x.model.supportedAudioTypes || []
-                        ).includes(i?.content?.mime_type)) {
-                            ctx.carry.audioMode = true;
-                            x.model.audio && (supported[x.id]++); // Priority for audio models
-                        }
-                    }
-                }
-                ctx.selectedAi = [Object.keys(supported).sort(
-                    (x, y) => supported[y] - supported[x]
-                )?.[0] || ais[0].id];
+    if (ctx.session.config?.ai === '@') {
+        ctx.selectedAi = ais.map(x => x.id);
+    } else if (ctx.collected?.length) {
+        const supported = {};
+        for (const x of ais) {
+            const supportedMimeTypes = [
+                ...x.model.supportedMimeTypes || [],
+                ...x.model.supportedAudioTypes || [],
+            ];
+            for (const i of ctx.collected) {
+                supported[x.id] || (supported[x.id] = 0);
+                // Priority for supported mime types
+                supportedMimeTypes.includes(i?.content?.mime_type)
+                    && supported[x.id]++;
+                // Priority for user selected AI
+                x.id === ctx.session.config?.ai && supported[x.id]++;
+                // Priority for audio models
+                ctx.checkSpeech() && (
+                    x.model.supportedAudioTypes || []
+                ).includes(i?.content?.mime_type)
+                    && (ctx.carry.audioMode = true)
+                    && x.model.audio && supported[x.id]++;
             }
+        }
+        ctx.selectedAi = [Object.keys(supported).sort(
+            (x, y) => supported[y] - supported[x]
+        )?.[0] || ais[0].id];
+    } else if (ais.map(x => x.id).includes(ctx.session.config?.ai)) {
+        ctx.selectedAi = [ctx.session.config.ai];
+    } else {
+        ctx.selectedAi = [ais[0].id];
     }
     await next();
 };
