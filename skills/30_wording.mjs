@@ -1,4 +1,4 @@
-import { bot } from 'utilitas';
+import { bot, hal } from '../index.mjs';
 
 const execPrompt = (ctx, arrLines) => ctx.collect((ctx.context = {
     cmd: ctx.cmd.cmd, prompt: bot.lines(arrLines),
@@ -34,7 +34,7 @@ const action = async (ctx, next) => {
                 }
             };
             Object.keys(ctx.config).map(x => cnf[x] += ' <-- SET');
-            ctx.result = bot.map(cnf);
+            ctx.result = hal.map(cnf);
             ctx.hello();
             break;
         case 'to': promptTranslate(ctx, ctx.cmd.args || ctx.session.config?.lang || ctx._.lang); break;

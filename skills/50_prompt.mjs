@@ -1,11 +1,11 @@
-import { bot, utilitas } from 'utilitas';
+import { bot, hal, utilitas } from '../index.mjs';
 
 const action = async (ctx, next) => {
     ctx.session.prompts || (ctx.session.prompts = {});
     const cmd = ctx.cmd?.cmd;
     switch (cmd) {
         case 'prompts':
-            const prompts = bot.lines2(Object.keys(ctx.session.prompts || {}).map(
+            const prompts = hal.lines2(Object.keys(ctx.session.prompts || {}).map(
                 x => bot.lines([`- /${x}`, ctx.session.prompts[x]])
             ));
             return await ctx.ok(prompts || 'No custom prompts.');
@@ -14,7 +14,7 @@ const action = async (ctx, next) => {
             const subArrText = arrText[0].split('>');
             const _cmd = utilitas.ensureString(
                 subArrText[0], { case: 'SNAKE' }
-            ).slice(0, bot.MAX_MENU_LENGTH);
+            ).slice(0, hal.MAX_MENU_LENGTH);
             const _prompt = bot.lines([
                 subArrText.slice(1).join(' '), ...arrText.slice(1)
             ]).trim();

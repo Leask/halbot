@@ -1,4 +1,4 @@
-import { alan, bot, uoid, utilitas } from 'utilitas';
+import { alan, bot, hal, uoid, utilitas } from '../index.mjs';
 
 const [EMIJI_FINISH, END, NEW, THREAD] = ['☑️', '❎', '✨', '🧵'];
 
@@ -134,7 +134,7 @@ const action = async (ctx, next) => {
                 const sNames = await alan.analyzeSessions(
                     ctx.session.sessions.filter(
                         x => (x.labelUpdatedAt || 0) < x.touchedAt
-                    ).map(x => x.id), { ignoreRequest: bot.HELLO }
+                    ).map(x => x.id), { ignoreRequest: hal.HELLO }
                 );
                 return await listThreads(sNames, resp[0]?.message_id);
             }, { log: true });

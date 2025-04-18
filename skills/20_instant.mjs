@@ -1,4 +1,4 @@
-import { alan, bot, utilitas } from 'utilitas';
+import { alan, bot, utilitas } from '../index.mjs';
 
 const action = async (ctx, next) => {
     const ais = await alan.getAi(null, { all: true });

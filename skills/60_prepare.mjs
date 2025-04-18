@@ -1,4 +1,4 @@
-import { alan, bot, utilitas } from 'utilitas';
+import { alan, hal, utilitas } from '../index.mjs';
 
 const checkUnsupportedMimeType = async ctx => {
     ctx.carry.attachments = [];
@@ -23,7 +23,7 @@ const action = async (ctx, next) => {
     if (ctx.result) {
         ctx.avatar = '⚙️';
     } else if (ctx.m?.voice) {
-        ctx.avatar = bot.EMOJI_SPEECH; ctx.result = utilitas.trim(ctx.txt);
+        ctx.avatar = hal.EMOJI_SPEECH; ctx.result = utilitas.trim(ctx.txt);
     } else if (ctx.m?.data) {
         ctx.avatar = '🔘'; ctx.result = utilitas.trim(ctx.txt);
     } else if (ctx.m?.poll) {

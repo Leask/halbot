@@ -1,4 +1,4 @@
-import { alan, utilitas } from 'utilitas';
+import { alan, utilitas } from '../index.mjs';
 
 const onProgress = { onProgress: true };
 const LN2 = '\n\n';

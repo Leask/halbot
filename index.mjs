@@ -1,4 +1,5 @@
 import { alan, bot, image, web, speech, utilitas } from 'utilitas';
+import * as hal from './lib/hal.mjs';
 
 await utilitas.locate(utilitas.__(import.meta.url, 'package.json'));
 const skillPath = utilitas.__(import.meta.url, 'skills');
@@ -8,7 +9,7 @@ const init = async (options = {}) => {
     const [pkg, _speech, speechOptions, vision]
         = [await utilitas.which(), {}, { tts: true, stt: true }, {}];
     const info = bot.lines([
-        `[${bot.EMOJI_BOT} ${pkg.title}](${pkg.homepage})`, pkg.description
+        `[${hal.EMOJI_BOT} ${pkg.title}](${pkg.homepage})`, pkg.description
     ]);
     // init ai engines
     // use AI vision, AI stt if ChatGPT or Gemini is enabled
@@ -102,13 +103,13 @@ const init = async (options = {}) => {
     // config multimodal engines
     const supportedMimeTypes = new Set(Object.values(ais).map(x => {
         // init instant ai selection
-        cmds.push(bot.newCommand(`ai_${x.id}`, `${x.name}: ${x.features}`));
+        cmds.push(hal.newCommand(`ai_${x.id}`, `${x.name}: ${x.features}`));
         return x.model;
     }).map(x => [
         ...x.supportedMimeTypes || [], ...x.supportedAudioTypes || [],
     ]).flat().map(x => x.toLowerCase()));
-    // init bot
-    const _bot = await bot.init({
+    // init hal
+    const _hal = await hal.init({
         args: options?.args,
         auth: options?.auth,
         botToken: options?.telegramToken,
@@ -128,10 +129,11 @@ const init = async (options = {}) => {
         skillPath: options?.skillPath || skillPath,
         speech: _speech, vision,
     });
-    _bot._.lang = options?.lang || 'English';
-    _bot._.image = options?.openaiApiKey && image;
-    return _bot;
+    _hal._.lang = options?.lang || 'English';
+    _hal._.image = options?.openaiApiKey && image;
+    return _hal;
 };
 
 export default init;
-export { alan, bot, init, speech, utilitas };
+export * from 'utilitas';
+export { hal, init };

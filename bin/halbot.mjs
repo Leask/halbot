@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { cache, dbio, memory, storage as _storage, utilitas } from 'utilitas';
-import halbot from '../index.mjs';
+import hal from '../index.mjs';
 
 const debug = utilitas.humanReadableBoolean(process.env['DEBUG']);
 const log = content => utilitas.log(content, import.meta.url);
@@ -30,5 +30,5 @@ try {
         default:
             config.storage && utilitas.throwError('Invalid storage config.');
     }
-    await halbot({ ...config, storage });
+    await hal({ ...config, storage });
 } catch (err) { debug ? utilitas.throwError(err) : log(err); }

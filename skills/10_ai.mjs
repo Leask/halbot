@@ -1,4 +1,4 @@
-import { alan, bot, utilitas } from 'utilitas';
+import { alan, bot, hal, utilitas } from '../index.mjs';
 
 const ais = await alan.getAi(null, { all: true });
 const EMIJI_FINISH = '☑️';
@@ -6,7 +6,7 @@ const EMIJI_FINISH = '☑️';
 const listAIs = async ctx => {
     const lastMessageId = ctx?.update?.callback_query?.message?.message_id;
     const message = `Features:\n`
-        + bot.uList(Object.entries(alan.FEATURE_ICONS).map(
+        + hal.uList(Object.entries(alan.FEATURE_ICONS).map(
             x => `${x[1]} ${x[0]}`
         )) + `\n\nAI${ais.length > 0 ? 's' : ''}:\n`;
     const buttons = ais.map(x => ({

@@ -1,4 +1,4 @@
-import { bot } from 'utilitas';
+import { bot } from '../index.mjs';
 
 const action = async (ctx, next) => {
     if (!ctx.cmd.args) {
