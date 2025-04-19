@@ -6,6 +6,7 @@ const [CREATED, SWITCHED] = [
     `${NEW} Thread created: `, `${EMIJI_FINISH} Thread switched: `
 ];
 
+// https://stackoverflow.com/questions/69924954/an-error-is-issued-when-opening-the-telebot-keyboard
 const keyboards = [[
     { text: `/ai ${hal.EMOJI_BOT}` },
     { text: `/new ${NEW}` },
