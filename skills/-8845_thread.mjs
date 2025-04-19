@@ -1,4 +1,4 @@
-import { alan, bot, hal, uoid, utilitas } from '../index.mjs';
+import { alan, hal, uoid, utilitas } from '../index.mjs';
 
 const [EMIJI_FINISH, END, NEW, THREAD] = ['☑️', '❎', '✨', '🧵'];
 
@@ -6,9 +6,8 @@ const [CREATED, SWITCHED] = [
     `${NEW} Thread created: `, `${EMIJI_FINISH} Thread switched: `
 ];
 
-// moved to help and configs
 const keyboards = [[
-    { text: `/ai ${bot.EMOJI_BOT}` },
+    { text: `/ai ${hal.EMOJI_BOT}` },
     { text: `/new ${NEW}` },
     { text: `/end ${END}` },
     { text: `/list ${THREAD}` },
