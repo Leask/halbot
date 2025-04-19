@@ -3,7 +3,7 @@ import { alan, bot, utilitas } from '../index.mjs';
 const action = async (ctx, next) => {
     const ais = await alan.getAi(null, { all: true });
     const allAi = ais.map(x => x.id);
-    switch (ctx.cmd.cmd) {
+    switch (ctx.cmd?.cmd) {
         case 'all':
             ctx.selectedAi = allAi;
             ctx.hello(ctx.cmd.args);
@@ -53,14 +53,9 @@ export const { name, run, priority, func, help, cmds } = {
     priority: 20,
     func: action,
     help: bot.lines([
-        'Use an AI engine `temporary` without touching your settings.',
+        '¶ Use an AI model `temporary` without touching your settings.',
+        'Example 1: /[AI_ID] Say hello to [AI_ID]!',
+        'Example 2: /all Say hello to all AIs!',
     ]),
-    cmds: {
-        all: 'Use all AI engines simultaneously: /all Say hello to all AIs!',
-        gemini: 'Use ♊️ Gemini temporary: /gemini Say hello to Gemini!',
-        chatgpt: 'Use ⚛️ ChatGPT temporary: /chatgpt Say hello to ChatGPT!',
-        claude: 'Use ✴️ Claude temporary: /claude Say hello to Claude!',
-        azure: 'Use ☁️ Azure temporary: /azure Say hello to Azure!',
-        ollama: 'Use 🦙 Ollama temporary: /ollama Say hello to Ollama!',
-    },
+    cmdx: {},
 };

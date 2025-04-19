@@ -173,7 +173,7 @@ export const { name, run, priority, func, help, cmdx } = {
     run: true,
     priority: -8845,
     func: action,
-    help: 'Thread management.',
+    help: '¶ Thread management.',
     cmdx: {
         clear: 'Clear current thread.',
         end: 'End current thread.',
