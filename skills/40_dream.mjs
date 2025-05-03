@@ -1,13 +1,19 @@
-import { bot } from '../index.mjs';
+import { bot, storage } from '../index.mjs';
 
 const GEMINI = 'GEMINI';
 const types = { image: 'photo', video: 'video' };
 
 const action = async (ctx, next) => {
-    let [provider, func] = [GEMINI, 'image'];
+    let [provider, func, reference] = [GEMINI, 'image', null];
     switch (ctx.cmd.cmd) {
-        case 'gptimage': provider = 'OPENAI'; break;
-        case 'fantasy': func = 'video';
+        case 'fantasy': func = 'video'; break;
+        case 'gptimage':
+            provider = 'OPENAI';
+            reference = ctx.collected.filter(x => [
+                storage.MIME_JPEG, storage.MIME_PNG, storage.MIME_WEBP
+            ].includes(x?.content?.mime_type)).slice(0, 16).map(
+                x => x?.content?.data
+            );
     }
     if (!ctx.cmd.args) {
         return await ctx.ok('Please input your prompt.');
@@ -15,7 +21,8 @@ const action = async (ctx, next) => {
     let [objMsg, output] = [(await ctx.ok('💭'))[0], null]; //tts = null
     try {
         output = (await ctx._.gen[func](ctx.cmd.args, {
-            provider, expected: 'FILE'
+            provider, expected: 'FILE',
+            ...reference?.length ? { reference, input: 'BASE64' } : {},
         })) || [];
     } catch (err) {
         return await ctx.er(err.message || `Error generating ${func}.`,
