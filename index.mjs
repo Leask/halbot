@@ -1,4 +1,4 @@
-import { alan, bot, image, web, speech, utilitas } from 'utilitas';
+import { alan, bot, gen, web, speech, utilitas } from 'utilitas';
 import * as hal from './lib/hal.mjs';
 
 await utilitas.locate(utilitas.__(import.meta.url, 'package.json'));
@@ -25,7 +25,7 @@ const init = async (options = {}) => {
             ...apiKey, model: options.openaiModel || '*',
             priority: options.openaiPriority, ...options
         });
-        await image.init(apiKey);
+        await gen.init(apiKey);
         await speech.init({ ...apiKey, ...speechOptions });
         _speech.tts = speech.tts;
     }
@@ -37,7 +37,6 @@ const init = async (options = {}) => {
             ...apiKey, provider: 'GEMINI', model: options.geminiModel || '*',
             priority: options.geminiPriority, ...options
         });
-        await image.init({ ...apiKey, provider: 'GEMINI' });
         if (!_speech.tts) {
             await speech.init({ ...apiKey, ...speechOptions });
             _speech.tts = speech.tts;
@@ -46,6 +45,13 @@ const init = async (options = {}) => {
             ...apiKey, cx: options.googleCx,
         });
     }
+    const geminiGenReady = options.googleApiKey
+        || (options.googleCredentials && options.googleProjectId);
+    geminiGenReady && await gen.init({
+        apiKey: options.googleApiKey, provider: 'GEMINI',
+        credentials: options.googleCredentials,
+        projectId: options.googleProjectId,
+    });
     if (options.anthropicApiKey) {
         await alan.init({
             provider: 'ANTHROPIC', model: options.anthropicModel || '*',
@@ -53,11 +59,11 @@ const init = async (options = {}) => {
             priority: options.anthropicPriority, ...options
         });
     }
-    if (options.anthropicCredentials && options.anthropicProjectId) {
+    if (options.googleCredentials && options.googleProjectId) {
         await alan.init({
             provider: 'VERTEX ANTHROPIC', model: options.anthropicModel || '*',
-            credentials: options.anthropicCredentials,
-            projectId: options.anthropicProjectId,
+            credentials: options.googleCredentials,
+            projectId: options.googleProjectId,
             priority: options.anthropicPriority, ...options
         });
     }
@@ -130,7 +136,8 @@ const init = async (options = {}) => {
         speech: _speech, vision,
     });
     _hal._.lang = options?.lang || 'English';
-    _hal._.image = options?.openaiApiKey && image;
+    _hal._.gen = options?.gen
+        || (options?.openaiApiKey || geminiGenReady ? gen : null);
     return _hal;
 };
 
