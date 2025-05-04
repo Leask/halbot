@@ -8,25 +8,31 @@ const log = content => utilitas.log(content, import.meta.url);
 const action = async (ctx, next) => {
     if (!ctx.prompt && !ctx.carry.attachments.length) { return await next(); }
     let [
-        ais, YOU, msgs, tts, rsm, pms, extra, lock, sResp, lastMsg, lastSent,
-        references, audio
+        ais, YOU, msgs, pms, extra, lock, sResp, lastMsg, lastSent, references,
+        audio,
     ] = [
-            await alan.getAi(null, { all: true }), `${ctx.avatar} You:`, {}, {},
-            {}, [], { buttons: [] }, 1000 * 5, null, null, 0, null, null,
+            await alan.getAi(null, { all: true }), `${ctx.avatar} You:`, {}, [],
+            { buttons: [] }, 1000 * 5, null, null, 0, null, null,
         ];
     const packMsg = options => {
         const said = !options?.tts && ctx.result ? ctx.result : '';
         const packed = [
             ...ctx.carry?.threadInfo, ...said ? [joinL2([YOU, said])] : [],
         ];
-        const source = options?.tts ? tts : msgs;
         const pure = [];
         ctx.selectedAi.map(n => {
-            const content = source[n] || '';
+            const content = msgs[n]?.[options?.tts ? 'spoken' : 'text'] || '';
             pure.push(content);
-            packed.push(joinL2([...options?.tts ? [] : [
-                `${ais.find(x => x.id === n).name}:`
-            ], content]));
+            const ai = ais.find(x => x.id === n);
+            let aiName = ai.name;
+            const defModel = aiName.replace(/^.*\(.*\)$/, '$1');
+            const curModel = msgs[n]?.model;
+            if (defModel && curModel && defModel !== curModel) {
+                aiName = aiName.replace(/^(.*\().*(\))$/, `$1${curModel}$2`);
+            }
+            packed.push(joinL2([
+                ...options?.tts ? [] : [`${aiName}:`], content
+            ]));
         });
         return pure.join('').trim().length ? joinL1(packed) : '';
     };
@@ -58,32 +64,33 @@ const action = async (ctx, next) => {
             try {
                 const resp = await alan.talk(ctx.prompt || alan.ATTACHMENTS, {
                     aiId: ai, ...ctx.carry, stream: async r => {
-                        msgs[ai] = r.text;
+                        msgs[ai] = r;
                         ctx.carry.threadInfo.length || ok(onProgress);
                     },
                 });
                 references = resp.references;
                 audio = resp.audio;
-                msgs[ai] = resp.text;
-                tts[ai] = ctx.selectedAi.length === 1
-                    && !msgs[ai].split('\n').some(x => /^\s*```/.test(x))
-                    ? resp.spoken : '';
+                msgs[ai] = resp;
+                msgs[ai].spoken = ctx.selectedAi.length === 1
+                    && !resp.text.split('\n').some(x => /^\s*```/.test(x))
+                    ? resp.spoken : null;
                 for (let img of resp?.images || []) {
                     await ctx.image(img.data, { caption: `🎨 by ${resp.model}` });
                     await ctx.timeout();
                 }
                 return resp;
             } catch (err) {
-                msgs[ai] = `⚠️ ${err?.message || err}`;
-                tts[ai] = null;
-                rsm[ai] = null;
+                msgs[ai] = {
+                    ...msgs[ai], text: `⚠️ ${err?.message || err}`,
+                    spoken: null,
+                };
                 log(err);
             }
         })(n));
     }
     await Promise.all(pms);
-    if (Object.values(msgs).join('').trim()) { await ok({ final: true }); }
-    else { await ctx.deleteMessage(sResp[0].message_id); }
+    await (Object.values(msgs).map(x => x.text).join('').trim()
+        ? ok({ final: true }) : ctx.deleteMessage(sResp[0].message_id));
     ctx.tts = audio || packMsg({ tts: true });
     await next();
 };
