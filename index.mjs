@@ -6,8 +6,10 @@ const skillPath = utilitas.__(import.meta.url, 'skills');
 
 const init = async (options = {}) => {
     assert(options.telegramToken, 'Telegram Bot API Token is required.');
-    const [pkg, _speech, speechOptions, vision]
-        = [await utilitas.which(), {}, { tts: true, stt: true }, {}];
+    const [pkg, _speech, speechOptions, vision] = [
+        await utilitas.which(), options?.speech || {}, { tts: true, stt: true },
+        {},
+    ];
     const info = bot.lines([
         `[${hal.EMOJI_BOT} ${pkg.title}](${pkg.homepage})`, pkg.description
     ]);
@@ -16,7 +18,7 @@ const init = async (options = {}) => {
     if (options.openaiApiKey || options.googleApiKey) {
         vision.read = alan.distillFile;
         vision.see = alan.distillFile;
-        _speech.stt = alan.distillFile;
+        _speech?.stt || (_speech.stt = alan.distillFile);
     }
     // use openai embedding, dall-e, tts if openai is enabled
     if (options.openaiApiKey) {
@@ -26,8 +28,10 @@ const init = async (options = {}) => {
             priority: options.openaiPriority, ...options
         });
         await gen.init(apiKey);
-        await speech.init({ ...apiKey, ...speechOptions });
-        _speech.tts = speech.tts;
+        if (!_speech.tts) {
+            await speech.init({ ...apiKey, ...speechOptions });
+            _speech.tts = speech.tts;
+        }
     }
     // use gemini embedding if gemini is enabled and chatgpt is not enabled
     // use google tts if google api key is ready

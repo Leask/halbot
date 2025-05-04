@@ -1,6 +1,6 @@
 import { alan, hal, uoid, utilitas } from '../index.mjs';
 
-const [EMIJI_FINISH, END, NEW, THREAD] = ['☑️', '❎', '✨', '🧵'];
+const [EMIJI_FINISH, END, NEW, THREAD, CLR] = ['☑️', '❎', '✨', '🧵', '🆑'];
 
 const [CREATED, SWITCHED] = [
     `${NEW} Thread created: `, `${EMIJI_FINISH} Thread switched: `
