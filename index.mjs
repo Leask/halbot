@@ -116,7 +116,9 @@ const init = async (options = {}) => {
         cmds.push(hal.newCommand(`ai_${x.id}`, `${x.name}: ${x.features}`));
         return x.model;
     }).map(x => [
-        ...x.supportedMimeTypes || [], ...x.supportedAudioTypes || [],
+        ...x.supportedMimeTypes,
+        ...x.supportedDocTypes,
+        ...x.supportedAudioTypes,
     ]).flat().map(x => x.toLowerCase()));
     // init hal
     const _hal = await hal.init({

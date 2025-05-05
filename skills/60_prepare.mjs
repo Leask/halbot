@@ -8,8 +8,9 @@ const checkUnsupportedMimeType = async ctx => {
         ctx.selectedAi.map(y => {
             const ai = ais.find(z => z.id === y);
             if (![
-                ...ai.model.supportedMimeTypes || [],
-                ...ai.model.supportedAudioTypes || [],
+                ...ai.model.supportedMimeTypes,
+                ...ai.model.supportedDocTypes,
+                ...ai.model.supportedAudioTypes,
             ].includes(x?.content?.mime_type)) { notSupported = true; }
         });
         notSupported ? await x.content.analyze() : ctx.carry.attachments.push({

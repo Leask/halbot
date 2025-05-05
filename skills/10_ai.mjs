@@ -27,8 +27,9 @@ const action = async (ctx, next) => {
         const supported = {};
         for (const x of ais) {
             const supportedMimeTypes = [
-                ...x.model.supportedMimeTypes || [],
-                ...x.model.supportedAudioTypes || [],
+                ...x.model.supportedMimeTypes,
+                ...x.model.supportedDocTypes,
+                ...x.model.supportedAudioTypes,
             ];
             for (const i of ctx.collected) {
                 supported[x.id] || (supported[x.id] = 0);
