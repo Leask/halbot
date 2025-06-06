@@ -3,7 +3,7 @@
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
 [![Node.js Package](https://github.com/Leask/halbot/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/Leask/halbot/actions/workflows/npm-publish.yml)
 
-Just another `ChatGPT` / `Gemini` / `Claude` / `Azure` / `Jina` / `Ollama` Telegram bob, which is simple design, easy to use, extendable and fun.
+Just another `ChatGPT` / `Gemini` / `Claude` / `Azure` / `Jina` / `Ollama` Telegram bot, which is simple design, easy to use, extendable and fun.
 
 Live demo, click to watch on YouTube:
 
