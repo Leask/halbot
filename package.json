@@ -1,12 +1,12 @@
 {
   "name": "halbot",
   "description": "Just another `ChatGPT` / `Gemini` / `Claude` / `Azure` / `Jina` / `Ollama` Telegram bot, which is simple design, easy to use, extendable and fun.",
-  "version": "1993.2.112",
+  "version": "1994.0.1",
   "private": false,
   "homepage": "https://github.com/Leask/halbot",
   "type": "module",
   "engines": {
-    "node": ">=19.x"
+    "node": ">=20.x"
   },
   "main": "index.mjs",
   "bin": {
@@ -29,8 +29,6 @@
     "url": "https://github.com/Leask/halbot.git"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.70.1",
-    "@anthropic-ai/vertex-sdk": "^0.14.0",
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@ffprobe-installer/ffprobe": "^2.1.2",
     "@google-cloud/speech": "^7.2.1",
@@ -51,7 +49,7 @@
     "pgvector": "^0.2.1",
     "telegraf": "^4.16.3",
     "tesseract.js": "^6.0.1",
-    "utilitas": "^2000.3.3",
+    "utilitas": "^2000.3.14",
     "youtube-transcript": "^1.2.1"
   }
 }

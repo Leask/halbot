@@ -1,4 +1,4 @@
-import { alan, bot, gen, web, speech, utilitas } from 'utilitas';
+import { alan, bot, embedding, gen, web, speech, utilitas } from 'utilitas';
 import * as hal from './lib/hal.mjs';
 
 await utilitas.locate(utilitas.__(import.meta.url, 'package.json'));
@@ -6,100 +6,68 @@ const skillPath = utilitas.__(import.meta.url, 'skills');
 
 const init = async (options = {}) => {
     assert(options.telegramToken, 'Telegram Bot API Token is required.');
-    const [pkg, _speech, speechOptions, vision] = [
-        await utilitas.which(), options?.speech || {}, { tts: true, stt: true },
-        {},
+    let [pkg, _speech, _embedding, speechOptions, vision, opts] = [
+        await utilitas.which(), options?.speech || {}, options?.embedding,
+        { tts: true, stt: true }, {}, null,
     ];
     const info = bot.lines([
         `[${hal.EMOJI_BOT} ${pkg.title}](${pkg.homepage})`, pkg.description
     ]);
-    // init ai engines
     // use AI vision, AI stt if ChatGPT or Gemini is enabled
-    if (options.openaiApiKey || options.googleApiKey) {
+    if (options.openrouterApiKey
+        || options.openaiApiKey || options.googleApiKey) {
         vision.read = alan.distillFile;
         vision.see = alan.distillFile;
         _speech?.stt || (_speech.stt = alan.distillFile);
     }
-    // use openai embedding, dall-e, tts if openai is enabled
+    // use openai's dall-e, embedding, tts if openai is enabled
     if (options.openaiApiKey) {
-        const apiKey = { apiKey: options.openaiApiKey, provider: 'OPENAI' };
-        await alan.init({
-            ...apiKey, model: options.openaiModel || '*',
-            priority: options.openaiPriority, ...options
-        });
-        await gen.init(apiKey);
+        opts = { provider: 'OPENAI', apiKey: options.openaiApiKey };
+        await gen.init(opts);
+        if (!_embedding) {
+            await embedding.init(opts);
+            _embedding = embedding.embed;
+        }
         if (!_speech.tts) {
-            await speech.init({ ...apiKey, ...speechOptions });
+            await speech.init({ ...opts, ...speechOptions });
             _speech.tts = speech.tts;
         }
     }
-    // use gemini embedding if gemini is enabled and chatgpt is not enabled
-    // use google tts if google api key is ready
+    // use google's imagen, veo, search if google is enabled
+    // use google's embedding, tts if google is enabled and ChatGPT is not
     if (options.googleApiKey) {
-        const apiKey = { apiKey: options.googleApiKey, provider: 'GOOGLE' };
-        await alan.init({
-            ...apiKey, provider: 'GEMINI', model: options.geminiModel || '*',
-            priority: options.geminiPriority, ...options
+        opts = { provider: 'GOOGLE', apiKey: options.googleApiKey };
+        await gen.init(opts);
+        options.googleCx && await web.initSearch({
+            ...opts, cx: options.googleCx,
         });
+        if (!_embedding) {
+            await embedding.init(opts);
+            _embedding = embedding.embed;
+        }
         if (!_speech.tts) {
-            await speech.init({ ...apiKey, ...speechOptions });
+            await speech.init({ ...opts, ...speechOptions });
             _speech.tts = speech.tts;
         }
-        options.googleCx && await web.initSearch({
-            ...apiKey, cx: options.googleCx,
-        });
     }
-    const geminiGenReady = options.googleApiKey
-        || (options.googleCredentials && options.googleProjectId);
-    geminiGenReady && await gen.init({
-        apiKey: options.googleApiKey, provider: 'GEMINI',
-        credentials: options.googleCredentials,
-        projectId: options.googleProjectId,
+    // init ai providers
+    options.openrouterApiKey && await alan.init({
+        provider: 'OPENROUTER', apiKey: options.openrouterApiKey,
+        model: options.openrouterModel || '*',
+        priority: options.openrouterPriority, ...options,
     });
-    if (options.anthropicApiKey) {
-        await alan.init({
-            provider: 'ANTHROPIC', model: options.anthropicModel || '*',
-            apiKey: options.anthropicApiKey,
-            priority: options.anthropicPriority, ...options
-        });
-    }
-    if (options.googleCredentials && options.googleProjectId) {
-        await alan.init({
-            provider: 'VERTEX ANTHROPIC', model: options.anthropicModel || '*',
-            credentials: options.googleCredentials,
-            projectId: options.googleProjectId,
-            priority: options.anthropicPriority, ...options
-        });
-    }
-    if (options.siliconflowApiKey) {
-        await alan.init({
-            provider: 'SILICONFLOW', model: options.siliconflowModel || '*',
-            apiKey: options.siliconflowApiKey,
-            priority: options.siliconflowPriority, ...options
-        });
-    }
+    options.siliconflowApiKey && await alan.init({
+        provider: 'SILICONFLOW', apiKey: options.siliconflowApiKey,
+        model: options.siliconflowModel || '*',
+        priority: options.siliconflowPriority, ...options,
+    });
     if (options.jinaApiKey) {
-        const apiKey = { apiKey: options.jinaApiKey };
+        opts = { provider: 'JINA', apiKey: options.jinaApiKey };
         await alan.init({
-            provider: 'JINA', model: options.jinaModel || '*',
-            ...apiKey, priority: options.jinaPriority, ...options
+            ...opts, model: options.jinaModel || '*',
+            priority: options.jinaPriority, ...options
         });
-        await web.initSearch({ provider: 'Jina', ...apiKey });
-    }
-    if (options.azureApiKey && options.azureEndpoint) {
-        await alan.init({
-            provider: 'AZURE', model: options.azureModel,
-            apiKey: options.azureApiKey, priority: options.azurePriority,
-            baseURL: options.azureEndpoint, ...options
-        });
-    }
-    if (options.azureOpenaiApiKey && options.azureOpenaiEndpoint) {
-        await alan.init({
-            provider: 'AZURE OPENAI', model: options.azureOpenaiModel,
-            apiKey: options.azureOpenaiApiKey,
-            priority: options.azureOpenaiPriority,
-            endpoint: options.azureOpenaiEndpoint, ...options
-        });
+        await web.initSearch(opts);
     }
     if (options?.ollamaEnabled || options?.ollamaEndpoint) {
         await alan.init({
@@ -128,7 +96,6 @@ const init = async (options = {}) => {
         chatType: options?.chatType,
         cmds,
         database: options?.storage?.client && options?.storage,
-        embedding: ais.find(x => x.embedding)?.embedding,
         supportedMimeTypes,
         hello: options?.hello,
         help: options?.help,
@@ -139,7 +106,7 @@ const init = async (options = {}) => {
         provider: 'telegram',
         session: options?.storage,
         skillPath: options?.skillPath || skillPath,
-        speech: _speech, vision,
+        embedding: _embedding, speech: _speech, vision,
     });
     _hal._.lang = options?.lang || 'English';
     _hal._.gen = options?.gen

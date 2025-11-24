@@ -3,7 +3,9 @@
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
 [![Node.js Package](https://github.com/Leask/halbot/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/Leask/halbot/actions/workflows/npm-publish.yml)
 
-Just another `ChatGPT` / `Gemini` / `Claude` / `Azure` / `Jina` / `Ollama` Telegram bot, which is simple design, easy to use, extendable and fun.
+Just another AI powered Telegram bot, which is simple design, easy to use, extendable and fun.
+
+ℹ️ In the latest version, we've moved away from directly integrating multiple SDKs and are now focusing on supporting `OpenAI-style` APIs. We recommend using `OpenRouter` for multi-model access, as it greatly simplifies configuration and usage complexity. This approach also provides more flexibility in selecting and switching between different AI models.
 
 Live demo, click to watch on YouTube:
 
@@ -26,16 +28,15 @@ alt="Halbot live demo" width="240" height="180" border="10" /></a>
 ## Features
 
 - [Telegram](https://telegram.org/) Bot (`Telegram Bot` token required)
+- [OpenRouter](https://openrouter.ai/) (`OpenRouter` API Key required)
 - [ChatGPT](https://openai.com/blog/chatgpt) (`OpenAI` API key required)
-- [Gemini](https://ai.google.dev/gemini-api/docs) (Google `Gemini` API Key required)
-- [Claude](https://www.anthropic.com/api) (`Anthropic` or Google `Vextex` API Key required)
-- [Azure](https://azure.microsoft.com/en-us/solutions/ai) (`Azure` API Key required)
 - [Jina](https://jina.ai/api-dashboard/deepsearch) (`Jina` API Key required)
 - [Ollama](https://github.com/jmorganca/ollama) (Install `Ollama` and serve your model)
-- Speech-to-Text (`OpenAI` or `Google Cloud` API key required, or your own engine)
-- Text-to-Speech (`OpenAI` or `Google Cloud` API key required, or your own engine)
-- Text-to-Image by DALL·E or Imagen (`OpenAI` or Google `Gemini` API key required, or your own engine)
-- OCR/OBJECT_DETECT (`OpenAI` or Google `Gemini` API key required, or your own engine)
+- Speech-to-Text (`OpenAI` or `Google` API key required, or your own engine)
+- Text-to-Speech (`OpenAI` or `Google` API key required, or your own engine)
+- Image generation by DALL·E or Imagen (`OpenAI` or `Google` API key required, or your own engine)
+- Video generation by veo (`Google` API key required, or your own engine)
+- OCR/OBJECT_DETECT (`OpenAI` or `Google` API key required, or your own engine)
 - DeepSearch (`Jina` API Key required)
 - Feeding webpage and [YouTube](https://www.youtube.com/) to enhance your prompt
 - Support Tools (Function Calls)
@@ -77,35 +78,29 @@ All supported configuration fields:
     // REQUIRED, string.
     "telegramToken": "[[Telegram Bot API Token]]",
 
+    // Set some of these fields if you need Openrouter's AI models.
+    // OPTIONAL, string.
+    "openrouterApiKey": "[[OpenRouter API Key]]",
+    // OPTIONAL, string, default: "*".
+    "openrouterModel": "[[Custom OpenRouter Model ID]]",
+    // OPTIONAL, integer.
+    "openrouterPriority": "[[Custom OpenRouter Priority]]",
+
     // Set some of these fields if you need OpenAI's ChatGPT, Whisper, Embedding features.
     // OPTIONAL, string.
     "openaiApiKey": "[[OpenAI API Key]]",
     // OPTIONAL, string.
     "openaiEndpoint": "[[Custom OpenAI API endpoint]]",
-    // OPTIONAL, string, default: "gpt-3.5-turbo".
+    // OPTIONAL, string, default: [[latest gpt mainstream model]].
     "openaiModel": "[[Custom OpenAI Model ID]]",
     // OPTIONAL, integer.
     "openaiPriority": "[[Custom OpenAI Priority]]",
 
-    // Set some of these fields if you need Google's Gemini, TTS, STT, OCR, OBJECT_DETECT, Embedding features.
+    // Set some of these fields if you need Google's search, imagen, veo, TTS, STT, OCR, OBJECT_DETECT, Embedding features.
     // OPTIONAL, string.
     "googleApiKey": "[[Google Cloud / Gemini API Key]]",
-    // OPTIONAL, string, default: "gemini-pro-vision".
-    "geminiModel": "[[Custom Gemini Model ID]]",
-    // OPTIONAL, integer
-    "geminiPriority": "[[Custom Gemini Priority]]",
-
-    // Set some of these fields if you need Anthropic's Claude features.
-    // OPTIONAL, string.
-    "anthropicApiKey": "[[Anthropic API Key]]",
-    // OPTIONAL, string.
-    "anthropicCredentials": "[[Vertex Anthropic Credentials]]",
-    // OPTIONAL, string.
-    "anthropicProjectId": "[[Vertex Anthropic Project Id]]",
-    // OPTIONAL, string, default: `latest claude model`.
-    "anthropicModel": "[[Custom Anthropic Model ID]]",
-    // OPTIONAL, integer.
-    "anthropicPriority": "[[Custom Anthropic Priority]]",
+    // OPTIONAL, string, set if you need Google Search as a tool.
+    "googleCx": "[[Google Search Engine ID]]",
 
     // Set some of these fields if you need SiliconFlow's DeepSearch features.
     // OPTIONAL, string.
@@ -115,33 +110,13 @@ All supported configuration fields:
     // OPTIONAL, integer.
     "siliconflowPriority": "[[Custom SiliconFlow Priority]]",
 
-    // Set some of these fields if you need Jina's DeepSearch features.
+    // Set some of these fields if you need Jina's DeepSearch, reader, search features.
     // OPTIONAL, string.
     "jinaApiKey": "[[Jina API Key]]",
     // OPTIONAL, string.
     "jinaModel": "[[Custom Jina Model ID]]",
     // OPTIONAL, integer.
     "jinaPriority": "[[Custom Jina Priority]]",
-
-    // Set some of these fields if you need Azure's AI features.
-    // OPTIONAL, string.
-    "azureApiKey": "[[Azure API Key]]",
-    // OPTIONAL, string.
-    "azureEndpoint": "[[Azure API Endpoint]]",
-    // OPTIONAL, string.
-    "azureModel": "[[Custom Azure Model ID]]",
-    // OPTIONAL, integer.
-    "azurePriority": "[[Custom Azure Priority]]",
-
-    // Set some of these fields if you nee Azure OpenAI's AI features.
-    // OPTIONAL, string.
-    "azureOpenaiApiKey": "[[Azure OpenAI API Key]]",
-    // OPTIONAL, string.
-    "azureOpenaiEndpoint": "[[Azure OpenAI API Endpoint]]",
-    // OPTIONAL, string.
-    "azureOpenaiModel": "[[Custom Azure OpenAI Model ID]]",
-    // OPTIONAL, integer.
-    "azureOpenaiPriority": "[[Custom Azure OpenAI Priority]]",
 
     // Set some of these fields if you need Ollama features.
     // OPTIONAL, boolean.
@@ -152,10 +127,6 @@ All supported configuration fields:
     "ollamaModel": "[[Custom Ollama Model ID]]",
     // OPTIONAL, integer.
     "ollamaPriority": "[[Custom Ollama Priority]]",
-
-    // OPTIONAL, string.
-    // Using this option along with `googleApiKey` to enable Google Search as a tool.
-    "googleCx": "[[Google Search Engine ID]]",
 
     // OPTIONAL, undefined || array of string.
     // To open the bot to PUBLIC, DO NOT set this field;
@@ -231,7 +202,7 @@ In peace-of-mind:
 $ npx halbot
 ```
 
-`If you have multible AI engines configed, use '/chatgpt' or '/bing' to switch between them, or you can use '/*' to ask them all at the same time.`
+Run `/help` in the chat to get help information.
 
 ## Integrate to your project
 
@@ -266,6 +237,10 @@ const config = {
         [[aiNameB]]: [[aiConfigB]],
         // ...
     },
+
+    // OPTIONAL, object.
+    // Your own embedding engine.
+    embedding: [[embeddingApi]],
 
     // OPTIONAL, object.
     // Your own speech-to-text and text-to-speech engine.
@@ -364,6 +339,15 @@ await halbot(config);
 - `halbot` uses my other project [🧰 utilitas](https://github.com/Leask/utilitas) as the basic framework to handle all the dirty work.
 - `halbot` uses [🤖 utilitas.bot](https://github.com/Leask/utilitas/blob/master/lib/bot.mjs) as a Telegram bot engine.
 - `halbot` uses [🤖 utilitas.alan](https://github.com/Leask/utilitas/blob/master/lib/alan.mjs) to communicate with the AI engines.
+
+## Related Issues:
+
+Besure to upgrade jwa on node v25:
+https://github.com/auth0/node-jsonwebtoken/issues/992
+
+```bash
+$ npm upgrade jwa
+```
 
 ## Contact me
 
