@@ -1,6 +1,6 @@
 {
   "name": "halbot",
-  "description": "Just another `ChatGPT` / `Gemini` / `Claude` / `Azure` / `Jina` / `Ollama` Telegram bot, which is simple design, easy to use, extendable and fun.",
+  "description": "Just another AI powered Telegram bot, which is simple design, easy to use, extendable and fun.",
   "version": "1994.0.1",
   "private": false,
   "homepage": "https://github.com/Leask/halbot",
