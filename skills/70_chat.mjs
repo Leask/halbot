@@ -24,12 +24,10 @@ const action = async (ctx, next) => {
             const content = msgs[n]?.[options?.tts ? 'spoken' : 'text'] || '';
             pure.push(content);
             const ai = ais.find(x => x.id === n);
-            let aiName = ai.name;
-            const defModel = aiName.replace(/^.*\(.*\)$/, '$1');
-            const curModel = msgs[n]?.model;
-            if (defModel && curModel && defModel !== curModel) {
-                aiName = aiName.replace(/^(.*\().*(\))$/, `$1${curModel}$2`);
-            }
+            const aiName = ai.name.replace(
+                /^(.*\().*(\))$/,
+                `$1${msgs[n]?.model.replace(/^[^\/]*\//, '')}$2`
+            );
             packed.push(joinL2([
                 ...options?.tts ? [] : [`${aiName}:`], content
             ]));
