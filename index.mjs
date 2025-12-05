@@ -20,10 +20,13 @@ const init = async (options = {}) => {
         vision.see = alan.distillFile;
         _speech?.stt || (_speech.stt = alan.distillFile);
     }
-    // use openai's dall-e, embedding, tts if openai is enabled
-    if (options.openaiApiKey) {
-        opts = { provider: 'OPENAI', apiKey: options.openaiApiKey };
+    // use google's imagen, veo, search, embedding, tts if google is enabled
+    if (options.googleApiKey) {
+        opts = { provider: 'GOOGLE', apiKey: options.googleApiKey };
         await gen.init(opts);
+        options.googleCx && await web.initSearch({
+            ...opts, cx: options.googleCx,
+        });
         if (!_embedding) {
             await embedding.init(opts);
             _embedding = embedding.embed;
@@ -33,14 +36,10 @@ const init = async (options = {}) => {
             _speech.tts = speech.tts;
         }
     }
-    // use google's imagen, veo, search if google is enabled
-    // use google's embedding, tts if google is enabled and ChatGPT is not
-    if (options.googleApiKey) {
-        opts = { provider: 'GOOGLE', apiKey: options.googleApiKey };
+    // use openai's dall-e, embedding, tts if openai is enabled, and google is not
+    if (options.openaiApiKey) {
+        opts = { provider: 'OPENAI', apiKey: options.openaiApiKey };
         await gen.init(opts);
-        options.googleCx && await web.initSearch({
-            ...opts, cx: options.googleCx,
-        });
         if (!_embedding) {
             await embedding.init(opts);
             _embedding = embedding.embed;
