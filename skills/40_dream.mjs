@@ -1,10 +1,10 @@
 import { bot, storage } from '../index.mjs';
 
-const GEMINI = 'GEMINI';
+const GOOGLE = 'GOOGLE';
 const types = { image: 'photo', video: 'video' };
 
 const action = async (ctx, next) => {
-    let [provider, func, reference] = [GEMINI, 'image', null];
+    let [provider, func, reference] = [GOOGLE, 'image', null];
     switch (ctx.cmd.cmd) {
         case 'fantasy': func = 'video'; break;
         case 'gptimage':
