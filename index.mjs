@@ -13,28 +13,19 @@ const init = async (options = {}) => {
     const info = bot.lines([
         `[${hal.EMOJI_BOT} ${pkg.title}](${pkg.homepage})`, pkg.description
     ]);
-    // use AI vision, AI stt if ChatGPT or Gemini is enabled
+    // use AI vision, AI stt if OpenRouter, Gemini or OpenAI is enabled
     if (options.openrouterApiKey
         || options.openaiApiKey || options.googleApiKey) {
         vision.read = alan.distillFile;
         vision.see = alan.distillFile;
         _speech?.stt || (_speech.stt = alan.distillFile);
     }
-    // use google's imagen, veo, search, embedding, tts if google is enabled
-    if (options.googleApiKey) {
-        opts = { provider: 'GOOGLE', apiKey: options.googleApiKey };
-        await gen.init(opts);
-        options.googleCx && await web.initSearch({
-            ...opts, cx: options.googleCx,
+    // use embedding if OpenRouter is enabled
+    if (options.openrouterApiKey && !_embedding) {
+        await embedding.init({
+            provider: 'OPENROUTER', apiKey: options.openrouterApiKey,
         });
-        if (!_embedding) {
-            await embedding.init(opts);
-            _embedding = embedding.embed;
-        }
-        if (!_speech.tts) {
-            await speech.init({ ...opts, ...speechOptions });
-            _speech.tts = speech.tts;
-        }
+        _embedding = embedding.embed;
     }
     // use openai's dall-e, embedding, tts if openai is enabled, and google is not
     if (options.openaiApiKey) {
@@ -44,6 +35,18 @@ const init = async (options = {}) => {
             await embedding.init(opts);
             _embedding = embedding.embed;
         }
+        if (!_speech.tts) {
+            await speech.init({ ...opts, ...speechOptions });
+            _speech.tts = speech.tts;
+        }
+    }
+    // use google's imagen, veo, search, tts if google is enabled
+    if (options.googleApiKey) {
+        opts = { provider: 'GOOGLE', apiKey: options.googleApiKey };
+        await gen.init(opts);
+        options.googleCx && await web.initSearch({
+            ...opts, cx: options.googleCx,
+        });
         if (!_speech.tts) {
             await speech.init({ ...opts, ...speechOptions });
             _speech.tts = speech.tts;

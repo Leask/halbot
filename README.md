@@ -78,7 +78,7 @@ All supported configuration fields:
     // REQUIRED, string.
     "telegramToken": "[[Telegram Bot API Token]]",
 
-    // Set some of these fields if you need Openrouter's AI models.
+    // Set some of these fields if you need Openrouter's LLM/Embedding/STT models.
     // OPTIONAL, string.
     "openrouterApiKey": "[[OpenRouter API Key]]",
     // OPTIONAL, string, default: "*".
@@ -86,7 +86,13 @@ All supported configuration fields:
     // OPTIONAL, integer.
     "openrouterPriority": "[[Custom OpenRouter Priority]]",
 
-    // Set some of these fields if you need OpenAI's ChatGPT, Whisper, Embedding features.
+    // Set some of these fields if you need Google's search, imagen, veo, TTS features.
+    // OPTIONAL, string.
+    "googleApiKey": "[[Google Cloud / Gemini API Key]]",
+    // OPTIONAL, string, set if you need Google Search as a tool.
+    "googleCx": "[[Google Search Engine ID]]",
+
+    // Set some of these fields if you need OpenAI's ChatGPT, TTS/STT, Embedding features.
     // OPTIONAL, string.
     "openaiApiKey": "[[OpenAI API Key]]",
     // OPTIONAL, string.
@@ -96,13 +102,7 @@ All supported configuration fields:
     // OPTIONAL, integer.
     "openaiPriority": "[[Custom OpenAI Priority]]",
 
-    // Set some of these fields if you need Google's search, imagen, veo, TTS, STT, OCR, OBJECT_DETECT, Embedding features.
-    // OPTIONAL, string.
-    "googleApiKey": "[[Google Cloud / Gemini API Key]]",
-    // OPTIONAL, string, set if you need Google Search as a tool.
-    "googleCx": "[[Google Search Engine ID]]",
-
-    // Set some of these fields if you need SiliconFlow's DeepSearch features.
+    // Set some of these fields if you need SiliconFlow's AI models.
     // OPTIONAL, string.
     "siliconflowApiKey": "[[SiliconFlow API Key]]",
     // OPTIONAL, string.
