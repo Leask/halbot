@@ -27,6 +27,18 @@ const init = async (options = {}) => {
         });
         _embedding = embedding.embed;
     }
+    // use google's imagen, veo, search, tts if google is enabled
+    if (options.googleApiKey) {
+        opts = { provider: 'GOOGLE', apiKey: options.googleApiKey };
+        await gen.init(opts);
+        options.googleCx && await web.initSearch({
+            ...opts, cx: options.googleCx,
+        });
+        if (!_speech.tts) {
+            await speech.init({ ...opts, ...speechOptions });
+            _speech.tts = speech.tts;
+        }
+    }
     // use openai's dall-e, embedding, tts if openai is enabled, and google is not
     if (options.openaiApiKey) {
         opts = { provider: 'OPENAI', apiKey: options.openaiApiKey };
@@ -35,18 +47,6 @@ const init = async (options = {}) => {
             await embedding.init(opts);
             _embedding = embedding.embed;
         }
-        if (!_speech.tts) {
-            await speech.init({ ...opts, ...speechOptions });
-            _speech.tts = speech.tts;
-        }
-    }
-    // use google's imagen, veo, search, tts if google is enabled
-    if (options.googleApiKey) {
-        opts = { provider: 'GOOGLE', apiKey: options.googleApiKey };
-        await gen.init(opts);
-        options.googleCx && await web.initSearch({
-            ...opts, cx: options.googleCx,
-        });
         if (!_speech.tts) {
             await speech.init({ ...opts, ...speechOptions });
             _speech.tts = speech.tts;
