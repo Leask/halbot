@@ -13,10 +13,6 @@ const keyboards = [[
     { text: `/end ${END}` },
     { text: `/list ${THREAD}` },
 ], [
-    { text: '/polish ❇️' },
-    { text: '/to 🇨🇳' },
-    { text: '/to 🇺🇸' },
-], [
     { text: '/help 🛟' },
     { text: '/set --tts=🔇' },
     { text: '/set --tts=🔊' },
