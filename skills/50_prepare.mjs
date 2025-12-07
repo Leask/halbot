@@ -3,7 +3,7 @@ import { alan, hal, utilitas } from '../index.mjs';
 const checkUnsupportedMimeType = async ctx => {
     ctx.carry.attachments = [];
     const ais = await alan.getAi(null, { all: true });
-    print(ctx.collected);
+    // print(ctx.collected);
     for (const x of ctx.collected.filter(x => x.type === 'PROMPT')) {
         let notSupported = false;
         ctx.selectedAi.map(y => {
