@@ -26,15 +26,10 @@ const action = async (ctx, next) => {
     } else if (ctx.collected?.length) {
         const supported = {};
         for (const x of ais) {
-            const supportedMimeTypes = [
-                ...x.model.supportedMimeTypes,
-                ...x.model.supportedDocTypes,
-                ...x.model.supportedAudioTypes,
-            ];
             for (const i of ctx.collected) {
                 supported[x.id] || (supported[x.id] = 0);
                 // Priority for supported mime types
-                supportedMimeTypes.includes(i?.content?.mime_type)
+                x.model.supportedMimeTypes.includes(i?.content?.mime_type)
                     && supported[x.id]++;
                 // Priority for user selected AI
                 x.id === ctx.session.config?.ai && supported[x.id]++;

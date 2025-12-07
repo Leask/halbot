@@ -73,7 +73,7 @@ const init = async (options = {}) => {
     const { ais } = await alan.initChat({ sessions: options?.storage });
     const cmds = options?.cmds || [];
     // config multimodal engines
-    const supportedMimeTypes = new Set(Object.values(ais).map(x => {
+    const supportedMimeTypes = new Set(ais.map(x => {
         // init instant ai selection
         cmds.push(hal.newCommand(`ai_${x.id}`, `${x.name}: ${x.features}`));
         return x.model;

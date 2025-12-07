@@ -3,15 +3,14 @@ import { alan, hal, utilitas } from '../index.mjs';
 const checkUnsupportedMimeType = async ctx => {
     ctx.carry.attachments = [];
     const ais = await alan.getAi(null, { all: true });
+    print(ctx.collected);
     for (const x of ctx.collected.filter(x => x.type === 'PROMPT')) {
         let notSupported = false;
         ctx.selectedAi.map(y => {
             const ai = ais.find(z => z.id === y);
-            if (![
-                ...ai.model.supportedMimeTypes,
-                ...ai.model.supportedDocTypes,
-                ...ai.model.supportedAudioTypes,
-            ].includes(x?.content?.mime_type)) { notSupported = true; }
+            if (!ai.model.supportedMimeTypes.includes(x?.content?.mime_type)) {
+                notSupported = true;
+            }
         });
         notSupported ? await x.content.analyze() : ctx.carry.attachments.push({
             ...x.content, analyze: undefined,
