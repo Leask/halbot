@@ -103,7 +103,6 @@ const init = async (options = {}) => {
         help: options?.help,
         homeGroup: options?.homeGroup,
         info: options?.info || info,
-        magicWord: options?.magicWord,
         private: options?.private,
         provider: 'telegram',
         session: options?.storage,
