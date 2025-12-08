@@ -33,12 +33,6 @@ const action = async (ctx, next) => {
                     && supported[x.id]++;
                 // Priority for user selected AI
                 x.id === ctx.session.config?.ai && supported[x.id]++;
-                // Priority for audio models
-                ctx.checkSpeech() && (
-                    x.model.supportedAudioTypes || []
-                ).includes(i?.content?.mime_type)
-                    && (ctx.carry.audioMode = true)
-                    && x.model.audio && supported[x.id]++;
             }
         }
         ctx.selectedAi = [Object.keys(supported).sort(

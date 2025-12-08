@@ -16,9 +16,7 @@ const action = async (ctx, next) => {
         ];
     const packMsg = options => {
         const said = !options?.tts && ctx.result ? ctx.result : '';
-        const packed = [
-            ...ctx.carry?.threadInfo, ...said ? [joinL2([YOU, said])] : [],
-        ];
+        const packed = [...said ? [joinL2([YOU, said])] : []];
         const pure = [];
         ctx.selectedAi.map(n => {
             const content = msgs[n]?.[options?.tts ? 'spoken' : 'text'] || '';
@@ -56,14 +54,14 @@ const action = async (ctx, next) => {
         lastSent = curTime;
         return sResp;
     };
-    ctx.carry.threadInfo.length || await ok(onProgress);
+    await ok(onProgress);
     for (const n of ctx.selectedAi) {
         pms.push((async ai => {
             try {
                 const resp = await alan.talk(ctx.prompt || alan.ATTACHMENTS, {
                     aiId: ai, ...ctx.carry, stream: async r => {
                         msgs[ai] = r;
-                        ctx.carry.threadInfo.length || ok(onProgress);
+                        await ok(onProgress);
                     },
                 });
                 references = resp.references;
@@ -73,7 +71,11 @@ const action = async (ctx, next) => {
                     && !resp.text.split('\n').some(x => /^\s*```/.test(x))
                     ? resp.spoken : null;
                 for (let img of resp?.images || []) {
-                    await ctx.image(img.data, { caption: `🎨 by ${resp.model}` });
+                    await ctx.image(img.data, { caption: `🎨 by ${r.model}` });
+                    await ctx.timeout();
+                }
+                for (let video of resp?.videos || []) {
+                    await ctx.video(video.data, { caption: `🎬 by ${r.model}` });
                     await ctx.timeout();
                 }
                 return resp;

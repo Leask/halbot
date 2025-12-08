@@ -18,6 +18,7 @@ export const { name, run, priority, func, help, cmds } = {
     func: action,
     help: bot.lines([
         '¶ Use an AI engine `temporary` without touching your settings.',
+        'Example: `/[AI_ID]` Tell me a joke.',
     ]),
     cmds: {
         all: 'Use all AI engines simultaneously: /all Say hello to all AIs!',
