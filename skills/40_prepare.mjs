@@ -31,7 +31,7 @@ const action = async (ctx, next) => {
     } else {
         ctx.avatar = '😸';
     }
-    // prompt
+    // collect input
     await checkUnsupportedMimeType(ctx);
     const maxInputTokens = await alan.getChatPromptLimit()
         - await alan.getChatAttachmentCost() * ctx.carry.attachments.length;
@@ -44,6 +44,13 @@ const action = async (ctx, next) => {
     ) < maxInputTokens && additionInfo.length) {
         ctx.prompt += `${additionInfo.shift()} `;
     }
+    // rag
+    ctx.carry.sessionId = ctx.chatId; // THIS LINE IS IMPORTANT
+    if (ctx.prompt) {
+        const result = await ctx.recall(ctx.prompt);
+        print(result);
+    }
+    // prompt
     ctx.prompt = utilitas.trim(ctx.prompt);
     additionInfo.filter(x => x).length && (ctx.prompt += '...');
     // next
