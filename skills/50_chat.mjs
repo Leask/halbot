@@ -58,7 +58,7 @@ const action = async (ctx, next) => {
     for (const n of ctx.selectedAi) {
         pms.push((async ai => {
             try {
-                const resp = await alan.talk(ctx.prompt || alan.ATTACHMENTS, {
+                const resp = await alan.talk(ctx.prompt, {
                     aiId: ai, ...ctx.carry, stream: async r => {
                         msgs[ai] = r;
                         await ok(onProgress);
