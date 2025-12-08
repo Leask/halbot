@@ -91,6 +91,7 @@ const action = async (ctx, next) => {
     await Promise.all(pms);
     await (Object.values(msgs).map(x => x.text).join('').trim()
         ? ok({ final: true }) : ctx.deleteMessage(sResp[0].message_id));
+    ctx.generated = Object.values(msgs).map(x => x.text).join('\n\n');
     ctx.tts = audio || packMsg({ tts: true });
     await next();
 };
