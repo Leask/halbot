@@ -47,8 +47,8 @@ const action = async (ctx, next) => {
     // rag
     ctx.carry.sessionId = ctx.chatId; // THIS LINE IS IMPORTANT
     if (ctx.prompt) {
-        const result = await ctx.recall(ctx.prompt);
-        print(result);
+        const ragResp = await ctx.recall(ctx.prompt);
+        const ctxResp = await ctx.getContext();
     }
     // prompt
     ctx.prompt = utilitas.trim(ctx.prompt);
