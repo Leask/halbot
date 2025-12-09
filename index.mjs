@@ -11,6 +11,10 @@ const init = async (options = {}) => {
     const info = bot.lines([
         `[${hal.EMOJI_BOT} ${pkg.title}](${pkg.homepage})`, pkg.description
     ]);
+    // use google's search if google is enabled
+    options.googleApiKey && options.googleCx && await web.initSearch({
+        provider: 'GOOGLE', apiKey: options.googleApiKey, cx: options.googleCx,
+    });
     // use openrouter's AI models, embedding if OpenRouter is enabled
     if (options.openrouterApiKey) {
         opts = { provider: 'OPENROUTER', apiKey: options.openrouterApiKey };
@@ -24,15 +28,12 @@ const init = async (options = {}) => {
             _embedding = embedding.embed;
         }
     }
-    // use google's imagen, veo, search, tts if google is enabled
+    // use google's imagen, veo, tts if google is enabled
     if (options.googleApiKey) {
         opts = { provider: 'GOOGLE', apiKey: options.googleApiKey };
         await alan.init({
             ...opts, model: options.googleModel || '*',
             priority: options.googlePriority, ...options,
-        });
-        options.googleCx && await web.initSearch({
-            ...opts, cx: options.googleCx,
         });
         _tts || (_tts = alan.tts);
     }
