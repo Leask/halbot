@@ -1,13 +1,15 @@
 import { alan, bot, hal, storage, utilitas } from '../index.mjs';
 
+const _name = 'Broca';
 const [PRIVATE_LIMIT, GROUP_LIMIT] = [60 / 60, 60 / 20].map(x => x * 1000);
-const CALLBACK_LIMIT = 30;
 const [parse_mode, logOptions] = [hal.parse_mode, { log: true }];
-const log = (c, o) => utilitas.log(c, import.meta.url, { time: 1, ...o || {} });
+const log = (c, o) => utilitas.log(c, _name, { time: 1, ...o || {} });
 const getKey = s => s?.toLowerCase?.()?.startsWith?.('http') ? 'url' : 'source';
 const isMarkdownError = e => e?.description?.includes?.("can't parse entities");
 const normalizeKey = chatId => `${hal.HALBOT}_SESSION_${chatId}`;
 const compact = (str, op) => utilitas.ensureString(str, { ...op || {}, compact: true });
+
+const [CALLBACK_LIMIT, BOT_COMMAND] = [30, 'bot_command'];
 
 const KNOWN_UPDATE_TYPES = [
     'callback_query', 'channel_post', 'edited_message', 'message',
@@ -245,7 +247,7 @@ const ctxExt = ctx => {
 const action = async (ctx, next) => {
     // log event
     const e = `Event: ${ctx.update.update_id} => ${JSON.stringify(ctx.update)} `;
-    process.stdout.write(`[HAL] ${e} \n`);
+    process.stdout.write(`[${_name.toUpperCase()} ${new Date().toISOString()}] ${e} \n`);
     log(e);
     // init ctx methods
     ctxExt(ctx);
@@ -286,7 +288,7 @@ const action = async (ctx, next) => {
         ...(ctx._.message.entities || []).map(e => ({ ...e, text: ctx._.message.text })),
         ...(ctx._.message.caption_entities || []).map(e => ({ ...e, text: ctx._.message.caption })),
         ...(ctx._.message.reply_to_message?.entities || []).filter(
-            x => x?.type !== bot_command
+            x => x?.type !== BOT_COMMAND
         ).map(e => ({ ...e, text: ctx._.message.reply_to_message.text })),
     ].map(e => ({
         ...e, matched: e.text.substring(e.offset, e.offset + e.length),
@@ -297,7 +299,7 @@ const action = async (ctx, next) => {
         let target;
         switch (e.type) {
             case hal.MENTION: target = e.matched.substring(1, e.length); break;
-            case hal.bot_command: target = e.matched.split('@')[1]; break;
+            case BOT_COMMAND: target = e.matched.split('@')[1]; break;
         }
         return target === ctx.botInfo.username;
     }) || ctx._.message.reply_to_message?.from?.username === ctx.botInfo.username
@@ -321,7 +323,7 @@ const action = async (ctx, next) => {
 };
 
 export const { name, run, priority, func } = {
-    name: 'Broca',
+    name: _name,
     run: true,
     priority: 10,
     func: action,
