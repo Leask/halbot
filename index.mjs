@@ -1,8 +1,8 @@
-import { alan, bot, embedding, web, utilitas } from 'utilitas';
+import { alan, bot, rag, web, utilitas } from 'utilitas';
 import * as hal from './lib/hal.mjs';
 
 await utilitas.locate(utilitas.__(import.meta.url, 'package.json'));
-const skillPath = utilitas.__(import.meta.url, 'skills');
+const pipelinePath = utilitas.__(import.meta.url, 'pipeline');
 
 const init = async (options = {}) => {
     assert(options.telegramToken, 'Telegram Bot API Token is required.');
@@ -24,8 +24,8 @@ const init = async (options = {}) => {
             priority: options.openrouterPriority, ...options,
         })
         if (!_embedding) {
-            await embedding.init(opts);
-            _embedding = embedding.embed;
+            await rag.initEmbedding(opts);
+            _embedding = rag.embed;
         }
     }
     // use google's imagen, veo, tts if google is enabled
@@ -45,8 +45,8 @@ const init = async (options = {}) => {
             priority: options.openaiPriority, ...options,
         });
         if (!_embedding) {
-            await embedding.init(opts);
-            _embedding = embedding.embed;
+            await rag.initEmbedding(opts);
+            _embedding = rag.embed;
         }
         _tts || (_tts = alan.tts);
     }
@@ -87,8 +87,10 @@ const init = async (options = {}) => {
         embedding: _embedding, hello: options?.hello, help: options?.help,
         homeGroup: options?.homeGroup, info: options?.info || info,
         lang: options?.lang || 'English', private: options?.private,
-        provider: 'telegram', session: options?.storage,
-        skillPath: options?.skillPath || skillPath, supportedMimeTypes,
+        provider: 'telegram',
+        pipeline: options?.pipeline,
+        pipelinePath: options?.pipelinePath || pipelinePath,
+        supportedMimeTypes,
         tts: _tts,
     });
     return _hal;

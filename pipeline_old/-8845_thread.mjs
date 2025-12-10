@@ -12,7 +12,6 @@ const keyboards = [[
 ]];
 
 const action = async (ctx, next) => {
-    ctx.carry || (ctx.carry = {});
     // load functions
     const ok = async (message, options) => await ctx.ok(message, {
         ...options || {},
