@@ -33,7 +33,7 @@ const memorize = async (ctx) => {
     if (!ctx.messageId || !distilled) { return; }
     const event = {
         id, bot_id: ctx.botInfo.id, chat_id: ctx._.chatId,
-        chat_type: ctx.chatType, message_id: ctx.messageId,
+        chat_type: ctx._.chatType, message_id: ctx._.messageId,
         received: JSON.stringify(received), received_text,
         response: JSON.stringify(response), response_text,
         collected: JSON.stringify(collected), distilled,
@@ -304,11 +304,12 @@ const action = async (ctx, next) => {
         return target === ctx.botInfo.username;
     }) || ctx._.message.reply_to_message?.from?.username === ctx.botInfo.username
         || ctx.type === 'callback_query')
-        && (ctx.chatType = hal.MENTION);
-    (((ctx.txt || ctx._.message.voice || ctx._.message.poll || ctx._.message.data || ctx._.message.document
-        || ctx._.message.photo || ctx._.message.sticker || ctx._.message.video_note || ctx._.message.video
-        || ctx._.message.audio || ctx._.message.location || ctx._.message.venue || ctx._.message.contact
-    ) && ctx._.messageessageId)
+        && (ctx._.chatType = hal.MENTION);
+    (((ctx._.text || ctx._.message.voice || ctx._.message.poll
+        || ctx._.message.data || ctx._.message.document || ctx._.message.photo
+        || ctx._.message.sticker || ctx._.message.video_note
+        || ctx._.message.video || ctx._.message.audio || ctx._.message.location
+        || ctx._.message.venue || ctx._.message.contact) && ctx._.messageId)
         || (ctx._.message.new_chat_member || ctx._.message.left_chat_member))
         && await next();
     // persistence
