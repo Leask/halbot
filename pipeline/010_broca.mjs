@@ -224,7 +224,7 @@ const ctxExt = ctx => {
     };
     ctx.skipMemorize = () => ctx._.skipMemorize = true;
     ctx.end = () => { ctx._.done.push(null); ctx.skipMemorize() };
-    ctx.complete = async (options) => await ctx.ok('☑️', options);
+    ctx.complete = async (options) => await ctx.ok(hal.CHECK, options);
     ctx.json = async (obj, options) => await ctx.ok(hal.json(obj), options);
     ctx.list = async (list, options) => await ctx.ok(uList(list), options);
     ctx.audio = async (s, o) => await replyWith(ctx, 'replyWithAudio', s, o);
