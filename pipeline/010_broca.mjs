@@ -2,7 +2,7 @@ import { alan, bot, hal, storage, utilitas } from '../index.mjs';
 
 const _name = 'Broca';
 const [PRIVATE_LIMIT, GROUP_LIMIT] = [60 / 60, 60 / 20].map(x => x * 1000);
-const [parse_mode, logOptions] = [hal.parse_mode, { log: true }];
+const [parse_mode, logOptions] = [bot.parse_mode, { log: true }];
 const log = (c, o) => utilitas.log(c, _name, { time: 1, ...o || {} });
 const getKey = s => s?.toLowerCase?.()?.startsWith?.('http') ? 'url' : 'source';
 const isMarkdownError = e => e?.description?.includes?.("can't parse entities");
@@ -225,7 +225,7 @@ const ctxExt = ctx => {
     ctx.skipMemorize = () => ctx._.skipMemorize = true;
     ctx.end = () => { ctx._.done.push(null); ctx.skipMemorize() };
     ctx.complete = async (options) => await ctx.ok('☑️', options);
-    ctx.json = async (obj, options) => await ctx.ok(json(obj), options);
+    ctx.json = async (obj, options) => await ctx.ok(hal.json(obj), options);
     ctx.list = async (list, options) => await ctx.ok(uList(list), options);
     ctx.audio = async (s, o) => await replyWith(ctx, 'replyWithAudio', s, o);
     ctx.image = async (s, o) => await replyWith(ctx, 'replyWithPhoto', s, o);
@@ -324,8 +324,5 @@ const action = async (ctx, next) => {
 };
 
 export const { name, run, priority, func } = {
-    name: _name,
-    run: true,
-    priority: 10,
-    func: action,
+    name: _name, run: true, priority: 10, func: action,
 };

@@ -1,8 +1,11 @@
 import { hal, utilitas } from '../index.mjs';
 
+const _name = 'Commands';
 const COMMAND_REGEXP = /^\/([a-z0-9_]+)(@([a-z0-9_]*))?\ ?(.*)$/sig;
+const log = (c, o) => utilitas.log(c, _name, { time: 1, ...o || {} });
 
 const action = async (ctx, next) => {
+    // handle callback query
     if (ctx._.type === 'callback_query') {
         const data = utilitas.parseJson(ctx._.message.data);
         const cb = ctx._.session?.callback?.filter?.(x => x.id === data?.callback)?.[0];
@@ -10,11 +13,12 @@ const action = async (ctx, next) => {
             log(`Callback: ${cb.text}`); // Avoid ctx._.text interference:
             ctx.collect(cb.text, null, { refresh: true });
         } else {
-            return await ctx.er(
+            return await ctx.err(
                 `Command is invalid or expired: ${ctx._.message.data}`
             );
         }
     }
+    // handle text command
     for (let e of ctx._.entities || []) {
         if (e.type !== hal.BOT_COMMAND) { continue; }
         if (!COMMAND_REGEXP.test(e.matched)) { continue; }
@@ -33,6 +37,7 @@ const action = async (ctx, next) => {
             break;
         }
     }
+    // update last touched command
     if (ctx._.cmd) {
         log(`Command: ${JSON.stringify(ctx._.cmd)}`);
         ctx._.session.cmds || (ctx._.session.cmds = {});
@@ -43,8 +48,5 @@ const action = async (ctx, next) => {
 };
 
 export const { name, run, priority, func } = {
-    name: 'Commands',
-    run: true,
-    priority: 20,
-    func: action,
+    name: _name, run: true, priority: 20, func: action,
 };
