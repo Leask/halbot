@@ -6,10 +6,7 @@ const action = async (ctx, next) => {
     let resp, md = true;
     switch (ctx._.cmd.cmd) {
         case 'echo':
-            resp = hal.json({
-                update: ctx.update,
-                session: ctx._.session,
-            });
+            resp = hal.json({ update: ctx.update, _: ctx._ });
             break;
         case 'uptime':
             resp = utilitas.uptime();

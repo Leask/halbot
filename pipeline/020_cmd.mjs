@@ -1,6 +1,6 @@
 import { hal, utilitas } from '../index.mjs';
 
-const _name = 'Commands';
+const _name = 'CMD';
 const COMMAND_REGEXP = /^\/([a-z0-9_]+)(@([a-z0-9_]*))?\ ?(.*)$/sig;
 const log = (c, o) => utilitas.log(c, _name, { time: 1, ...o || {} });
 
