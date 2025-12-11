@@ -9,7 +9,7 @@ const isMarkdownError = e => e?.description?.includes?.("can't parse entities");
 const normalizeKey = chatId => `${hal.HALBOT}_SESSION_${chatId}`;
 const compact = (str, op) => utilitas.ensureString(str, { ...op || {}, compact: true });
 
-const [CALLBACK_LIMIT, BOT_COMMAND] = [30, 'bot_command'];
+const [CALLBACK_LIMIT] = [30];
 
 const KNOWN_UPDATE_TYPES = [
     'callback_query', 'channel_post', 'edited_message', 'message',
@@ -94,7 +94,7 @@ const getExtra = (ctx, options) => {
 };
 
 const reply = async (ctx, md, text, extra) => {
-    // if (ctx.type === 'inline_query') {
+    // if (ctx._.type === 'inline_query') {
     //     return await ctx.answerInlineQuery([{}, {}]);
     // }
     if (md) {
@@ -259,13 +259,13 @@ const action = async (ctx, next) => {
     // get message body
     for (let t of KNOWN_UPDATE_TYPES) {
         if (ctx.update[t]) {
-            ctx._.message = ctx.update[ctx.type = t];
+            ctx._.message = ctx.update[ctx._.type = t];
             break;
         }
     }
-    if (ctx.type === 'callback_query') { ctx._.message = ctx._.message.message; }
-    // else if (ctx.type === 'inline_query') { ctx._.message.chat = { id: ctx._.message.from.id, type: PRIVATE }; }
-    else if (ctx.type === 'my_chat_member') {
+    if (ctx._.type === 'callback_query') { ctx._.message = ctx._.message.message; }
+    // else if (ctx._.type === 'inline_query') { ctx._.message.chat = { id: ctx._.message.from.id, type: PRIVATE }; }
+    else if (ctx._.type === 'my_chat_member') {
         log(
             'Group member status changed: '
             + ctx._.message.new_chat_member.user.id + ' => '
@@ -275,7 +275,7 @@ const action = async (ctx, next) => {
             || ctx._.message.new_chat_member.status === 'left') {
             return ctx.end();
         } else { ctx.hello(); }
-    } else if (!ctx.type) { return log(`Unsupported message type.`); }
+    } else if (!ctx._.type) { return log(`Unsupported message type.`); }
     // get chat metadata
     ctx._.chatId = ctx._.message.chat.id;
     ctx._.chatType = ctx._.message.chat.type;
@@ -288,7 +288,7 @@ const action = async (ctx, next) => {
         ...(ctx._.message.entities || []).map(e => ({ ...e, text: ctx._.message.text })),
         ...(ctx._.message.caption_entities || []).map(e => ({ ...e, text: ctx._.message.caption })),
         ...(ctx._.message.reply_to_message?.entities || []).filter(
-            x => x?.type !== BOT_COMMAND
+            x => x?.type !== hal.BOT_COMMAND
         ).map(e => ({ ...e, text: ctx._.message.reply_to_message.text })),
     ].map(e => ({
         ...e, matched: e.text.substring(e.offset, e.offset + e.length),
@@ -299,11 +299,11 @@ const action = async (ctx, next) => {
         let target;
         switch (e.type) {
             case hal.MENTION: target = e.matched.substring(1, e.length); break;
-            case BOT_COMMAND: target = e.matched.split('@')[1]; break;
+            case hal.BOT_COMMAND: target = e.matched.split('@')[1]; break;
         }
         return target === ctx.botInfo.username;
     }) || ctx._.message.reply_to_message?.from?.username === ctx.botInfo.username
-        || ctx.type === 'callback_query')
+        || ctx._.type === 'callback_query')
         && (ctx._.chatType = hal.MENTION);
     (((ctx._.text || ctx._.message.voice || ctx._.message.poll
         || ctx._.message.data || ctx._.message.document || ctx._.message.photo
