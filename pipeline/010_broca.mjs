@@ -2,14 +2,13 @@ import { alan, bot, hal, storage, utilitas } from '../index.mjs';
 
 const _name = 'Broca';
 const [PRIVATE_LIMIT, GROUP_LIMIT] = [60 / 60, 60 / 20].map(x => x * 1000);
-const [parse_mode, logOptions] = [bot.parse_mode, { log: true }];
 const log = (c, o) => utilitas.log(c, _name, { time: 1, ...o || {} });
 const getKey = s => s?.toLowerCase?.()?.startsWith?.('http') ? 'url' : 'source';
 const isMarkdownError = e => e?.description?.includes?.("can't parse entities");
 const normalizeKey = chatId => `${hal.HALBOT}_SESSION_${chatId}`;
 const compact = (str, op) => utilitas.ensureString(str, { ...op || {}, compact: true });
 
-const [CALLBACK_LIMIT] = [30];
+const [CALLBACK_LIMIT, parse_mode] = [30, bot.parse_mode];
 
 const KNOWN_UPDATE_TYPES = [
     'callback_query', 'channel_post', 'edited_message', 'message',
@@ -39,18 +38,18 @@ const memorize = async (ctx) => {
         collected: JSON.stringify(collected), distilled,
     };
     await utilitas.ignoreErrFunc(async () => {
-        event.distilled_vector = hal.bot._.embedding
-            ? await hal.bot._.embedding(event.distilled) : [];
-        switch (hal.bot._.database?.provider) {
+        event.distilled_vector = hal._.embedding
+            ? await hal._.embedding(event.distilled) : [];
+        switch (hal._.database?.provider) {
             case dbio.MYSQL:
                 event.distilled_vector = JSON.stringify(event.distilled_vector);
                 break;
         }
-        await hal.bot._.database?.client?.upsert?.(table, event, { skipEcho: true });
-    }, logOptions);
+        await hal._.database?.client?.upsert?.(table, event, { skipEcho: true });
+    }, hal.logOptions);
     // TODO: 調整，如果命令執行過，應該更新菜單 ！？
     await utilitas.ignoreErrFunc(async () => await hal.telegram.setMyCommands([
-        ...hal.bot._.cmds, ...Object.keys(ctx._.message.prompts || {}).map(
+        ...hal._.cmds, ...Object.keys(ctx._.message.prompts || {}).map(
             command => hal.newCommand(command, ctx._.message.prompts[command])
         )
     ].sort((x, y) =>
@@ -58,7 +57,7 @@ const memorize = async (ctx) => {
         - (ctx._.message?.cmds?.[x.command.toLowerCase()]?.touchedAt || 0)
     ).slice(0, hal.COMMAND_LIMIT), {
         scope: { type: 'chat', chat_id: ctx._.chatId },
-    }), logOptions);
+    }), hal.logOptions);
 };
 
 const getExtra = (ctx, options) => {
@@ -110,7 +109,7 @@ const reply = async (ctx, md, text, extra) => {
     return await utilitas.ignoreErrFunc(
         async () => await (extra?.reply_parameters?.message_id
             ? ctx.reply(text, extra) : ctx.sendMessage(text, extra)
-        ), logOptions
+        ), hal.logOptions
     );
 };
 
@@ -134,7 +133,7 @@ const editMessageText = async (ctx, md, lastMsgId, text, extra) => {
     return await utilitas.ignoreErrFunc(async (
     ) => await ctx.telegram.editMessageText(
         ctx._.chatId, lastMsgId, '', text, extra
-    ), logOptions);
+    ), hal.logOptions);
 };
 
 const sessionGet = async chatId => {
@@ -165,7 +164,7 @@ const ctxExt = ctx => {
         (options?.refresh ? '' : ctx._.text) || '', content || ''
     ].filter(x => x.length).join('\n\n'));
     ctx.hello = str => {
-        str = str || ctx._.message?.config?.hello || hal.bot._.hello;
+        str = str || ctx._.message?.config?.hello || hal._.hello;
         ctx.collect(str, null, { refresh: true });
         return str;
     };
@@ -208,14 +207,14 @@ const ctxExt = ctx => {
         return await ctx.ok(`⚠️ ${m?.message || m} `, opts);
     };
     ctx.shouldReply = async text => {
-        const should = utilitas.insensitiveHas(hal.bot._?.chatType, ctx._.chatType)
+        const should = utilitas.insensitiveHas(hal._?.chatType, ctx._.chatType)
             || ctx._.message?.config?.chatty;
         text = utilitas.isSet(text, true) ? (text || '') : '';
         if (!should || !text) { return should; }
         return await ctx.ok(text);
     };
     ctx.shouldSpeech = async text => {
-        const should = hal.bot._?.tts && (ctx._.chatType === PRIVATE
+        const should = hal._?.tts && (ctx._.chatType === PRIVATE
             ? ctx._.message.config?.tts !== false
             : ctx._.message.config?.tts === true);
         text = utilitas.isSet(text, true) ? (text || '') : ctx._.tts;
@@ -234,7 +233,7 @@ const ctxExt = ctx => {
     ctx.speech = async (cnt, options) => {
         let file = await (Buffer.isBuffer(cnt) ? storage.convert(cnt, {
             input: storage.BUFFER, expected: storage.FILE,
-        }) : utilitas.ignoreErrFunc(async () => await hal.bot._?.tts?.(
+        }) : utilitas.ignoreErrFunc(async () => await hal._?.tts?.(
             cnt, { expected: storage.FILE }
         ), { log: true }));
         if (!file) { return; }

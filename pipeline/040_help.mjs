@@ -3,16 +3,16 @@ import { bot, hal, utilitas } from '../index.mjs';
 const lines2 = arr => bot.lines(arr, '\n\n');
 
 const action = async (ctx, next) => {
-    const help = hal.bot._.info ? [hal.bot._.info] : [];
-    for (let i in hal.bot._.pipeline) {
-        if (hal.bot._.pipeline[i].hidden) { continue; }
+    const help = hal._.info ? [hal._.info] : [];
+    for (let i in hal._.pipeline) {
+        if (hal._.pipeline[i].hidden) { continue; }
         const _help = [];
-        if (hal.bot._.pipeline[i].help) {
-            _help.push(hal.bot._.pipeline[i].help);
+        if (hal._.pipeline[i].help) {
+            _help.push(hal._.pipeline[i].help);
         }
         const cmdsx = {
-            ...hal.bot._.pipeline[i].cmds || {},
-            ...hal.bot._.pipeline[i].cmdx || {},
+            ...hal._.pipeline[i].cmds || {},
+            ...hal._.pipeline[i].cmdx || {},
         };
         if (utilitas.countKeys(cmdsx)) {
             _help.push(bot.lines([
@@ -20,11 +20,11 @@ const action = async (ctx, next) => {
                 ...Object.keys(cmdsx).map(x => `- /${x}: ${cmdsx[x]}`),
             ]));
         }
-        if (utilitas.countKeys(hal.bot._.pipeline[i].args)) {
+        if (utilitas.countKeys(hal._.pipeline[i].args)) {
             _help.push(bot.lines([
                 '_⚙️ Options:_',
-                ...Object.keys(hal.bot._.pipeline[i].args).map(x => {
-                    const _arg = hal.bot._.pipeline[i].args[x];
+                ...Object.keys(hal._.pipeline[i].args).map(x => {
+                    const _arg = hal._.pipeline[i].args[x];
                     return `- \`${x}\`` + (_arg.short ? `(${_arg.short})` : '')
                         + `, ${_arg.type}(${_arg.default ?? 'N/A'})`
                         + (_arg.desc ? `: ${_arg.desc}` : '');

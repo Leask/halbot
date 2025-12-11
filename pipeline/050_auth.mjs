@@ -3,10 +3,10 @@ import { hal, utilitas } from '../index.mjs';
 // https://stackoverflow.com/questions/50204633/allow-bot-to-access-telegram-group-messages
 const action = async (ctx, next) => {
     if (!await ctx.shouldReply()) { return; }                                   // if chatType is not in whitelist, exit.
-    if (!hal.bot._.private) { return await next(); }                            // if not private, go next.
-    if (utilitas.insensitiveHas(hal.bot._.private, ctx._.chatId) || (           // auth by chatId
+    if (!hal._.private) { return await next(); }                            // if not private, go next.
+    if (utilitas.insensitiveHas(hal._.private, ctx._.chatId) || (           // auth by chatId
         ctx._.message?.from?.id && utilitas.insensitiveHas(                     // auth by userId
-            hal.bot._.private, ctx._.message?.from?.id
+            hal._.private, ctx._.message?.from?.id
         ))) {
         return await next();
     }
@@ -15,13 +15,13 @@ const action = async (ctx, next) => {
     ).map(x => x.user.id).some(a => utilitas.insensitiveHas(ctx._.private, a))) {
         return await next();
     }
-    if (hal.bot._.homeGroup && utilitas.insensitiveHas([                        // auth by homeGroup
+    if (hal._.homeGroup && utilitas.insensitiveHas([                        // auth by homeGroup
         'creator', 'administrator', 'member' // 'left'
     ], (await utilitas.ignoreErrFunc(async (
     ) => await ctx.telegram.getChatMember(
-        hal.bot._.homeGroup, ctx._.message?.from?.id
+        hal._.homeGroup, ctx._.message?.from?.id
     )))?.status)) { return await next(); }
-    if (hal.bot._.auth && await hal.bot._.auth(ctx)) { return await next(); }   // auth by custom function
+    if (hal._.auth && await hal._.auth(ctx)) { return await next(); }   // auth by custom function
     await ctx.ok('😿 Sorry, I am not allowed to talk to strangers.');
 };
 
