@@ -12,6 +12,23 @@ const action = async (ctx, next) => {
     ctxExt(ctx);
     let parsed = null;
     switch (ctx._.cmd?.cmd) {
+        case 'lang':
+            if (!ctx._.cmd.args) {
+                return await ctx.ok('Please specify a language.');
+            }
+            const _config = {
+                ...ctx._.session.config = {
+                    ...ctx._.session.config || {},
+                    ...ctx._.config = {
+                        lang: ctx._.cmd.args,
+                        hello: `Please reply in ${ctx._.cmd.args}. Hello!`,
+                    },
+                }
+            };
+            Object.keys(ctx._.config).map(x => _config[x] += ` ${hal.CHECK}`);
+            ctx.result = hal.map(_config);
+            ctx.hello();
+            break;
         case 'toggle':
             parsed = {};
             Object.keys(await hal.parseArgs(ctx._.cmd.args)).map(x =>
@@ -46,7 +63,10 @@ export const { name, run, priority, func, help, cmdx, args } = {
     help: bot.lines([
         '¶ Configure the bot by UNIX/Linux CLI style.',
         'Using [node:util.parseArgs](https://nodejs.org/api/util.html#utilparseargsconfig) to parse arguments.',
+        '¶ Set your default language.',
+        'Example: /lang Français',
     ]), cmdx: {
+        lang: 'Set your default language: /lang `LANG`',
         toggle: 'Toggle configurations. Only works for boolean values.',
         set: 'Usage: /set --`OPTION` `VALUE` -`SHORT`',
         reset: 'Reset configurations.',

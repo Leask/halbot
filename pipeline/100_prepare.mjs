@@ -1,20 +1,17 @@
 import { alan, utilitas } from '../index.mjs';
 
-const checkUnsupportedMimeType = async ctx => {
-    ctx.carry.attachments = [];
-    const ais = await alan.getAi(null, { all: true });
+const collectAttachments = async ctx => {
+    ctx._.attachments = [];
     // print(ctx.collected);
-    for (const x of ctx.collected.filter(x => x.type === 'PROMPT')) {
+    for (const x of ctx._.collected.filter(x => x.type === 'ATTACHMENT')) {
         let notSupported = false;
-        ctx.selectedAi.map(y => {
-            const ai = ais.find(z => z.id === y);
-            if (!ai.model.supportedMimeTypes.includes(x?.content?.mime_type)) {
+        ctx._.ai.map(y => {
+            const ai = ctx._.ais.find(z => z.id === y);
+            if (!ai.model.supportedMimeTypes.includes(x.content?.mime_type)) {
                 notSupported = true;
             }
         });
-        notSupported ? await x.content.analyze() : ctx.carry.attachments.push({
-            ...x.content, analyze: undefined,
-        });
+        notSupported || ctx._.attachments.push(x.content);
     }
 };
 
@@ -32,10 +29,10 @@ const action = async (ctx, next) => {
         ctx.avatar = '😸';
     }
     // collect input
-    await checkUnsupportedMimeType(ctx);
+    await collectAttachments(ctx);
     const maxInputTokens = await alan.getChatPromptLimit()
-        - await alan.getChatAttachmentCost() * ctx.carry.attachments.length;
-    const additionInfo = ctx.collected.filter(
+        - await alan.getChatAttachmentCost() * ctx._.attachments.length;
+    const additionInfo = ctx._.collected.filter(
         x => String.isString(x.content)
     ).map(x => x.content).join('\n').split(' ').filter(x => x);
     ctx.prompt = (ctx.txt || '') + '\n\n';

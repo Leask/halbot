@@ -18,6 +18,7 @@ const listAIs = async ctx => {
 };
 
 const action = async (ctx, next) => {
+    ctx._.ais = ais;
     switch (ctx._.cmd?.cmd) {
         case 'ai': return await listAIs(ctx);
         case 'all': ctx.hello(ctx._.cmd.args);
