@@ -20,8 +20,9 @@ const listAIs = async ctx => {
 const action = async (ctx, next) => {
     switch (ctx._.cmd?.cmd) {
         case 'ai': return await listAIs(ctx);
+        case 'all': ctx.hello(ctx._.cmd.args);
     }
-    if (ctx._.session.config?.ai === '@') {
+    if (ctx._.cmd?.cmd === 'all' || ctx._.session.config?.ai === '@') {
         ctx._.ai = ais.map(x => x.id);
     } else if (ctx._.collected?.length) {
         const supported = {};
@@ -59,12 +60,15 @@ export const { name, run, priority, func, help, args, cmdx } = {
     priority: 90,
     func: action,
     help: bot.lines([
-        '¶ Set initial prompt to the AI engine.',
+        '¶ Set initial prompt to the AI model.',
         "Tip 1: Set `hello=''` to reset to default initial prompt.",
-        '¶ Select between AI engines.',
-        "Tip 2: Set `ai=''` to use default AI engine.",
-        'Tip 3: Set `ai=[AI_ID]` to use specific AI engine.',
-        'Tip 4: Set `ai=@` to use all AI engines simultaneously.',
+        '¶ Select between AI models.',
+        "Tip 2: Set `ai=''` to use default AI model.",
+        'Tip 3: Set `ai=[AI_ID]` to use specific AI model.',
+        'Tip 4: Set `ai=@` to use all AI models simultaneously.',
+        '¶ Use an AI model `temporary` without touching your settings.',
+        'Tip 5: `/[AI_ID]` Tell me a joke.',
+        'Tip 6: `/all` Use all AI models simultaneously.',
     ]),
     args: {
         hello: {
@@ -73,11 +77,12 @@ export const { name, run, priority, func, help, args, cmdx } = {
         },
         ai: {
             type: 'string', short: 'a', default: '',
-            desc: "`(AI_ID, ..., @)` Select AI engine.",
+            desc: "`(AI_ID, ..., @)` Select AI model.",
             validate: validateAi,
         },
     },
     cmdx: {
         ai: 'List all available AIs.',
+        all: 'Use all AI models simultaneously: /all Say hello to all AIs!',
     }
 };
