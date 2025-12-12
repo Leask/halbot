@@ -6,8 +6,10 @@ const pipelinePath = utilitas.__(import.meta.url, 'pipeline');
 
 const init = async (options = {}) => {
     assert(options.telegramToken, 'Telegram Bot API Token is required.');
-    let [pkg, _tts, _embedding, opts]
-        = [await utilitas.which(), options?.tts, options?.embedding, null];
+    let [pkg, _tts, _embed, _rerank, opts] = [
+        await utilitas.which(), options?.tts, options?.embed, options?.rerank,
+        null
+    ];
     const info = bot.lines([
         `[${hal.EMOJI_BOT} ${pkg.title}](${pkg.homepage})`, pkg.description
     ]);
@@ -23,9 +25,9 @@ const init = async (options = {}) => {
             model: options.openrouterModel || '*',
             priority: options.openrouterPriority, ...options,
         })
-        if (!_embedding) {
+        if (!_embed) {
             await rag.initEmbedding(opts);
-            _embedding = rag.embed;
+            _embed = rag.embed;
         }
     }
     // use google's imagen, veo, tts if google is enabled
@@ -44,11 +46,22 @@ const init = async (options = {}) => {
             ...opts, model: options.openaiModel || '*',
             priority: options.openaiPriority, ...options,
         });
-        if (!_embedding) {
+        if (!_embed) {
             await rag.initEmbedding(opts);
-            _embedding = rag.embed;
+            _embed = rag.embed;
         }
         _tts || (_tts = alan.tts);
+    }
+    // use google rerank if google is enabled
+    if (options?.googleCredentials && options.googleProjectId) {
+        opts = {
+            provider: 'GOOGLE', credentials: options.googleCredentials,
+            projectId: options.googleProjectId,
+        };
+        if (!_rerank) {
+            await rag.initReranker(opts);
+            _rerank = rag.rerank;
+        }
     }
     // init other ai providers
     options.siliconflowApiKey && await alan.init({
@@ -63,6 +76,10 @@ const init = async (options = {}) => {
             priority: options.jinaPriority, ...options
         });
         await web.initSearch(opts);
+        if (!_rerank) {
+            await rag.initReranker(opts);
+            _rerank = rag.rerank;
+        }
     }
     if (options?.ollamaEnabled || options?.ollamaEndpoint) {
         await alan.init({
@@ -84,14 +101,12 @@ const init = async (options = {}) => {
         args: options?.args, auth: options?.auth,
         botToken: options?.telegramToken, chatType: options?.chatType,
         cmds, database: options?.storage?.client && options?.storage,
-        embedding: _embedding, hello: options?.hello, help: options?.help,
+        embed: _embed, hello: options?.hello, help: options?.help,
         homeGroup: options?.homeGroup, info: options?.info || info,
-        lang: options?.lang || 'English', private: options?.private,
-        provider: 'telegram',
-        pipeline: options?.pipeline,
+        lang: options?.lang || 'English', pipeline: options?.pipeline,
         pipelinePath: options?.pipelinePath || pipelinePath,
-        supportedMimeTypes,
-        tts: _tts,
+        private: options?.private, provider: 'telegram', rerank: _rerank,
+        supportedMimeTypes, tts: _tts,
     });
     return _hal;
 };

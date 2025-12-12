@@ -38,8 +38,8 @@ const memorize = async (ctx) => {
         collected: JSON.stringify(collected), distilled,
     };
     await utilitas.ignoreErrFunc(async () => {
-        event.distilled_vector = hal._.embedding
-            ? await hal._.embedding(event.distilled) : [];
+        event.distilled_vector = hal._.embed
+            ? await hal._.embed(event.distilled) : [];
         switch (hal._.database?.provider) {
             case dbio.MYSQL:
                 event.distilled_vector = JSON.stringify(event.distilled_vector);

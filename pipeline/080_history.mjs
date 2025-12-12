@@ -2,37 +2,38 @@ import { bot, dbio, hal, utilitas } from '../index.mjs';
 
 const compact = (str, op) => utilitas.ensureString(str, { ...op || {}, compact: true });
 const compactLimit = (str, op) => compact(str, { ...op || {}, limit: 140 });
+const SUB_LIMIT = 200; // Google Rerank limit
 const SEARCH_LIMIT = 10;
 
 const recall = async (ctx, keyword, offset = 0, limit = SEARCH_LIMIT) => {
-    let result = [];
+    let [result, _limit] = [[], hal._.rerank ? SUB_LIMIT : limit];
     switch (hal._?.database?.provider) {
         case dbio.MYSQL:
             result = await hal._?.database?.client?.query?.(
                 'SELECT *, MATCH(`distilled`) '
                 + 'AGAINST(? IN NATURAL LANGUAGE MODE) AS `relevance` '
-                + 'FROM ?? WHERE `bot_id` = ? AND `chat_id` = ? '
+                + "FROM ?? WHERE `bot_id` = ? AND `chat_id` = ?  AND `received_text` NOT LIKE '/%' AND length(`response_text`) > 1 "
                 + 'HAVING relevance > 0 '
                 + 'ORDER BY `relevance` DESC '
-                + `LIMIT ${limit} OFFSET ?`,
+                + `LIMIT ${_limit} OFFSET ?`,
                 [keyword, hal.table, ctx.botInfo.id, ctx._.chatId, offset]
             );
             break;
         case dbio.POSTGRESQL:
             // globalThis.debug = 2;
-            const vector = await dbio.encodeVector(await hal._.embedding(keyword));
+            const vector = await dbio.encodeVector(await hal._.embed(keyword));
             result = await hal._.database?.client?.query?.(
                 `SELECT *, (1 - (distilled_vector <=> $1)) as relevance `
-                + `FROM ${hal.table} WHERE bot_id = $2 AND chat_id = $3`
+                + `FROM ${hal.table} WHERE bot_id = $2 AND chat_id = $3 AND received_text NOT LIKE '/%' AND length(response_text) > 1`
                 + ` ORDER BY (distilled_vector <=> $1) ASC`
-                + ` LIMIT ${limit} OFFSET $4`, [
+                + ` LIMIT ${_limit} OFFSET $4`, [
                 vector, ctx.botInfo.id, ctx._.chatId, offset
             ]);
             break;
         default:
             result = [];
     }
-    return result;
+    return await rerank(keyword, result, offset, limit);
 };
 
 const getContext = async (ctx, offset = 0, limit = SEARCH_LIMIT) => {
@@ -54,6 +55,24 @@ const getContext = async (ctx, offset = 0, limit = SEARCH_LIMIT) => {
             break;
         default:
             result = [];
+    }
+    return result;
+};
+
+const rerank = async (keyword, result, offset = 0, limit = SEARCH_LIMIT) => {
+    if (result.length && hal._.rerank) {
+        const keys = {};
+        const _result = [];
+        for (const x of result) {
+            if (!keys[x.distilled]) {
+                keys[x.distilled] = true;
+                _result.push(x);
+            }
+        }
+        const resp = await hal._.rerank(keyword, _result.map(x => x.distilled));
+        resp.map(x => result[x.index].score = x.score);
+        result.sort((a, b) => b.score - a.score);
+        result = result.filter(x => x.score > 0.3).slice(offset, offset + limit);
     }
     return result;
 };
@@ -80,11 +99,9 @@ const action = async (ctx, next) => {
             const result = await ctx.recall(keywords, offset);
             for (const i in result) {
                 const content = bot.lines([
-                    ...result[i].response_text ? [
-                        `- ↩️ ${compactLimit(result[i].response_text)}`
-                    ] : [],
-                    `- ${utilitas.getTimeIcon(result[i].created_at)} `
-                    + `${result[i].created_at.toLocaleString()}`,
+                    '```↩️', compactLimit(result[i].response_text), '```',
+                    [`${utilitas.getTimeIcon(result[i].created_at)} ${result[i].created_at.toLocaleString()}`,
+                    `🏆 ${(Math.round(result[i].score * 100) / 100).toFixed(2)}`].join('  '),
                 ]);
                 await ctx.resp(content, true, {
                     reply_parameters: {
@@ -93,14 +110,15 @@ const action = async (ctx, next) => {
                 });
                 await ctx.timeout();
             }
-            await ctx.resp('___', true, ctx.getExtra({
-                buttons: [{
-                    label: '🔍 More',
-                    text: `/search@${ctx.botInfo.username} ${keywords} `
-                        + `--skip=${offset + result.length}`,
-                }]
-            }));
-            result.length || await ctx.er('No more records.');
+            result.length === SEARCH_LIMIT && await ctx.resp(
+                '___', true, ctx.getExtra({
+                    buttons: [{
+                        label: '🔍 More',
+                        text: `/search@${ctx.botInfo.username} ${keywords} `
+                            + `--skip=${offset + result.length}`,
+                    }]
+                }));
+            result.length || await ctx.err('No more records.');
             break;
         default:
             await next();
