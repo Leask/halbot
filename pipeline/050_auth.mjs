@@ -12,7 +12,7 @@ const action = async (ctx, next) => {
     }
     if (ctx._.chatType !== hal.PRIVATE && (                                     // 1 of the group admins is in whitelist
         await ctx.telegram.getChatAdministrators(ctx._.chatId)
-    ).map(x => x.user.id).some(a => utilitas.insensitiveHas(ctx._.private, a))) {
+    ).map(x => x.user.id).some(a => utilitas.insensitiveHas(hal._.private, a))) {
         return await next();
     }
     if (hal._.homeGroup && utilitas.insensitiveHas([                        // auth by homeGroup

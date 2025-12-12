@@ -25,7 +25,7 @@ const action = async (ctx, next) => {
     });
     // handle callback query
     if (ctx._.type === 'callback_query') {
-        const data = utilitas.parseJson(ctx._.message.data);
+        const data = utilitas.parseJson(ctx.update.callback_query.data);
         const cb = ctx._.session?.callback?.filter?.(x => x.id === data?.callback)?.[0];
         if (cb?.text) {
             log(`Callback: ${cb.text}`); // Avoid ctx._.text interference:

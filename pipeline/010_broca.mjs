@@ -1,4 +1,4 @@
-import { alan, bot, hal, storage, utilitas } from '../index.mjs';
+import { alan, bot, hal, storage, uoid, utilitas } from '../index.mjs';
 
 const _name = 'Broca';
 const [PRIVATE_LIMIT, GROUP_LIMIT] = [60 / 60, 60 / 20].map(x => x * 1000);
@@ -74,7 +74,7 @@ const getExtra = (ctx, options) => {
                     return { text: button.label, url: button.url };
                 } else if (button.text) {
                     const id = uoid.fakeUuid(button.text);
-                    ctx._.message.callback.push({ id, ...button });
+                    ctx._.session.callback.push({ id, ...button });
                     return {
                         text: button.label,
                         callback_data: JSON.stringify({ callback: id }),
@@ -92,13 +92,14 @@ const getExtra = (ctx, options) => {
     return resp;
 };
 
-const reply = async (ctx, md, text, extra) => {
+const resp = async (ctx, text, md, extra) => {
     // if (ctx._.type === 'inline_query') {
     //     return await ctx.answerInlineQuery([{}, {}]);
     // }
+    let resp;
     if (md) {
         try {
-            return await (extra?.reply_parameters?.message_id
+            resp = await (extra?.reply_parameters?.message_id
                 ? ctx.replyWithMarkdown(text, { parse_mode, ...extra })
                 : ctx.sendMessage(text, { parse_mode, ...extra }));
         } catch (err) { // utilitas.throwError('Error sending message.');
@@ -106,23 +107,26 @@ const reply = async (ctx, md, text, extra) => {
             await ctx.timeout();
         }
     }
-    return await utilitas.ignoreErrFunc(
+    resp || (resp = await utilitas.ignoreErrFunc(
         async () => await (extra?.reply_parameters?.message_id
             ? ctx.reply(text, extra) : ctx.sendMessage(text, extra)
         ), hal.logOptions
-    );
+    ));
+    resp && ctx._.done.push(resp);
+    return resp;
 };
 
 const replyWith = async (ctx, func, src, options) => ctx._.done.push(
     await ctx[func](Array.isArray(src) ? src.map(x => ({
         type: x.type || 'photo', media: { [getKey(x.src)]: x.src },
-    })) : { [getKey(src)]: src }, getExtra(ctx, options))
+    })) : { [getKey(src)]: src }, ctx.getExtra(options))
 );
 
-const editMessageText = async (ctx, md, lastMsgId, text, extra) => {
+const edit = async (ctx, lastMsgId, text, md, extra) => {
+    let resp;
     if (md) {
         try {
-            return await ctx.telegram.editMessageText(
+            resp = await ctx.telegram.editMessageText(
                 ctx._.chatId, lastMsgId, '', text, { parse_mode, ...extra }
             );
         } catch (err) { // utilitas.throwError('Error editing message.');
@@ -130,10 +134,12 @@ const editMessageText = async (ctx, md, lastMsgId, text, extra) => {
             await ctx.timeout();
         }
     }
-    return await utilitas.ignoreErrFunc(async (
+    resp || (resp = await utilitas.ignoreErrFunc(async (
     ) => await ctx.telegram.editMessageText(
         ctx._.chatId, lastMsgId, '', text, extra
-    ), hal.logOptions);
+    ), hal.logOptions));
+    resp && ctx._.done.push(resp);
+    return resp;
 };
 
 const sessionGet = async chatId => {
@@ -168,9 +174,13 @@ const ctxExt = ctx => {
         ctx.collect(str, null, { refresh: true });
         return str;
     };
+    ctx.getExtra = (options) => getExtra(ctx, options);
+    ctx.resp = async (text, md, extra) => await resp(ctx, text, md, extra);
+    ctx.edit = async (lastMsgId, text, md, extra) =>
+        await edit(ctx, lastMsgId, text, md, extra);
     ctx.ok = async (message, options) => {
         let pages = bot.paging(message, options);
-        const extra = getExtra(ctx, options);
+        const extra = ctx.getExtra(options);
         const [pageIds, pageMap] = [[], {}];
         options?.pageBreak || ctx._.done.map(x => {
             pageMap[x?.message_id] || (pageIds.push(x?.message_id));
@@ -182,21 +192,18 @@ const ctxExt = ctx => {
             if (options?.onProgress && !options?.lastMessageId
                 && pageMap[pageIds[~~i]]?.text === pages[i]) { continue; }
             if (options?.onProgress && !pageIds[~~i]) {                     // progress: new page, reply text
-                ctx._.done.push(await reply(
-                    ctx, false, pages[i], extra
-                ));
+                await ctx.resp(pages[i], false, extra);
             } else if (options?.onProgress) {                               // progress: ongoing, edit text
-                ctx._.done.push(await editMessageText(
-                    ctx, false, pageIds[~~i],
-                    pages[i], shouldExtra ? extra : {}
-                ));
+                await ctx.edit(
+                    pageIds[~~i], pages[i], false, shouldExtra ? extra : {}
+                );
             } else if (options?.lastMessageId || pageIds[~~i]) {            // progress: final, edit markdown
-                ctx._.done.push(await editMessageText(
-                    ctx, true, options?.lastMessageId || pageIds[~~i],
-                    pages[i], shouldExtra ? extra : {}
-                ));
+                await ctx.edit(
+                    options?.lastMessageId || pageIds[~~i],
+                    pages[i], true, shouldExtra ? extra : {}
+                );
             } else {                                                        // never progress, reply markdown
-                ctx._.done.push(await reply(ctx, true, pages[i], extra));
+                await ctx.resp(pages[i], true, extra);
             }
             await ctx.timeout();
         }
