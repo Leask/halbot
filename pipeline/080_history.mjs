@@ -12,8 +12,9 @@ const recall = async (ctx, keyword, offset = 0, limit = SEARCH_LIMIT) => {
             result = await hal._?.database?.client?.query?.(
                 'SELECT *, MATCH(`distilled`) '
                 + 'AGAINST(? IN NATURAL LANGUAGE MODE) AS `relevance` '
-                + "FROM ?? WHERE `bot_id` = ? AND `chat_id` = ?  AND `received_text` NOT LIKE '/%' AND length(`response_text`) > 1 "
-                + 'HAVING relevance > 0 '
+                + "FROM ?? WHERE `bot_id` = ? AND `chat_id` = ? "
+                + "AND `received_text` NOT LIKE '/%' "
+                + 'AND length(`response_text`) > 1 HAVING relevance > 0 '
                 + 'ORDER BY `relevance` DESC '
                 + `LIMIT ${_limit} OFFSET ?`,
                 [keyword, hal.table, ctx.botInfo.id, ctx._.chatId, offset]
@@ -24,11 +25,13 @@ const recall = async (ctx, keyword, offset = 0, limit = SEARCH_LIMIT) => {
             const vector = await dbio.encodeVector(await hal._.embed(keyword));
             result = await hal._.database?.client?.query?.(
                 `SELECT *, (1 - (distilled_vector <=> $1)) as relevance `
-                + `FROM ${hal.table} WHERE bot_id = $2 AND chat_id = $3 AND received_text NOT LIKE '/%' AND length(response_text) > 1`
-                + ` ORDER BY (distilled_vector <=> $1) ASC`
-                + ` LIMIT ${_limit} OFFSET $4`, [
-                vector, ctx.botInfo.id, ctx._.chatId, offset
-            ]);
+                + `FROM ${hal.table} WHERE bot_id = $2 AND chat_id = $3 `
+                + `AND received_text NOT LIKE '/%' `
+                + `AND length(response_text) > 1 `
+                + `ORDER BY (distilled_vector <=> $1) ASC `
+                + `LIMIT ${_limit} OFFSET $4`,
+                [vector, ctx.botInfo.id, ctx._.chatId, offset]
+            );
             break;
         default:
             result = [];
