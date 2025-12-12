@@ -4,7 +4,7 @@ const sendConfig = async (ctx, obj, options) => await ctx.ok(
     utilitas.prettyJson(obj, { code: true, md: true }), options
 );
 
-const action = async (ctx, next) => {
+const action = async (ctx) => {
     let parsed = null;
     switch (ctx._.cmd.cmd) {
         case 'toggle':

@@ -65,10 +65,7 @@ const action = async (ctx, next) => {
     // handle commands
     switch (ctx.cmd?.cmd) {
         case 'clearkb':
-            return await ctx.ok(hal.CHECK, { keyboards: [] });
-        case 'reset':
-            await alan.resetSession(ctx._.chatId);
-            return await ctx.ok(hal.CHECK);
+            return await ctx.complete({ keyboards: [] });
     }
     // next middleware
     await next();
