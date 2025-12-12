@@ -1,6 +1,7 @@
 import { alan, bot, hal, utilitas } from '../index.mjs';
 
 const ais = await alan.getAi(null, { all: true });
+const TOP_LIMIT = 3;
 
 const listAIs = async ctx => {
     const lastMessageId = ctx?.update?.callback_query?.message?.message_id;
@@ -24,7 +25,7 @@ const action = async (ctx, next) => {
         case 'all': ctx.hello(ctx._.cmd.args);
     }
     if (ctx._.cmd?.cmd === 'all' || ctx._.session.config?.ai === '@') {
-        ctx._.ai = ais.map(x => x.id);
+        ctx._.ai = ais.slice(0, TOP_LIMIT).map(x => x.id);
     } else if (ctx._.collected?.length) {
         const supported = {};
         for (const x of ais) {
@@ -66,10 +67,10 @@ export const { name, run, priority, func, help, args, cmdx } = {
         '¶ Select between AI models.',
         "Tip 2: Set `ai=''` to use default AI model.",
         'Tip 3: Set `ai=[AI_ID]` to use specific AI model.',
-        'Tip 4: Set `ai=@` to use all AI models simultaneously.',
+        'Tip 4: Set `ai=@` to use all AI models (top 3) simultaneously.',
         '¶ Use an AI model `temporary` without touching your settings.',
         'Tip 5: `/[AI_ID]` Tell me a joke.',
-        'Tip 6: `/all` Use all AI models simultaneously.',
+        'Tip 6: `/all` Use all AI models (top 3) simultaneously.',
     ]),
     args: {
         hello: {

@@ -13,8 +13,9 @@ const recall = async (ctx, keyword, offset = 0, limit = SEARCH_LIMIT) => {
                 'SELECT *, MATCH(`distilled`) '
                 + 'AGAINST(? IN NATURAL LANGUAGE MODE) AS `relevance` '
                 + "FROM ?? WHERE `bot_id` = ? AND `chat_id` = ? "
+                + "AND `received_text` != '' "
                 + "AND `received_text` NOT LIKE '/%' "
-                + 'AND length(`response_text`) > 1 HAVING relevance > 0 '
+                + "AND `response_text` != '' HAVING relevance > 0 "
                 + 'ORDER BY `relevance` DESC '
                 + `LIMIT ${_limit} OFFSET ?`,
                 [keyword, hal.table, ctx.botInfo.id, ctx._.chatId, offset]
@@ -26,8 +27,9 @@ const recall = async (ctx, keyword, offset = 0, limit = SEARCH_LIMIT) => {
             result = await hal._.database?.client?.query?.(
                 `SELECT *, (1 - (distilled_vector <=> $1)) as relevance `
                 + `FROM ${hal.table} WHERE bot_id = $2 AND chat_id = $3 `
+                + `AND received_text != '' `
                 + `AND received_text NOT LIKE '/%' `
-                + `AND length(response_text) > 1 `
+                + `AND received_text != '' `
                 + `ORDER BY (distilled_vector <=> $1) ASC `
                 + `LIMIT ${_limit} OFFSET $4`,
                 [vector, ctx.botInfo.id, ctx._.chatId, offset]
@@ -45,6 +47,9 @@ const getContext = async (ctx, offset = 0, limit = SEARCH_LIMIT) => {
         case dbio.MYSQL:
             result = await hal._?.database?.client?.query?.(
                 'SELECT * FROM ?? WHERE `bot_id` = ? AND `chat_id` = ? '
+                + "AND `received_text` != '' "
+                + "AND `received_text` NOT LIKE '/%' "
+                + "AND `response_text` != '' "
                 + `ORDER BY \`created_at\` DESC LIMIT ${limit} OFFSET ?`,
                 [hal.table, ctx.botInfo.id, ctx._.chatId, offset]
             );
@@ -52,6 +57,9 @@ const getContext = async (ctx, offset = 0, limit = SEARCH_LIMIT) => {
         case dbio.POSTGRESQL:
             result = await hal._.database?.client?.query?.(
                 `SELECT * FROM ${hal.table} WHERE bot_id = $1 AND chat_id = $2 `
+                + `AND received_text != '' `
+                + `AND received_text NOT LIKE '/%' `
+                + `AND received_text != '' `
                 + `ORDER BY created_at DESC LIMIT ${limit} OFFSET $3`,
                 [ctx.botInfo.id, ctx._.chatId, offset]
             );
@@ -113,6 +121,7 @@ const action = async (ctx, next) => {
                 });
                 await ctx.timeout();
             }
+            // TODO: NEED MORE DEBUG
             result.length === SEARCH_LIMIT && await ctx.resp(
                 '___', true, ctx.getExtra({
                     buttons: [{

@@ -26,7 +26,7 @@ const action = async (ctx, next) => {
                 }
             };
             Object.keys(ctx._.config).map(x => _config[x] += ` ${hal.CHECK}`);
-            ctx.result = hal.map(_config);
+            ctx._.result = hal.map(_config);
             ctx.hello();
             break;
         case 'toggle':
@@ -43,19 +43,15 @@ const action = async (ctx, next) => {
                 };
                 assert(utilitas.countKeys(ctx._.config), 'No option matched.');
                 Object.keys(ctx._.config).map(x => _config[x] += ` ${hal.CHECK}`);
-                await ctx.sendConfig(_config);
+                return await ctx.sendConfig(_config);
             } catch (err) {
-                await ctx.err(err.message || err);
+                return await ctx.err(err.message || err);
             }
-            break;
         case 'reset':
             ctx._.session.config = ctx._.config = {};
-            await ctx.complete();
-            break;
-        default:
-            await next();
-            break;
+            return await ctx.complete();
     }
+    await next();
 };
 
 export const { name, run, priority, func, help, cmdx, args } = {

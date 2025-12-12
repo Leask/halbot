@@ -99,6 +99,6 @@ const action = async (ctx, next) => {
 export const { name, run, priority, func } = {
     name: 'Chat',
     run: true,
-    priority: 70,
+    priority: 110,
     func: action,
 };

@@ -17,39 +17,40 @@ const collectAttachments = async ctx => {
 
 const action = async (ctx, next) => {
     // avatar
-    if (ctx.result) {
-        ctx.avatar = '⚙️';
+    if (ctx._.result) {
+        ctx._.avatar = '⚙️';
     } else if (ctx.m?.data) {
-        ctx.avatar = '🔘'; ctx.result = utilitas.trim(ctx.txt);
+        ctx._.avatar = '🔘'; ctx._.result = utilitas.trim(ctx.txt);
     } else if (ctx.m?.poll) {
-        ctx.avatar = '📊';
+        ctx._.avatar = '📊';
     } else if (ctx.cmd?.cmd && !ctx.cmd?.ignored) {
-        ctx.avatar = '🚀'; ctx.result = utilitas.trim(ctx.txt);
+        ctx._.avatar = '🚀'; ctx._.result = utilitas.trim(ctx.txt);
     } else {
-        ctx.avatar = '😸';
+        ctx._.avatar = '😸';
     }
     // collect input
     await collectAttachments(ctx);
-    const maxInputTokens = await alan.getChatPromptLimit()
-        - await alan.getChatAttachmentCost() * ctx._.attachments.length;
+    const maxInputTokens = await alan.getChatPromptLimit({ aiId: ctx._.ai })
+        - await alan.getChatAttachmentCost({ aiId: ctx._.ai }) * ctx._.attachments.length;
     const additionInfo = ctx._.collected.filter(
         x => String.isString(x.content)
     ).map(x => x.content).join('\n').split(' ').filter(x => x);
-    ctx.prompt = (ctx.txt || '') + '\n\n';
+    ctx._.prompt = ctx._.text ? (ctx._.text + '\n\n') : '';
     while (await alan.countTokens(
-        `${ctx.prompt}${additionInfo?.[0] || ''}`
+        `${ctx._.prompt}${additionInfo?.[0] || ''}`
     ) < maxInputTokens && additionInfo.length) {
-        ctx.prompt += `${additionInfo.shift()} `;
+        ctx._.prompt += `${additionInfo.shift()} `;
     }
     // rag
-    ctx.carry.sessionId = ctx.chatId; // THIS LINE IS IMPORTANT
-    if (ctx.prompt) {
-        const ragResp = await ctx.recall(ctx.prompt);
+    ctx._.sessionId = ctx._.chatId; // THIS LINE IS IMPORTANT
+    if (ctx._.prompt) {
+        const ragResp = await ctx.recall(ctx._.prompt);
         const ctxResp = await ctx.getContext();
+        print(ragResp, ctxResp);
     }
     // prompt
-    ctx.prompt = utilitas.trim(ctx.prompt);
-    additionInfo.filter(x => x).length && (ctx.prompt += '...');
+    ctx._.prompt = utilitas.trim(ctx._.prompt);
+    additionInfo.filter(x => x).length && (ctx._.prompt += '...');
     // next
     await next();
 };
@@ -57,6 +58,6 @@ const action = async (ctx, next) => {
 export const { name, run, priority, func } = {
     name: 'Prepare',
     run: true,
-    priority: 60,
+    priority: 100,
     func: action,
 };
