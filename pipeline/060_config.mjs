@@ -4,9 +4,14 @@ const sendConfig = async (ctx, obj, options) => await ctx.ok(
     utilitas.prettyJson(obj, { code: true, md: true }), options
 );
 
-const action = async (ctx) => {
+const ctxExt = ctx => {
+    ctx.sendConfig = async (obj, options) => await sendConfig(ctx, obj, options);
+};
+
+const action = async (ctx, next) => {
+    ctxExt(ctx);
     let parsed = null;
-    switch (ctx._.cmd.cmd) {
+    switch (ctx._.cmd?.cmd) {
         case 'toggle':
             parsed = {};
             Object.keys(await hal.parseArgs(ctx._.cmd.args)).map(x =>
@@ -21,7 +26,7 @@ const action = async (ctx) => {
                 };
                 assert(utilitas.countKeys(ctx._.config), 'No option matched.');
                 Object.keys(ctx._.config).map(x => _config[x] += ` ${hal.CHECK}`);
-                await sendConfig(ctx, _config);
+                await ctx.sendConfig(_config);
             } catch (err) {
                 await ctx.err(err.message || err);
             }
@@ -30,15 +35,18 @@ const action = async (ctx) => {
             ctx._.session.config = ctx._.config = {};
             await ctx.complete();
             break;
+        default:
+            await next();
+            break;
     }
 };
 
-export const { name, run, priority, func, help, cmds, args } = {
+export const { name, run, priority, func, help, cmdx, args } = {
     name: 'Config', run: true, priority: 60, func: action,
     help: bot.lines([
         '¶ Configure the bot by UNIX/Linux CLI style.',
         'Using [node:util.parseArgs](https://nodejs.org/api/util.html#utilparseargsconfig) to parse arguments.',
-    ]), cmds: {
+    ]), cmdx: {
         toggle: 'Toggle configurations. Only works for boolean values.',
         set: 'Usage: /set --`OPTION` `VALUE` -`SHORT`',
         reset: 'Reset configurations.',

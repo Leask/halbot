@@ -19,10 +19,11 @@ const keyboards = [[
 const action = async (ctx, next) => {
     // reload functions
     const _ok = ctx.ok;
-    ctx.ok = async (message, options) => await _ok(message, {
-        ...options || {},
-        ...options?.buttons ? {} : (options?.keyboards || { keyboards }),
-    });
+    // @TODO: this will case keyboard showup everytime
+    // ctx.ok = async (message, options) => await _ok(message, {
+    //     ...options || {},
+    //     ...options?.buttons ? {} : (options?.keyboards || { keyboards }),
+    // });
     // handle callback query
     if (ctx._.type === 'callback_query') {
         const data = utilitas.parseJson(ctx.update.callback_query.data);
