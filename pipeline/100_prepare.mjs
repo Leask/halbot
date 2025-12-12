@@ -1,5 +1,7 @@
 import { alan, utilitas } from '../index.mjs';
 
+const CONTEXT_LIMIT = 5;
+
 const collectAttachments = async ctx => {
     ctx._.attachments = [];
     // print(ctx.collected);
@@ -41,13 +43,17 @@ const action = async (ctx, next) => {
     ) < maxInputTokens && additionInfo.length) {
         ctx._.prompt += `${additionInfo.shift()} `;
     }
-    // rag
+    // context and rag
     ctx._.sessionId = ctx._.chatId; // THIS LINE IS IMPORTANT
-    if (ctx._.prompt) {
-        const ragResp = await ctx.recall(ctx._.prompt);
-        const ctxResp = await ctx.getContext();
-        print(ragResp, ctxResp);
-    }
+    const ctxResp = await ctx.getContext(
+        undefined, ctx._.prompt ? CONTEXT_LIMIT : undefined
+    );
+    const ragResp = ctx._.prompt ? (await ctx.recall(ctx._.prompt, undefined, undefined, {
+        exclude: ctxResp.map(x => x.message_id)
+    })) : [];
+    ctxResp.sort((a, b) => ~~a.message_id - ~~b.message_id);
+    ragResp.sort((a, b) => a.score - b.score);
+    ctx._.messages = [...ragResp, ...ctxResp];
     // prompt
     ctx._.prompt = utilitas.trim(ctx._.prompt);
     additionInfo.filter(x => x).length && (ctx._.prompt += '...');

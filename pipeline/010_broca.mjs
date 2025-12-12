@@ -19,7 +19,7 @@ const memorize = async (ctx) => {
     // https://limits.tginfo.me/en
     if (!ctx._.chatId || ctx.cmd?.cmd || ctx._.skipMemorize) { return; }
     const received = ctx.update;
-    const received_text = ctx._.text || '';
+    const received_text = ctx._.prompt || ctx._.text || '';
     const id = received.update_id;
     let response = {};
     ctx._.done.map(m => m?.text && (response[m.message_id] = m));
@@ -221,7 +221,7 @@ const ctxExt = ctx => {
         return await ctx.ok(text);
     };
     ctx.shouldSpeech = async text => {
-        const should = hal._?.tts && (ctx._.chatType === PRIVATE
+        const should = hal._?.tts && (ctx._.chatType === hal.PRIVATE
             ? ctx._.message.config?.tts !== false
             : ctx._.message.config?.tts === true);
         text = utilitas.isSet(text, true) ? (text || '') : ctx._.tts;

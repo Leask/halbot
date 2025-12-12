@@ -6,22 +6,22 @@ const [joinL1, joinL2] = [a => a.join(LN2), a => a.join(LN2)];
 const log = content => utilitas.log(content, import.meta.url);
 
 const action = async (ctx, next) => {
-    if (!ctx.prompt && !ctx.carry.attachments.length) { return await next(); }
+    if (!ctx._.prompt && !ctx._.attachments.length) { return await next(); }
     let [
-        ais, YOU, msgs, pms, extra, lock, sResp, lastMsg, lastSent, references,
+        YOU, msgs, pms, extra, lock, sResp, lastMsg, lastSent, references,
         audio,
     ] = [
-            await alan.getAi(null, { all: true }), `${ctx.avatar} You:`, {}, [],
-            { buttons: [] }, 1000 * 5, null, null, 0, null, null,
+            `${ctx._.avatar} You:`, {}, [], { buttons: [] }, 1000 * 5, null, null,
+            0, null, null,
         ];
     const packMsg = options => {
-        const said = !options?.tts && ctx.result ? ctx.result : '';
+        const said = !options?.tts && ctx._.result ? ctx._.result : '';
         const packed = [...said ? [joinL2([YOU, said])] : []];
         const pure = [];
-        ctx.selectedAi.map(n => {
+        ctx._.ai.map(n => {
             const content = msgs[n]?.[options?.tts ? 'spoken' : 'text'] || '';
             pure.push(content);
-            const ai = ais.find(x => x.id === n);
+            const ai = ctx._.ais.find(x => x.id === n);
             const aiName = ai.name.replace(
                 /^(.*\().*(\))$/,
                 `$1${msgs[n]?.model.replace(/^[^\/]*\//, '')}$2`
@@ -38,28 +38,24 @@ const action = async (ctx, next) => {
             curTime - lastSent < ctx.limit || lastMsg === curMsg
         )) { return; }
         [lastSent, lastMsg] = [curTime + lock, curMsg];
-        const cmd = ctx.session.context?.cmd;
         if (options?.final) {
             (references?.links || []).map((x, i) => extra.buttons.push({
                 label: `${i + 1}. ${x.title}`, url: x.uri,
             }));
-            cmd && (extra.buttons.push({
-                label: `❎ End context: \`${cmd}\``, text: '/clear',
-            }));
         }
         sResp = await ctx.ok(curMsg, {
-            ...ctx.carry.keyboards ? { keyboards: ctx.carry.keyboards } : {},
+            ...ctx._.keyboards ? { keyboards: ctx._.keyboards } : {},
             md: true, ...extra, ...options || {},
         });
         lastSent = curTime;
         return sResp;
     };
     await ok(onProgress);
-    for (const n of ctx.selectedAi) {
+    for (const n of ctx._.ai) {
         pms.push((async ai => {
             try {
-                const resp = await alan.talk(ctx.prompt, {
-                    aiId: ai, ...ctx.carry, stream: async r => {
+                const resp = await alan.talk(ctx._.prompt, {
+                    aiId: ai, ...ctx._, stream: async r => {
                         msgs[ai] = r;
                         await ok(onProgress);
                     },
@@ -67,15 +63,15 @@ const action = async (ctx, next) => {
                 references = resp.references;
                 audio = resp.audio;
                 msgs[ai] = resp;
-                msgs[ai].spoken = ctx.selectedAi.length === 1
+                msgs[ai].spoken = ctx._.ai.length === 1
                     && !resp.text.split('\n').some(x => /^\s*```/.test(x))
                     ? resp.spoken : null;
                 for (let img of resp?.images || []) {
-                    await ctx.image(img.data, { caption: `🎨 by ${r.model}` });
+                    await ctx.image(img.data, { caption: `🎨 by ${resp.model}` });
                     await ctx.timeout();
                 }
                 for (let video of resp?.videos || []) {
-                    await ctx.video(video.data, { caption: `🎬 by ${r.model}` });
+                    await ctx.video(video.data, { caption: `🎬 by ${resp.model}` });
                     await ctx.timeout();
                 }
                 return resp;

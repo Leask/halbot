@@ -5,8 +5,16 @@ const compactLimit = (str, op) => compact(str, { ...op || {}, limit: 140 });
 const SUB_LIMIT = 200; // Google Rerank limit
 const SEARCH_LIMIT = 10;
 
-const recall = async (ctx, keyword, offset = 0, limit = SEARCH_LIMIT) => {
-    let [result, _limit] = [[], hal._.rerank ? SUB_LIMIT : limit];
+const packMessage = (messages) => messages.map(x => ({
+    message_id: x.message_id, score: x.score,
+    request: x.received_text, response: x.response_text,
+}));
+
+const recall = async (ctx, keyword, offset = 0, limit = SEARCH_LIMIT, options = {}) => {
+    let [result, _limit, exclude] = [
+        [], hal._.rerank ? SUB_LIMIT : limit,
+        (options?.exclude || []).map(x => ~~x),
+    ];
     switch (hal._?.database?.provider) {
         case dbio.MYSQL:
             result = await hal._?.database?.client?.query?.(
@@ -16,6 +24,7 @@ const recall = async (ctx, keyword, offset = 0, limit = SEARCH_LIMIT) => {
                 + "AND `received_text` != '' "
                 + "AND `received_text` NOT LIKE '/%' "
                 + "AND `response_text` != '' HAVING relevance > 0 "
+                + (exclude.length ? `AND \`id\` NOT IN (${exclude.join(',')}) ` : '')
                 + 'ORDER BY `relevance` DESC '
                 + `LIMIT ${_limit} OFFSET ?`,
                 [keyword, hal.table, ctx.botInfo.id, ctx._.chatId, offset]
@@ -30,6 +39,7 @@ const recall = async (ctx, keyword, offset = 0, limit = SEARCH_LIMIT) => {
                 + `AND received_text != '' `
                 + `AND received_text NOT LIKE '/%' `
                 + `AND received_text != '' `
+                + (exclude.length ? `AND id NOT IN (${exclude.join(',')}) ` : '')
                 + `ORDER BY (distilled_vector <=> $1) ASC `
                 + `LIMIT ${_limit} OFFSET $4`,
                 [vector, ctx.botInfo.id, ctx._.chatId, offset]
@@ -38,10 +48,10 @@ const recall = async (ctx, keyword, offset = 0, limit = SEARCH_LIMIT) => {
         default:
             result = [];
     }
-    return await rerank(keyword, result, offset, limit);
+    return await rerank(keyword, result, offset, limit, options);
 };
 
-const getContext = async (ctx, offset = 0, limit = SEARCH_LIMIT) => {
+const getContext = async (ctx, offset = 0, limit = SEARCH_LIMIT, options = {}) => {
     let result = [];
     switch (hal._?.database?.provider) {
         case dbio.MYSQL:
@@ -67,10 +77,10 @@ const getContext = async (ctx, offset = 0, limit = SEARCH_LIMIT) => {
         default:
             result = [];
     }
-    return result;
+    return packMessage(result);
 };
 
-const rerank = async (keyword, result, offset = 0, limit = SEARCH_LIMIT) => {
+const rerank = async (keyword, result, offset = 0, limit = SEARCH_LIMIT, options = {}) => {
     if (result.length && hal._.rerank) {
         const keys = {};
         const _result = [];
@@ -85,7 +95,7 @@ const rerank = async (keyword, result, offset = 0, limit = SEARCH_LIMIT) => {
         result.sort((a, b) => b.score - a.score);
         result = result.filter(x => x.score > 0.3).slice(offset, offset + limit);
     }
-    return result;
+    return packMessage(result);
 };
 
 const ctxExt = ctx => {
