@@ -4,7 +4,25 @@ const _name = 'CMD';
 const COMMAND_REGEXP = /^\/([a-z0-9_]+)(@([a-z0-9_]*))?\ ?(.*)$/sig;
 const log = (c, o) => utilitas.log(c, _name, { time: 1, ...o || {} });
 
+// https://stackoverflow.com/questions/69924954/an-error-is-issued-when-opening-the-telebot-keyboard
+const keyboards = [[
+    { text: `/ai ${hal.EMOJI_BOT}` },
+    { text: '/help 🛟' },
+], [
+    { text: '/set --tts=🔊' },
+    { text: '/set --tts=🔇' },
+], [
+    { text: '/set --chatty=🐵' },
+    { text: '/set --chatty=🙊' },
+]];
+
 const action = async (ctx, next) => {
+    // reload functions
+    const _ok = ctx.ok;
+    ctx.ok = async (message, options) => await _ok(message, {
+        ...options || {},
+        ...options?.buttons ? {} : (options?.keyboards || { keyboards }),
+    });
     // handle callback query
     if (ctx._.type === 'callback_query') {
         const data = utilitas.parseJson(ctx._.message.data);
@@ -44,9 +62,18 @@ const action = async (ctx, next) => {
         ctx._.session.cmds[ctx._.cmd.cmd]
             = { args: ctx._.cmd.args, touchedAt: Date.now() };
     }
+    // handle commands
+    switch (ctx.cmd?.cmd) {
+        case 'clearkb':
+            return await ctx.ok(hal.CHECK, { keyboards: [] });
+        case 'reset':
+            await alan.resetSession(ctx._.chatId);
+            return await ctx.ok(hal.CHECK);
+    }
+    // next middleware
     await next();
 };
 
-export const { name, run, priority, func } = {
-    name: _name, run: true, priority: 20, func: action,
+export const { name, run, priority, func, cmdx } = {
+    name: _name, run: true, priority: 20, func: action, cmdx: {}
 };
