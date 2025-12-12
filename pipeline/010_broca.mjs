@@ -280,6 +280,7 @@ const action = async (ctx, next) => {
     ctx._.chatType = ctx._.message.chat.type;
     ctx._.messageId = ctx._.message.message_id;
     ctx._.message.text && ctx.collect(ctx._.message.text);
+    ctx._.message.caption && ctx.collect(ctx._.message.caption);
     // get session
     ctx._.session = await sessionGet(ctx.chatId);
     ctx._.limit = ctx.chatType === hal.PRIVATE ? PRIVATE_LIMIT : GROUP_LIMIT;
@@ -308,7 +309,8 @@ const action = async (ctx, next) => {
         || ctx._.message.data || ctx._.message.document || ctx._.message.photo
         || ctx._.message.sticker || ctx._.message.video_note
         || ctx._.message.video || ctx._.message.audio || ctx._.message.location
-        || ctx._.message.venue || ctx._.message.contact) && ctx._.messageId)
+        || ctx._.message.venue || ctx._.message.contact
+        || ctx._.message.checklist) && ctx._.messageId)
         || (ctx._.message.new_chat_member || ctx._.message.left_chat_member))
         && await next();
     // persistence
