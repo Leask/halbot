@@ -35,7 +35,7 @@ const action = async (ctx, next) => {
     const ok = async options => {
         const [curTime, curMsg] = [Date.now(), packMsg(options)];
         if (options?.onProgress && (
-            curTime - lastSent < ctx.limit || lastMsg === curMsg
+            curTime - lastSent < ctx._.limit || lastMsg === curMsg
         )) { return; }
         [lastSent, lastMsg] = [curTime + lock, curMsg];
         if (options?.final) {
@@ -87,8 +87,8 @@ const action = async (ctx, next) => {
     await Promise.all(pms);
     await (Object.values(msgs).map(x => x.text).join('').trim()
         ? ok({ final: true }) : ctx.deleteMessage(sResp[0].message_id));
-    ctx.generated = Object.values(msgs).map(x => x.text).join('\n\n');
-    ctx.tts = audio || packMsg({ tts: true });
+    ctx._.generated = Object.values(msgs).map(x => x.text).join('\n\n');
+    ctx._.tts = audio || packMsg({ tts: true });
     await next();
 };
 
