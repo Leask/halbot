@@ -49,7 +49,7 @@ const action = async (ctx, next) => {
         undefined, ctx._.prompt ? CONTEXT_LIMIT : undefined
     );
     const ragResp = ctx._.prompt ? (await ctx.recall(ctx._.prompt, undefined, undefined, {
-        exclude: ctxResp.map(x => x.message_id)
+        exclude: ctxResp.map(x => x.message_id),
     })) : [];
     ctxResp.sort((a, b) => ~~a.message_id - ~~b.message_id);
     ragResp.sort((a, b) => a.score - b.score);
