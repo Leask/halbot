@@ -57,7 +57,7 @@ const action = async (ctx, next) => {
                 const resp = await alan.talk(ctx._.prompt, {
                     aiId: ai, ...ctx._, stream: async r => {
                         msgs[ai] = r;
-                        await ok(onProgress);
+                        ok(onProgress); // never await this, it will block the stream
                     },
                 });
                 references = resp.references;
