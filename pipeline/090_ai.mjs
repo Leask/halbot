@@ -1,7 +1,7 @@
 import { alan, bot, hal, utilitas } from '../index.mjs';
 
 const ais = await alan.getAi(null, { all: true });
-const TOP_LIMIT = 3;
+const TOP = 'top';
 
 const listAIs = async ctx => {
     const lastMessageId = ctx?.update?.callback_query?.message?.message_id;
@@ -21,33 +21,20 @@ const listAIs = async ctx => {
 const action = async (ctx, next) => {
     ctx._.ais = ais;
     switch (ctx._.cmd?.cmd) {
-        case 'ai': return await listAIs(ctx);
-        case 'all': ctx.hello(ctx._.cmd.args);
-    }
-    if (ctx._.cmd?.cmd === 'all' || ctx._.session.config?.ai === '@') {
-        ctx._.ai = ais.slice(0, TOP_LIMIT).map(x => x.id);
-    } else if (ctx._.collected?.length) {
-        const supported = {};
-        for (const x of ais) {
-            for (const i of ctx._.collected) {
-                supported[x.id] = (supported[x.id] || 0)
-                    + ~~x.model.supportedMimeTypes.includes(i?.content?.mime_type) // Priority for supported mime types
-                    + ~~(x.id === ctx._.session.config?.ai);                       // Priority for user selected AI
-            }
-        }
-        ctx._.ai = [Object.keys(supported).sort(
-            (x, y) => supported[y] - supported[x]
-        )?.[0] || ais[0].id];
-    } else if (ais.map(x => x.id).includes(ctx._.session.config?.ai)) {
-        ctx._.ai = [ctx._.session.config.ai];
-    } else {
-        ctx._.ai = [ais[0].id];
+        case 'ai':
+            return await listAIs(ctx);
+        case TOP:
+            ctx.hello(ctx._.cmd.args);
+            ctx._.aiId = TOP;
+            break;
+        default:
+            ctx._.aiId = ctx._.session.config?.ai;
     }
     await next();
 };
 
 const validateAi = async (val, ctx) => {
-    for (let name of [...ais.map(x => x.id), '', '@']) {
+    for (let name of [...ais.map(x => x.id), '', TOP]) {
         if (utilitas.insensitiveCompare(val, name)) {
             ctx && (ctx.sendConfig = async (_c, _o) => await listAIs(ctx));
             return name;
@@ -67,10 +54,10 @@ export const { name, run, priority, func, help, args, cmdx } = {
         '¶ Select between AI models.',
         "Tip 2: Set `ai=''` to use default AI model.",
         'Tip 3: Set `ai=[AI_ID]` to use specific AI model.',
-        'Tip 4: Set `ai=@` to use all AI models (top 3) simultaneously.',
+        'Tip 4: Set `ai=top` to configure to use the top 3 AI models simultaneously.',
         '¶ Use an AI model `temporary` without touching your settings.',
         'Tip 5: `/[AI_ID]` Tell me a joke.',
-        'Tip 6: `/all` Use all AI models (top 3) simultaneously.',
+        'Tip 6: `/all` Use the top 3 AI models simultaneously, for current prompt.',
     ]),
     args: {
         hello: {
@@ -85,6 +72,6 @@ export const { name, run, priority, func, help, args, cmdx } = {
     },
     cmdx: {
         ai: 'List all available AIs.',
-        all: 'Use all AI models simultaneously: /all Say hello to all AIs!',
+        all: 'Use the top 3 AI models simultaneously: /all Say hello to all AIs!',
     }
 };
