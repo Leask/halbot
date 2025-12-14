@@ -1,4 +1,4 @@
-import { hal, utilitas } from '../index.mjs';
+import { bot, hal, utilitas } from '../index.mjs';
 
 const _name = 'CMD';
 const COMMAND_REGEXP = /^\/([a-z0-9_]+)(@([a-z0-9_]*))?\ ?(.*)$/sig;
@@ -6,7 +6,7 @@ const log = (c, o) => utilitas.log(c, _name, { time: 1, ...o || {} });
 
 // https://stackoverflow.com/questions/69924954/an-error-is-issued-when-opening-the-telebot-keyboard
 const keyboards = [[
-    { text: `/ai ${hal.EMOJI_BOT}` },
+    { text: `/ai ${bot.BOT}` },
     { text: '/help 🛟' },
 ], [
     { text: '/set --tts=🔊' },

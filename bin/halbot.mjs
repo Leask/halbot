@@ -10,7 +10,7 @@ const _getConfig = async () => await _storage.getConfig();
 const getConfig = async key => (await _getConfig())?.config?.[key];
 
 let storage = {
-    provider: 'FILE',
+    provider: _storage.FILE,
     get: async key => (await getConfig(MEMORY))?.[key],
     set: async (k, v) => await _storage.setConfig({ [MEMORY]: { [k]: v } }),
 };

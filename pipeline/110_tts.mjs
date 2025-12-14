@@ -1,12 +1,12 @@
 import { bot, hal, utilitas } from '../index.mjs';
 
 const action = async (ctx, next) => {
-    await ctx.shouldSpeech();
+    // await ctx.shouldSpeech();
     await next();
 };
 
 export const { name, run, priority, func, help, args } = {
-    name: 'TTS', run: true, priority: 200, func: action,
+    name: 'TTS', run: true, priority: 110, func: action,
     help: bot.lines([
         '¶ When enabled, the bot will speak out the answer if available.',
         'Example 1: /set --tts on',

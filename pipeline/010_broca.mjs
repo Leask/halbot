@@ -5,7 +5,6 @@ const [PRIVATE_LIMIT, GROUP_LIMIT] = [60 / 60, 60 / 20].map(x => x * 1000);
 const log = (c, o) => utilitas.log(c, _name, { time: 1, ...o || {} });
 const getKey = s => s?.toLowerCase?.()?.startsWith?.('http') ? 'url' : 'source';
 const isMarkdownError = e => e?.description?.includes?.("can't parse entities");
-const normalizeKey = chatId => `${hal.HALBOT}_SESSION_${chatId}`;
 const compact = (str, op) => utilitas.ensureString(str, { ...op || {}, compact: true });
 
 const [CALLBACK_LIMIT, parse_mode] = [30, bot.parse_mode];
@@ -143,15 +142,13 @@ const edit = async (ctx, lastMsgId, text, md, extra) => {
 };
 
 const sessionGet = async chatId => {
-    const key = normalizeKey(chatId);
-    const session = await alan.getSession(key) || {};
+    const session = await alan.getSession(chatId) || {};
     session.callback || (session.callback = []);
     session.config || (session.config = {});
     return session;
 };
 
 const sessionSet = async (chatId, session) => {
-    const key = normalizeKey(chatId);
     while (session?.callback?.length > CALLBACK_LIMIT) {
         session.callback.shift();
     }
@@ -159,7 +156,7 @@ const sessionSet = async (chatId, session) => {
     Object.keys(session).filter(x => /^[^_]+$/g.test(x)).map(
         x => toSet[x] = session[x]
     );
-    return await alan.setSession(key, toSet);
+    return await alan.setSession(chatId, toSet);
 };
 
 const ctxExt = ctx => {
@@ -289,7 +286,7 @@ const action = async (ctx, next) => {
     ctx._.message.text && ctx.collect(ctx._.message.text);
     ctx._.message.caption && ctx.collect(ctx._.message.caption);
     // get session
-    ctx._.session = await sessionGet(ctx.chatId);
+    ctx._.session = await sessionGet(ctx._.chatId);
     ctx._.limit = ctx.chatType === hal.PRIVATE ? PRIVATE_LIMIT : GROUP_LIMIT;
     ctx._.entities = [
         ...(ctx._.message.entities || []).map(e => ({ ...e, text: ctx._.message.text })),
@@ -321,7 +318,7 @@ const action = async (ctx, next) => {
         || (ctx._.message.new_chat_member || ctx._.message.left_chat_member))
         && await next();
     // persistence
-    await sessionSet(ctx.chatId, ctx._.session);
+    await sessionSet(ctx._.chatId, ctx._.session);
     await memorize(ctx);
     // fallback response and log
     if (ctx._.done.length) { return; }

@@ -11,7 +11,7 @@ const init = async (options = {}) => {
         null
     ];
     const info = bot.lines([
-        `[${hal.EMOJI_BOT} ${pkg.title}](${pkg.homepage})`, pkg.description
+        `[${bot.BOT} ${pkg.title}](${pkg.homepage})`, pkg.description
     ]);
     // use google's search if google is enabled
     options.googleApiKey && options.googleCx && await web.initSearch({
@@ -88,25 +88,26 @@ const init = async (options = {}) => {
             host: options?.ollamaEndpoint, ...options
         });
     }
-    const { ais } = await alan.initChat({ sessions: options?.storage });
-    const cmds = options?.cmds || [];
-    // config multimodal engines
-    const supportedMimeTypes = new Set(ais.map(x => {
-        // init instant ai selection
-        cmds.push(hal.newCommand(`ai_${x.id}`, `${x.name}: ${x.features}`));
-        return x.model;
-    }).map(x => x.supportedMimeTypes || []).flat().map(x => x.toLowerCase()));
     // init hal
     const _hal = await hal.init({
-        args: options?.args, auth: options?.auth,
-        botToken: options?.telegramToken, chatType: options?.chatType,
-        cmds, database: options?.storage?.client && options?.storage,
-        embed: _embed, hello: options?.hello, help: options?.help,
-        homeGroup: options?.homeGroup, info: options?.info || info,
-        lang: options?.lang || 'English', pipeline: options?.pipeline,
+        args: options?.args,
+        auth: options?.auth,
+        botToken: options?.telegramToken,
+        chatType: options?.chatType,
+        cmds: options?.cmds,
+        embed: _embed,
+        hello: options?.hello,
+        help: options?.help,
+        homeGroup: options?.homeGroup,
+        info: options?.info || info,
+        lang: options?.lang || 'English',
+        pipeline: options?.pipeline,
         pipelinePath: options?.pipelinePath || pipelinePath,
-        private: options?.private, provider: 'telegram', rerank: _rerank,
-        supportedMimeTypes, tts: _tts,
+        private: options?.private,
+        provider: 'telegram',
+        rerank: _rerank,
+        storage: options?.storage,
+        tts: _tts,
     });
     return _hal;
 };
