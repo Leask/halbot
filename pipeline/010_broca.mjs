@@ -5,7 +5,6 @@ const [PRIVATE_LIMIT, GROUP_LIMIT] = [60 / 60, 60 / 20].map(x => x * 1000);
 const log = (c, o) => utilitas.log(c, _name, { time: 1, ...o || {} });
 const getKey = s => s?.toLowerCase?.()?.startsWith?.('http') ? 'url' : 'source';
 const isMarkdownError = e => e?.description?.includes?.("can't parse entities");
-const compact = (str, op) => utilitas.ensureString(str, { ...op || {}, compact: true });
 
 const [CALLBACK_LIMIT, parse_mode] = [30, bot.parse_mode];
 
@@ -13,51 +12,6 @@ const KNOWN_UPDATE_TYPES = [
     'callback_query', 'channel_post', 'edited_message', 'message',
     'my_chat_member', // 'inline_query',
 ];
-
-const memorize = async (ctx) => {
-    // https://limits.tginfo.me/en
-    if (!ctx._.chatId || ctx.cmd?.cmd || ctx._.skipMemorize) { return; }
-    const received = ctx.update;
-    const received_text = ctx._.request || ctx._.text || '';
-    const id = received.update_id;
-    let response = {};
-    ctx._.done.map(m => m?.text && (response[m.message_id] = m));
-    response = Object.values(response).sort((a, b) => a.message_id - b.message_id);
-    const response_text = ctx?._.response || response.map(x => x.text).join('\n');
-    const collected = ctx._.collected.filter(x => String.isString(x.content));
-    const distilled = compact(bot.lines([
-        received_text, response_text, ...collected.map(x => x.content)
-    ]));
-    if (!ctx.messageId || !distilled) { return; }
-    const event = {
-        id, bot_id: ctx.botInfo.id, chat_id: ctx._.chatId,
-        chat_type: ctx._.chatType, message_id: ctx._.messageId,
-        received: JSON.stringify(received), received_text,
-        response: JSON.stringify(response), response_text,
-        collected: JSON.stringify(collected), distilled,
-    };
-    await utilitas.ignoreErrFunc(async () => {
-        event.distilled_vector = hal._.embed
-            ? await hal._.embed(event.distilled) : [];
-        switch (hal._.database?.provider) {
-            case dbio.MYSQL:
-                event.distilled_vector = JSON.stringify(event.distilled_vector);
-                break;
-        }
-        await hal._.database?.client?.upsert?.(table, event, { skipEcho: true });
-    }, hal.logOptions);
-    // TODO: 調整，如果命令執行過，應該更新菜單 ！？
-    await utilitas.ignoreErrFunc(async () => await hal.telegram.setMyCommands([
-        ...hal._.cmds, ...Object.keys(ctx._.message.prompts || {}).map(
-            command => hal.newCommand(command, ctx._.message.prompts[command])
-        )
-    ].sort((x, y) =>
-        (ctx._.message?.cmds?.[y.command.toLowerCase()]?.touchedAt || 0)
-        - (ctx._.message?.cmds?.[x.command.toLowerCase()]?.touchedAt || 0)
-    ).slice(0, hal.COMMAND_LIMIT), {
-        scope: { type: 'chat', chat_id: ctx._.chatId },
-    }), hal.logOptions);
-};
 
 const getExtra = (ctx, options) => {
     const resp = {
@@ -229,7 +183,7 @@ const ctxExt = ctx => {
     ctx.end = () => { ctx._.done.push(null); ctx.skipMemorize() };
     ctx.complete = async (options) => await ctx.ok(hal.CHECK, options);
     ctx.json = async (obj, options) => await ctx.ok(hal.json(obj), options);
-    ctx.list = async (list, options) => await ctx.ok(uList(list), options);
+    ctx.list = async (list, options) => await ctx.ok(hal.uList(list), options);
     ctx.audio = async (s, o) => await replyWith(ctx, 'replyWithAudio', s, o);
     ctx.image = async (s, o) => await replyWith(ctx, 'replyWithPhoto', s, o);
     ctx.video = async (s, o) => await replyWith(ctx, 'replyWithVideo', s, o);
@@ -319,11 +273,11 @@ const action = async (ctx, next) => {
         && await next();
     // persistence
     await sessionSet(ctx._.chatId, ctx._.session);
-    await memorize(ctx);
+    ctx.memorize && await ctx.memorize();
     // fallback response and log
     if (ctx._.done.length) { return; }
-    const errStr = ctx.cmd ? `Command not found: /${ctx.cmd.cmd}`
-        : '⚠️ No suitable response.';
+    const errStr = '⚠️ ' + (ctx._.cmd?.cmd
+        ? `Command not found: /${ctx._.cmd.cmd}` : 'No suitable response.');
     log(`INFO: ${errStr}`);
     await ctx.shouldReply(errStr);
 };
