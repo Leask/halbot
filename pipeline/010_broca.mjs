@@ -241,6 +241,9 @@ const action = async (ctx, next) => {
     }) || ctx._.message.reply_to_message?.from?.username === ctx.botInfo.username
         || ctx._.type === 'callback_query')
         && (ctx._.chatType = hal.MENTION);
+    ctx._.chatType === hal.GROUP && (
+        await ctx.telegram.getChatMembersCount(ctx._.chatId) === 2
+    ) && (ctx._.chatType = hal.MENTION);
     (((ctx._.text || ctx._.message.voice || ctx._.message.poll
         || ctx._.message.data || ctx._.message.document || ctx._.message.photo
         || ctx._.message.sticker || ctx._.message.video_note

@@ -6,10 +6,8 @@ const pipelinePath = utilitas.__(import.meta.url, 'pipeline');
 
 const init = async (options = {}) => {
     assert(options.telegramToken, 'Telegram Bot API Token is required.');
-    let [pkg, _tts, _embed, _rerank, opts] = [
-        await utilitas.which(), options?.tts, options?.embed, options?.rerank,
-        null
-    ];
+    let [pkg, _embed, _rerank, opts] =
+        [await utilitas.which(), options?.embed, options?.rerank, null];
     const info = bot.lines([
         `[${bot.BOT} ${pkg.title}](${pkg.homepage})`, pkg.description
     ]);
@@ -37,7 +35,6 @@ const init = async (options = {}) => {
             ...opts, model: options.googleModel || '*',
             priority: options.googlePriority, ...options,
         });
-        _tts || (_tts = alan.tts);
     }
     // use openai's embedding, tts if openai is enabled, and google is not
     if (options.openaiApiKey) {
@@ -50,7 +47,6 @@ const init = async (options = {}) => {
             await rag.initEmbedding(opts);
             _embed = rag.embed;
         }
-        _tts || (_tts = alan.tts);
     }
     // use google rerank if google is enabled
     if (options?.googleCredentials && options.googleProjectId) {
@@ -107,7 +103,6 @@ const init = async (options = {}) => {
         provider: 'telegram',
         rerank: _rerank,
         storage: options?.storage,
-        tts: _tts,
     });
     return _hal;
 };
