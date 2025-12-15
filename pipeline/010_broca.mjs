@@ -15,10 +15,8 @@ const KNOWN_UPDATE_TYPES = [
 
 const getExtra = (ctx, options) => {
     const resp = {
-        reply_parameters: {
-            message_id: ctx._.chatType === hal.PRIVATE
-                ? undefined : ctx._.messageId,
-        }, disable_notification: !!ctx._.done.length, ...options || {},
+        reply_parameters: { message_id: ctx._.messageId },
+        disable_notification: !!ctx._.done.length, ...options || {},
     };
     resp.reply_markup || (resp.reply_markup = {});
     if (options?.buttons?.length) {
@@ -130,7 +128,7 @@ const ctxExt = ctx => {
         let pages = bot.paging(message, options);
         const extra = ctx.getExtra(options);
         const [pageIds, pageMap] = [[], {}];
-        options?.pageBreak || ctx._.done.map(x => {
+        options?.pageBreak || ctx._.done.filter(x => x).map(x => {
             pageMap[x?.message_id] || (pageIds.push(x?.message_id));
             pageMap[x?.message_id] = x;
         });
@@ -168,8 +166,7 @@ const ctxExt = ctx => {
         if (!should || !text) { return should; }
         return await ctx.ok(text);
     };
-    ctx.skipMemorize = () => ctx._.skipMemorize = true;
-    ctx.end = () => { ctx._.done.push(null); ctx.skipMemorize() };
+    ctx.finish = () => ctx._.done.unshift(null);
     ctx.complete = async (options) => await ctx.ok(hal.CHECK, options);
     ctx.json = async (obj, options) => await ctx.ok(hal.json(obj), options);
     ctx.list = async (list, options) => await ctx.ok(hal.uList(list), options);
@@ -187,10 +184,7 @@ const action = async (ctx, next) => {
     // init ctx methods
     ctxExt(ctx);
     // init ctx storage
-    ctx._ = {
-        chatId: 0, collected: [], done: [], tts: '', text: '',
-        skipMemorize: false, generated: '',
-    };
+    ctx._ = { chatId: 0, collected: [], done: [], text: '' };
     // get message body
     for (let t of KNOWN_UPDATE_TYPES) {
         if (ctx.update[t]) {
@@ -208,7 +202,7 @@ const action = async (ctx, next) => {
         );
         if (ctx._.message.new_chat_member.user.id !== ctx.botInfo.id
             || ctx._.message.new_chat_member.status === 'left') {
-            return ctx.end();
+            return ctx.finish();
         } else { ctx.hello(); }
     } else if (!ctx._.type) { return log(`Unsupported message type.`); }
     // get chat metadata
@@ -254,7 +248,6 @@ const action = async (ctx, next) => {
         && await next();
     // persistence
     await sessionSet(ctx._.chatId, ctx._.session);
-    ctx.memorize && await ctx.memorize();
     // fallback response and log
     if (ctx._.done.length) { return; }
     const errStr = '⚠️ ' + (ctx._.cmd?.cmd

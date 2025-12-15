@@ -5,7 +5,7 @@ const compactLimit = (str, op) => compact(str, { ...op || {}, limit: 140 });
 
 const memorize = async (ctx) => {
     // https://limits.tginfo.me/en
-    if (!ctx._.chatId || ctx._.cmd?.cmd || ctx._.skipMemorize) { return; }
+    if (!ctx._.chatId || ctx._.cmd?.cmd) { return; }
     const received = ctx.update;
     const received_text = ctx._.request || ctx._.text || '';
     const id = received.update_id;
