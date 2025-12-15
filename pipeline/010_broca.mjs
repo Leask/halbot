@@ -1,4 +1,4 @@
-import { alan, bot, hal, storage, uoid, utilitas } from '../index.mjs';
+import { alan, bot, hal, uoid, utilitas } from '../index.mjs';
 
 const _name = 'Broca';
 const [PRIVATE_LIMIT, GROUP_LIMIT] = [60 / 60, 60 / 20].map(x => x * 1000);
@@ -16,7 +16,8 @@ const KNOWN_UPDATE_TYPES = [
 const getExtra = (ctx, options) => {
     const resp = {
         reply_parameters: {
-            message_id: ctx.chatType === hal.PRIVATE ? undefined : ctx.messageId,
+            message_id: ctx._.chatType === hal.PRIVATE
+                ? undefined : ctx._.messageId,
         }, disable_notification: !!ctx._.done.length, ...options || {},
     };
     resp.reply_markup || (resp.reply_markup = {});
@@ -121,7 +122,7 @@ const ctxExt = ctx => {
         (options?.refresh ? '' : ctx._.text) || '', content || ''
     ].filter(x => x.length).join('\n\n'));
     ctx.hello = str => {
-        str = str || ctx._.message?.config?.hello || hal._.hello;
+        str = str || ctx._.session?.config?.hello || hal._.hello;
         ctx.collect(str, null, { refresh: true });
         return str;
     };
@@ -166,18 +167,10 @@ const ctxExt = ctx => {
     };
     ctx.shouldReply = async text => {
         const should = utilitas.insensitiveHas(hal._?.chatType, ctx._.chatType)
-            || ctx._.message?.config?.chatty;
+            || ctx._.session?.config?.chatty;
         text = utilitas.isSet(text, true) ? (text || '') : '';
         if (!should || !text) { return should; }
         return await ctx.ok(text);
-    };
-    ctx.shouldSpeech = async text => {
-        const should = hal._?.tts && (ctx._.chatType === hal.PRIVATE
-            ? ctx._.message.config?.tts !== false
-            : ctx._.message.config?.tts === true);
-        text = utilitas.isSet(text, true) ? (text || '') : ctx._.tts;
-        if (!should || !text) { return should; }
-        return await ctx.speech(text);
     };
     ctx.skipMemorize = () => ctx._.skipMemorize = true;
     ctx.end = () => { ctx._.done.push(null); ctx.skipMemorize() };
@@ -188,17 +181,6 @@ const ctxExt = ctx => {
     ctx.image = async (s, o) => await replyWith(ctx, 'replyWithPhoto', s, o);
     ctx.video = async (s, o) => await replyWith(ctx, 'replyWithVideo', s, o);
     ctx.media = async (s, o) => await replyWith(ctx, 'replyWithMediaGroup', s, o);
-    ctx.speech = async (cnt, options) => {
-        let file = await (Buffer.isBuffer(cnt) ? storage.convert(cnt, {
-            input: storage.BUFFER, expected: storage.FILE,
-        }) : utilitas.ignoreErrFunc(async () => await hal._?.tts?.(
-            cnt, { expected: storage.FILE }
-        ), { log: true }));
-        if (!file) { return; }
-        const resp = await ctx.audio(file, options);
-        await storage.tryRm(file);
-        return resp;
-    };
 };
 
 const action = async (ctx, next) => {

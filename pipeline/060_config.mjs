@@ -61,6 +61,9 @@ export const { name, run, priority, func, help, cmdx, args } = {
         'Using [node:util.parseArgs](https://nodejs.org/api/util.html#utilparseargsconfig) to parse arguments.',
         '¶ Set your default language.',
         'Example: /lang Français',
+        '¶ When enabled, the bot will speak out the answer if available.',
+        'Example 1: /set --tts on',
+        'Example 2: /set --tts off',
     ]), cmdx: {
         lang: 'Set your default language: /lang `LANG`',
         toggle: 'Toggle configurations. Only works for boolean values.',
@@ -70,6 +73,11 @@ export const { name, run, priority, func, help, cmdx, args } = {
         chatty: {
             type: 'string', short: 'c', default: hal.ON,
             desc: `\`(${hal.BINARY_STRINGS.join(', ')})\` Enable/Disable chatty mode.`,
+            validate: utilitas.humanReadableBoolean,
+        },
+        tts: {
+            type: 'string', short: 't', default: hal.ON,
+            desc: `\`(${hal.BINARY_STRINGS.join(', ')})\` Enable/Disable TTS. Default \`${hal.ON}\` except in groups.`,
             validate: utilitas.humanReadableBoolean,
         },
     },
