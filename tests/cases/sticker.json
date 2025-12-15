@@ -1,0 +1,49 @@
+{
+    "update_id": 723193719,
+    "message": {
+        "message_id": 78353,
+        "from": {
+            "id": 54272018,
+            "is_bot": false,
+            "first_name": "Sixia \"Leask\"",
+            "last_name": "Huang",
+            "username": "Leask",
+            "language_code": "en",
+            "is_premium": true
+        },
+        "chat": {
+            "id": 54272018,
+            "first_name": "Sixia \"Leask\"",
+            "last_name": "Huang",
+            "username": "Leask",
+            "type": "private"
+        },
+        "date": 1765469146,
+        "sticker": {
+            "width": 512,
+            "height": 512,
+            "emoji": "👎",
+            "set_name": "ResistanceDog",
+            "is_animated": true,
+            "is_video": false,
+            "type": "regular",
+            "thumbnail": {
+                "file_id": "AAMCAgADGQEAAQEyEWk669q_MOcZgL_jPN29biQI2v8jAALbAANWnb0KXGf6n21pW20BAAdtAAM2BA",
+                "file_unique_id": "AQAD2wADVp29CnI",
+                "file_size": 5654,
+                "width": 128,
+                "height": 128
+            },
+            "thumb": {
+                "file_id": "AAMCAgADGQEAAQEyEWk669q_MOcZgL_jPN29biQI2v8jAALbAANWnb0KXGf6n21pW20BAAdtAAM2BA",
+                "file_unique_id": "AQAD2wADVp29CnI",
+                "file_size": 5654,
+                "width": 128,
+                "height": 128
+            },
+            "file_id": "CAACAgIAAxkBAAEBMhFpOuvavzDnGYC_4zzdvW4kCNr_IwAC2wADVp29Clxn-p9taVttNgQ",
+            "file_unique_id": "AgAD2wADVp29Cg",
+            "file_size": 13023
+        }
+    }
+}

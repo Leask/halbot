@@ -1,0 +1,47 @@
+{
+    "update_id": 723193718,
+    "message": {
+        "message_id": 78350,
+        "from": {
+            "id": 54272018,
+            "is_bot": false,
+            "first_name": "Sixia \"Leask\"",
+            "last_name": "Huang",
+            "username": "Leask",
+            "language_code": "en",
+            "is_premium": true
+        },
+        "chat": {
+            "id": 54272018,
+            "first_name": "Sixia \"Leask\"",
+            "last_name": "Huang",
+            "username": "Leask",
+            "type": "private"
+        },
+        "date": 1765469091,
+        "forward_origin": {
+            "type": "user",
+            "sender_user": {
+                "id": 54272018,
+                "is_bot": false,
+                "first_name": "Sixia \"Leask\"",
+                "last_name": "Huang",
+                "username": "Leask",
+                "language_code": "en",
+                "is_premium": true
+            },
+            "date": 1765469003
+        },
+        "forward_from": {
+            "id": 54272018,
+            "is_bot": false,
+            "first_name": "Sixia \"Leask\"",
+            "last_name": "Huang",
+            "username": "Leask",
+            "language_code": "en",
+            "is_premium": true
+        },
+        "forward_date": 1765469003,
+        "text": "Hello"
+    }
+}

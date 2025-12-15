@@ -134,10 +134,6 @@ All supported configuration fields:
     "private": ["[[CHAT_ID]]", "[[GROUP_ID]]", "[[CHANNEL_ID]]", ...],
 
     // OPTIONAL, string.
-    // Set some of these fields if you want to use a `magic word` to authenticate the bot.
-    "magicWord": "[[Your Magic Word here]]",
-
-    // OPTIONAL, string.
     // Use a HOME GROUP to authentication users.
     // Anyone in this group can access the bot.
     "homeGroup": "[[GROUP_ID]]",
