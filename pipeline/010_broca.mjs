@@ -18,12 +18,12 @@ const memorize = async (ctx) => {
     // https://limits.tginfo.me/en
     if (!ctx._.chatId || ctx.cmd?.cmd || ctx._.skipMemorize) { return; }
     const received = ctx.update;
-    const received_text = ctx._.prompt || ctx._.text || '';
+    const received_text = ctx._.request || ctx._.text || '';
     const id = received.update_id;
     let response = {};
     ctx._.done.map(m => m?.text && (response[m.message_id] = m));
     response = Object.values(response).sort((a, b) => a.message_id - b.message_id);
-    const response_text = ctx?.generated || response.map(x => x.text).join('\n');
+    const response_text = ctx?._.response || response.map(x => x.text).join('\n');
     const collected = ctx._.collected.filter(x => String.isString(x.content));
     const distilled = compact(bot.lines([
         received_text, response_text, ...collected.map(x => x.content)
