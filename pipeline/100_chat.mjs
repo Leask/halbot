@@ -26,23 +26,17 @@ const action = async (ctx, next) => {
         ...ctx._, sessionId: ctx._.chatId, // THIS LINE IS IMPORTANT
         stream: async rsp => { resp = rsp; ok({ processing: true }); }, // Never await, it will block the stream.
     });
-    for (let img of resp?.images || []) {
+    for (let image of resp?.images || []) {
         await ctx.timeout();
-        await ctx.image(img.data, {
-            caption: `${alan.FEATURE_ICONS.image} by ${resp.model}`,
-        });
+        await ctx.image(image.data, { caption: image.caption });
     }
     for (let video of resp?.videos || []) {
         await ctx.timeout();
-        await ctx.video(video.data, {
-            caption: `${alan.FEATURE_ICONS.video} by ${resp.model}`,
-        });
+        await ctx.video(video.data, { caption: video.caption });
     }
     for (let audio of resp?.audios || []) {
         await ctx.timeout();
-        await ctx.audio(audio.data, {
-            caption: `${alan.FEATURE_ICONS.audio} by ${resp.model}`,
-        });
+        await ctx.audio(audio.data, { caption: audio.caption });
     }
     // print(resp);
     await resp.text.trim() ? ok({ processing: false })
