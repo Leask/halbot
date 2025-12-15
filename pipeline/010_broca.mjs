@@ -107,11 +107,7 @@ const sessionSet = async (chatId, session) => {
     while (session?.callback?.length > CALLBACK_LIMIT) {
         session.callback.shift();
     }
-    const toSet = {};
-    Object.keys(session).filter(x => /^[^_]+$/g.test(x)).map(
-        x => toSet[x] = session[x]
-    );
-    return await alan.setSession(chatId, toSet);
+    return await alan.setSession(chatId, session);
 };
 
 const ctxExt = ctx => {

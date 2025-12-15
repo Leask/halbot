@@ -6,7 +6,9 @@ const action = async (ctx, next) => {
     let resp, md = true;
     switch (ctx._.cmd.cmd) {
         case 'echo':
-            resp = hal.json({ update: ctx.update, _: ctx._ });
+            const carry = { ...ctx._ };
+            delete carry.session.messages;
+            resp = hal.json({ update: ctx.update, _: carry });
             break;
         case 'uptime':
             resp = utilitas.uptime();
