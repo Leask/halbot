@@ -11,7 +11,7 @@ const ctxExt = ctx => {
 const action = async (ctx, next) => {
     ctxExt(ctx);
     let parsed = null;
-    switch (ctx._.cmd?.cmd) {
+    switch (ctx._.cmd.cmd) {
         case 'lang':
             if (!ctx._.cmd.args) {
                 return await ctx.ok('Please specify a language.');

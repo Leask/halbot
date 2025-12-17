@@ -72,8 +72,8 @@ const action = async (ctx, next) => {
     await next();
 };
 
-export const { name, hidden, priority, func, help, cmds } = {
-    name: _name, hidden: true, priority: 20, func: action,
+export const { name, run, hidden, priority, func, help, cmds } = {
+    name: _name, run: true, hidden: true, priority: 20, func: action,
     help: bot.lines([
         '¶ Commands handler.',
     ]),
