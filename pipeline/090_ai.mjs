@@ -5,17 +5,19 @@ const TOP = 'top';
 
 const listAIs = async ctx => {
     const lastMessageId = ctx?.update?.callback_query?.message?.message_id;
-    const message = `Features:\n`
-        + hal.uList(Object.entries(alan.FEATURE_ICONS).map(
-            x => `${x[1]} ${x[0]}`
-        )) + `\n\nAI${ais.length > 0 ? 's' : ''}:\n`;
+    const message = `*Time:* \n${new Date().toLocaleString()}\n\n`
+        + `*Features:*\n` + hal.uList(Object.entries(alan.FEATURE_ICONS).filter(
+            x => x[0] !== 'hidden'
+        ).map(
+            x => `${x[1]} \`${x[0]}\``
+        )) + `\n\n*AI${ais.length > 0 ? 's' : ''}:*\n`;
     const buttons = ais.map((x, i) => ({
         label: `${ctx._.session.config?.ai === x.id
             || (!ctx._.session.config?.ai && i === 0) ? `${hal.CHECK} `
-            : ''}${x.name}: ${x.features}`,
+            : ''}${x.label}`,
         text: `/set --ai=${x.id}`,
     }));
-    return await ctx.ok(message, { lastMessageId, buttons });
+    return await ctx.ok(message, { lastMessageId, buttons, md: true });
 };
 
 const action = async (ctx, next) => {

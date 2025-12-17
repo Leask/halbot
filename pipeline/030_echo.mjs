@@ -38,7 +38,7 @@ const action = async (ctx, next) => {
             await ctx.ok(bot.EMOJI_THINKING);
             for (let i = 0; i < 2; i++) {
                 await ctx.timeout();
-                await ctx.ok(ipsum(), { ...extra, onProgress: true });
+                await ctx.ok(ipsum(), { ...extra, processing: true });
             }
             await ctx.timeout();
             await ctx.ok(ipsum(), { ...extra, md });

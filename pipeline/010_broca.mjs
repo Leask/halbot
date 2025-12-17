@@ -135,11 +135,11 @@ const ctxExt = ctx => {
         for (let i in pages) {
             const lastPage = ~~i === pages.length - 1;
             const shouldExtra = options?.lastMessageId || lastPage;
-            if (options?.onProgress && !options?.lastMessageId
+            if (options?.processing && !options?.lastMessageId
                 && pageMap[pageIds[~~i]]?.text === pages[i]) { continue; }
-            if (options?.onProgress && !pageIds[~~i]) {                     // progress: new page, reply text
+            if (options?.processing && !pageIds[~~i]) {                     // progress: new page, reply text
                 await ctx.resp(pages[i], false, extra);
-            } else if (options?.onProgress) {                               // progress: ongoing, edit text
+            } else if (options?.processing) {                               // progress: ongoing, edit text
                 await ctx.edit(
                     pageIds[~~i], pages[i], false, shouldExtra ? extra : {}
                 );
