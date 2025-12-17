@@ -10,14 +10,11 @@ const action = async (ctx, next) => {
         if (hal._.pipeline[i].help) {
             _help.push(hal._.pipeline[i].help);
         }
-        const cmdsx = {
-            ...hal._.pipeline[i].cmds || {},
-            ...hal._.pipeline[i].cmdx || {},
-        };
-        if (utilitas.countKeys(cmdsx)) {
+        const cmds = hal._.pipeline[i].cmds || {};
+        if (utilitas.countKeys(cmds)) {
             _help.push(bot.lines([
                 '_🪄 Commands:_',
-                ...Object.keys(cmdsx).map(x => `- /${x}: ${cmdsx[x]}`),
+                ...Object.keys(cmds).map(x => `- /${x}: ${cmds[x]}`),
             ]));
         }
         if (utilitas.countKeys(hal._.pipeline[i].args)) {
@@ -36,8 +33,8 @@ const action = async (ctx, next) => {
     await ctx.ok(lines2(help), { md: true });
 };
 
-export const { name, run, priority, func, help, cmds } = {
-    name: 'Help', run: true, priority: 40, func: action,
+export const { name, priority, func, help, cmds } = {
+    name: 'Help', priority: 40, func: action,
     help: bot.lines([
         '¶ Basic syntax of this document:',
         'Scheme for commands: /`COMMAND`: `DESCRIPTION`',

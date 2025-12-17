@@ -54,9 +54,9 @@ const action = async (ctx, next) => {
     await ctx.ok(resp, { md });
 };
 
-export const { _NEED, name, run, hidden, priority, func, help, cmds } = {
+export const { _NEED, name, hidden, priority, func, help, cmds } = {
     _NEED: ['lorem-ipsum'],
-    name: 'Echo', run: true, hidden: true, priority: 30, func: action,
+    name: 'Echo', hidden: true, priority: 30, func: action,
     help: bot.lines([
         '¶ Basic behaviors for debug only.',
     ]),

@@ -43,11 +43,8 @@ const validateAi = async (val, ctx) => {
     utilitas.throwError('No AI engine matched.');
 };
 
-export const { name, run, priority, func, help, args, cmdx } = {
-    name: 'AI',
-    run: true,
-    priority: 90,
-    func: action,
+export const { name, priority, func, help, args, cmds } = {
+    name: 'AI', priority: 90, func: action,
     help: bot.lines([
         '¶ Set initial prompt to the AI model.',
         "Tip 1: Set `hello=''` to reset to default initial prompt.",
@@ -59,6 +56,10 @@ export const { name, run, priority, func, help, args, cmdx } = {
         'Tip 5: `/[AI_ID]` Tell me a joke.',
         'Tip 6: `/all` Use the top 3 AI models simultaneously, for current prompt.',
     ]),
+    cmds: {
+        ai: 'List all available AIs.',
+        all: 'Use the top 3 AI models simultaneously: /all Say hello to all AIs!',
+    },
     args: {
         hello: {
             type: 'string', short: 's', default: 'Hello!',
@@ -70,8 +71,4 @@ export const { name, run, priority, func, help, args, cmdx } = {
             validate: validateAi,
         },
     },
-    cmdx: {
-        ai: 'List all available AIs.',
-        all: 'Use the top 3 AI models simultaneously: /all Say hello to all AIs!',
-    }
 };

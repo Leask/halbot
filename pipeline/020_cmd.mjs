@@ -72,6 +72,12 @@ const action = async (ctx, next) => {
     await next();
 };
 
-export const { name, run, priority, func, cmdx } = {
-    name: _name, run: true, priority: 20, func: action, cmdx: {}
+export const { name, hidden, priority, func, help, cmds } = {
+    name: _name, hidden: true, priority: 20, func: action,
+    help: bot.lines([
+        '¶ Commands handler.',
+    ]),
+    cmds: {
+        clearkb: 'Clear keyboard: /clearkb',
+    },
 };

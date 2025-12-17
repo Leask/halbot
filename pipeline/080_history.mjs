@@ -99,13 +99,14 @@ const action = async (ctx, next) => {
     }
 };
 
-export const { name, run, priority, func, help, cmdx } = {
-    name: 'History', run: true, priority: 80, func: action,
+export const { name, priority, func, help, cmds } = {
+    name: 'History', priority: 80, func: action,
     help: bot.lines([
         '¶ Search history.',
         'Example 1: /search Answer to the Ultimate Question',
         'Example 2: /search Answer to the Ultimate Question --skip=10',
-    ]), cmdx: {
+    ]),
+    cmds: {
         search: 'Usage: /search `ANYTHING` --skip=`OFFSET`',
-    }
+    },
 };

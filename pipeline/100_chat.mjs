@@ -58,8 +58,5 @@ const action = async (ctx, next) => {
 };
 
 export const { name, run, priority, func } = {
-    name: _name,
-    run: true,
-    priority: 100,
-    func: action,
+    name: _name, run: true, priority: 100, func: action,
 };

@@ -54,8 +54,8 @@ const action = async (ctx, next) => {
     await next();
 };
 
-export const { name, run, priority, func, help, cmdx, args } = {
-    name: 'Config', run: true, priority: 60, func: action,
+export const { name, priority, func, help, cmds, args } = {
+    name: 'Config', priority: 60, func: action,
     help: bot.lines([
         '¶ Configure the bot by UNIX/Linux CLI style.',
         'Using [node:util.parseArgs](https://nodejs.org/api/util.html#utilparseargsconfig) to parse arguments.',
@@ -64,12 +64,14 @@ export const { name, run, priority, func, help, cmdx, args } = {
         '¶ When enabled, the bot will speak out the answer if available.',
         'Example 1: /set --tts on',
         'Example 2: /set --tts off',
-    ]), cmdx: {
+    ]),
+    cmds: {
         lang: 'Set your default language: /lang `LANG`',
         toggle: 'Toggle configurations. Only works for boolean values.',
         set: 'Usage: /set --`OPTION` `VALUE` -`SHORT`',
         reset: 'Reset configurations.',
-    }, args: {
+    },
+    args: {
         chatty: {
             type: 'string', short: 'c', default: hal.ON,
             desc: `\`(${hal.BINARY_STRINGS.join(', ')})\` Enable/Disable chatty mode.`,
