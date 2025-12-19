@@ -71,7 +71,6 @@ const action = async (ctx, next) => {
                 });
                 await ctx.timeout();
             }
-            // TODO: NEED MORE DEBUG
             result.length === hal.SEARCH_LIMIT && await ctx.resp(
                 '___', true, ctx.getExtra({
                     buttons: [{
