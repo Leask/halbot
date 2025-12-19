@@ -35,17 +35,6 @@ const memorize = async (ctx) => {
         }
         await hal._.storage?.client?.upsert?.(hal.table, event, { skipEcho: true });
     }, hal.logOptions);
-    // TODO: 調整，如果命令執行過，應該更新菜單 ！？
-    await utilitas.ignoreErrFunc(async () => await hal._.bot.telegram.setMyCommands([
-        ...hal._.cmds, ...Object.keys(ctx._.message.prompts || {}).map(
-            command => hal.newCommand(command, ctx._.message.prompts[command])
-        )
-    ].sort((x, y) =>
-        (ctx._.message?.cmds?.[y.command.toLowerCase()]?.touchedAt || 0)
-        - (ctx._.message?.cmds?.[x.command.toLowerCase()]?.touchedAt || 0)
-    ).slice(0, hal.COMMAND_LIMIT), {
-        scope: { type: 'chat', chat_id: ctx._.chatId },
-    }), hal.logOptions);
 };
 
 const ctxExt = ctx => {

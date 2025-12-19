@@ -68,6 +68,15 @@ const action = async (ctx, next) => {
         case 'clearkb':
             return await ctx.complete({ keyboards: [] });
     }
+    // update commands
+    await utilitas.ignoreErrFunc(async () =>
+        await hal._.bot.telegram.setMyCommands(hal._.cmds.sort((x, y) =>
+            (ctx._.session?.cmds?.[y.command.toLowerCase()]?.touchedAt || 0)
+            - (ctx._.session?.cmds?.[x.command.toLowerCase()]?.touchedAt || 0)
+        ).slice(0, hal.COMMAND_LIMIT), {
+            scope: { type: 'chat', chat_id: ctx._.chatId },
+        }), hal.logOptions
+    );
     // next middleware
     await next();
 };
