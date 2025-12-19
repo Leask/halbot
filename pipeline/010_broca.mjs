@@ -54,8 +54,8 @@ const resp = async (ctx, text, md, extra) => {
             resp = await (extra?.reply_parameters?.message_id
                 ? ctx.replyWithMarkdown(text, { parse_mode, ...extra })
                 : ctx.sendMessage(text, { parse_mode, ...extra }));
-        } catch (err) { // utilitas.throwError('Error sending message.');
-            isMarkdownError(err) || log(err);
+        } catch (err) {
+            log(err);
             await ctx.timeout();
         }
     }
@@ -81,8 +81,8 @@ const edit = async (ctx, lastMsgId, text, md, extra) => {
             resp = await ctx.telegram.editMessageText(
                 ctx._.chatId, lastMsgId, '', text, { parse_mode, ...extra }
             );
-        } catch (err) { // utilitas.throwError('Error editing message.');
-            isMarkdownError(err) || log(err);
+        } catch (err) {
+            log(err);
             await ctx.timeout();
         }
     }
