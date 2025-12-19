@@ -50,20 +50,19 @@ const resp = async (ctx, text, md, extra) => {
     // }
     let resp;
     if (md) {
-        try {
-            resp = await (extra?.reply_parameters?.message_id
-                ? ctx.replyWithMarkdown(text, { parse_mode, ...extra })
-                : ctx.sendMessage(text, { parse_mode, ...extra }));
-        } catch (err) {
-            log(err);
-            await ctx.timeout();
-        }
+        resp = await utilitas.ignoreErrFunc(async (
+        ) => await (extra?.reply_parameters?.message_id
+            ? ctx.replyWithMarkdown(text, { parse_mode, ...extra })
+            : ctx.sendMessage(text, { parse_mode, ...extra })), hal.logOptions);
     }
-    resp || (resp = await utilitas.ignoreErrFunc(
-        async () => await (extra?.reply_parameters?.message_id
-            ? ctx.reply(text, extra) : ctx.sendMessage(text, extra)
-        ), hal.logOptions
-    ));
+    if (!resp) {
+        await ctx.timeout();
+        resp = await utilitas.ignoreErrFunc(
+            async () => await (extra?.reply_parameters?.message_id
+                ? ctx.reply(text, extra) : ctx.sendMessage(text, extra)
+            ), hal.logOptions
+        );
+    }
     resp && ctx._.done.push(resp);
     return resp;
 };
@@ -77,19 +76,18 @@ const replyWith = async (ctx, func, src, options) => ctx._.done.push(
 const edit = async (ctx, lastMsgId, text, md, extra) => {
     let resp;
     if (md) {
-        try {
-            resp = await ctx.telegram.editMessageText(
-                ctx._.chatId, lastMsgId, '', text, { parse_mode, ...extra }
-            );
-        } catch (err) {
-            log(err);
-            await ctx.timeout();
-        }
+        resp = await utilitas.ignoreErrFunc(async (
+        ) => await ctx.telegram.editMessageText(
+            ctx._.chatId, lastMsgId, '', text, { parse_mode, ...extra }
+        ), hal.logOptions);
     }
-    resp || (resp = await utilitas.ignoreErrFunc(async (
-    ) => await ctx.telegram.editMessageText(
-        ctx._.chatId, lastMsgId, '', text, extra
-    ), hal.logOptions));
+    if (!resp) {
+        await ctx.timeout();
+        resp = await utilitas.ignoreErrFunc(async (
+        ) => await ctx.telegram.editMessageText(
+            ctx._.chatId, lastMsgId, '', text, extra
+        ), hal.logOptions);
+    }
     resp && ctx._.done.push(resp);
     return resp;
 };
