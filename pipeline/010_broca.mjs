@@ -148,14 +148,15 @@ const ctxExt = ctx => {
     };
     ctx.err = async (m, opts) => {
         log(m);
-        return await ctx.ok(`⚠️ ${m?.message || m} `, opts);
+        return await ctx.ok(`${bot.EMOJI_WARNING} ${m?.message || m} `, opts);
     };
-    ctx.shouldReply = async text => {
+    ctx.shouldReply = async (text, options) => {
         const should = utilitas.insensitiveHas(hal._?.chatType, ctx._.chatType)
             || ctx._.session?.config?.chatty;
         text = utilitas.isSet(text, true) ? (text || '') : '';
         if (!should || !text) { return should; }
-        return await ctx.ok(text);
+        return await (options?.error
+            ? ctx.err(text, options) : ctx.ok(text, options));
     };
     ctx.finish = () => ctx._.done.unshift(null);
     ctx.complete = async (options) => await ctx.ok(hal.CHECK, options);
@@ -241,10 +242,10 @@ const action = async (ctx, next) => {
     await sessionSet(ctx._.chatId, ctx._.session);
     // fallback response and log
     if (ctx._.done.length) { return; }
-    const errStr = '⚠️ ' + (ctx._.cmd?.cmd
-        ? `Command not found: /${ctx._.cmd.cmd}` : 'No suitable response.');
+    const errStr = ctx._.cmd?.cmd
+        ? `Command not found: /${ctx._.cmd.cmd}` : 'No suitable response.';
     log(`INFO: ${errStr}`);
-    await ctx.shouldReply(errStr);
+    await ctx.shouldReply(errStr, { error: true });
 };
 
 export const { _NEED, name, run, priority, func } = {
