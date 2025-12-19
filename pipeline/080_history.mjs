@@ -40,15 +40,16 @@ const memorize = async (ctx) => {
 const ctxExt = ctx => {
     ctx.memorize = async () => await memorize(ctx);
     ctx.recall = async (keyword, offset = 0, limit = hal.SEARCH_LIMIT, options = {}) =>
-        await recall(ctx._.chatId, keyword, offset, limit, options);
+        await hal.recall(ctx._.chatId, keyword, offset, limit, options);
     // ctx.getContext = async (offset = 0, limit = hal.SEARCH_LIMIT, options = {}) =>
-    //     await getContext(ctx._.chatId, offset, limit, options);
+    //     await hal.getContext(ctx._.chatId, offset, limit, options);
 };
 
 const action = async (ctx, next) => {
     ctxExt(ctx);
     switch (ctx._.cmd?.cmd) {
         case 'search':
+            // print(ctx.update.callback_query?.message);
             (ctx._.type === 'callback_query')
                 && await ctx.deleteMessage(ctx._.message.message_id);
             const regex = '[-—]+skip=[0-9]*';
@@ -60,7 +61,7 @@ const action = async (ctx, next) => {
             const result = await ctx.recall(keywords, offset);
             for (const i in result) {
                 const content = bot.lines([
-                    '```↩️', compactLimit(result[i].response_text), '```',
+                    '```↩️', compactLimit(result[i].response), '```',
                     [`${utilitas.getTimeIcon(result[i].created_at)} ${result[i].created_at.toLocaleString()}`,
                     `🏆 ${(Math.round(result[i].score * 100) / 100).toFixed(2)}`].join('  '),
                 ]);
@@ -77,7 +78,10 @@ const action = async (ctx, next) => {
                         label: '🔍 More',
                         text: `/search@${ctx.botInfo.username} ${keywords} `
                             + `--skip=${offset + result.length}`,
-                    }]
+                    }],
+                    reply_parameters: {
+                        message_id: ctx.update.callback_query?.message?.reply_to_message?.message_id || ctx._.message.message_id,
+                    },
                 }));
             result.length || await ctx.err('No more records.');
             break;

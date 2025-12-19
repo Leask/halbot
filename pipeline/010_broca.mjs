@@ -1,5 +1,5 @@
 import { alan, bot, hal, uoid, utilitas } from '../index.mjs';
-import { paginate } from 'tellegram';
+import { convert, paginate } from 'tellegram';
 
 const _name = 'Broca';
 const [PRIVATE_LIMIT, GROUP_LIMIT] = [60 / 60, 60 / 20].map(x => x * 1000);
@@ -52,14 +52,14 @@ const resp = async (ctx, text, md, extra) => {
     if (md) {
         resp = await utilitas.ignoreErrFunc(async (
         ) => await (extra?.reply_parameters?.message_id
-            ? ctx.replyWithMarkdown(text, { parse_mode, ...extra })
-            : ctx.sendMessage(text, { parse_mode, ...extra })), hal.logOptions);
+            ? ctx.sendMessage(convert(text), { parse_mode, ...extra })
+            : ctx.replyWithMarkdown(convert(text), { parse_mode, ...extra })), hal.logOptions);
     }
     if (!resp) {
         await ctx.timeout();
         resp = await utilitas.ignoreErrFunc(
             async () => await (extra?.reply_parameters?.message_id
-                ? ctx.reply(text, extra) : ctx.sendMessage(text, extra)
+                ? ctx.sendMessage(text, extra) : ctx.reply(text, extra)
             ), hal.logOptions
         );
     }
@@ -78,7 +78,7 @@ const edit = async (ctx, lastMsgId, text, md, extra) => {
     if (md) {
         resp = await utilitas.ignoreErrFunc(async (
         ) => await ctx.telegram.editMessageText(
-            ctx._.chatId, lastMsgId, '', text, { parse_mode, ...extra }
+            ctx._.chatId, lastMsgId, '', convert(text), { parse_mode, ...extra }
         ), hal.logOptions);
     }
     if (!resp) {
