@@ -50,7 +50,6 @@ const action = async (ctx, next) => {
     await next();
 };
 
-export const { _NEED, name, run, priority, func } = {
-    _NEED: [telegramifyMarkdown], name: _name,
-    run: true, priority: 100, func: action,
+export const { name, run, priority, func } = {
+    name: _name, run: true, priority: 100, func: action,
 };

@@ -1,12 +1,12 @@
 import { alan, bot, hal, uoid, utilitas } from '../index.mjs';
+import { paginate } from 'tellegram';
 
 const _name = 'Broca';
 const [PRIVATE_LIMIT, GROUP_LIMIT] = [60 / 60, 60 / 20].map(x => x * 1000);
 const log = (c, o) => utilitas.log(c, _name, { time: 1, ...o || {} });
 const getKey = s => s?.toLowerCase?.()?.startsWith?.('http') ? 'url' : 'source';
 const isMarkdownError = e => e?.description?.includes?.("can't parse entities");
-
-const [CALLBACK_LIMIT, parse_mode] = [30, bot.parse_mode];
+const [CALLBACK_LIMIT, parse_mode] = [30, bot.PARSE_MODE_MD_V2];
 
 const KNOWN_UPDATE_TYPES = [
     'callback_query', 'channel_post', 'edited_message', 'message',
@@ -125,7 +125,7 @@ const ctxExt = ctx => {
     ctx.edit = async (lastMsgId, text, md, extra) =>
         await edit(ctx, lastMsgId, text, md, extra);
     ctx.ok = async (message, options) => {
-        let pages = bot.paging(message, options);
+        let pages = paginate(message, options);
         const extra = ctx.getExtra(options);
         const [pageIds, pageMap] = [[], {}];
         options?.pageBreak || ctx._.done.filter(x => x).map(x => {
@@ -135,22 +135,13 @@ const ctxExt = ctx => {
         for (let i in pages) {
             const lastPage = ~~i === pages.length - 1;
             const shouldExtra = options?.lastMessageId || lastPage;
-            if (options?.processing && !options?.lastMessageId
-                && pageMap[pageIds[~~i]]?.text === pages[i]) { continue; }
-            if (options?.processing && !pageIds[~~i]) {                     // progress: new page, reply text
-                await ctx.resp(pages[i], false, extra);
-            } else if (options?.processing) {                               // progress: ongoing, edit text
-                await ctx.edit(
-                    pageIds[~~i], pages[i], false, shouldExtra ? extra : {}
-                );
-            } else if (options?.lastMessageId || pageIds[~~i]) {            // progress: final, edit markdown
-                await ctx.edit(
-                    options?.lastMessageId || pageIds[~~i],
-                    pages[i], true, shouldExtra ? extra : {}
-                );
-            } else {                                                        // never progress, reply markdown
-                await ctx.resp(pages[i], true, extra);
+            const _extra = shouldExtra ? extra : {};
+            const lastMsgId = ~~(options?.lastMessageId || pageIds[~~i]);
+            if (lastMsgId && pageMap[lastMsgId]?.text === pages[i]) {
+                continue;
             }
+            await (lastMsgId ? ctx.edit(lastMsgId, pages[i], options?.md, _extra) // ongoing, edit
+                : ctx.resp(pages[i], options?.md, _extra));                       // new page, reply
             await ctx.timeout();
         }
         return ctx._.done;
@@ -256,6 +247,7 @@ const action = async (ctx, next) => {
     await ctx.shouldReply(errStr);
 };
 
-export const { name, run, priority, func } = {
-    name: _name, run: true, priority: 10, func: action,
+export const { _NEED, name, run, priority, func } = {
+    _NEED: ['telegramifyMarkdown'], name: _name,
+    run: true, priority: 10, func: action,
 };
