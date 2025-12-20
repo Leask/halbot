@@ -30,7 +30,7 @@ const action = async (ctx, next) => {
         }
         _help.length && help.push(bot.lines([`*${i.toUpperCase()}*`, ..._help]));
     }
-    await ctx.ok(lines2(help), { md: true });
+    await ctx.ok(lines2(help));
 };
 
 export const { name, priority, func, help, cmds } = {

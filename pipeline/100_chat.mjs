@@ -20,7 +20,7 @@ const action = async (ctx, next) => {
         }
         sResp = await ctx.ok(resp.text, {
             ...ctx._.keyboards ? { keyboards: ctx._.keyboards } : {},
-            md: true, ...extra, ...options || {},
+            ...extra, ...options || {},
         });
         lastSent = curTime;
         return sResp;

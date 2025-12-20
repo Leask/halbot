@@ -44,16 +44,17 @@ const getExtra = (ctx, options) => {
     return resp;
 };
 
-const resp = async (ctx, text, md, extra) => {
+const resp = async (ctx, text, extra) => {
     // if (ctx._.type === 'inline_query') {
     //     return await ctx.answerInlineQuery([{}, {}]);
     // }
     let resp;
-    if (md) {
+    if (!extra?.noMd) {
+        const txt = extra?.parsed ? text : convert(text);
         resp = await utilitas.ignoreErrFunc(async (
         ) => await (extra?.reply_parameters?.message_id
-            ? ctx.sendMessage(convert(text), { parse_mode, ...extra })
-            : ctx.replyWithMarkdown(convert(text), { parse_mode, ...extra })), hal.logOptions);
+            ? ctx.sendMessage(txt, { parse_mode, ...extra })
+            : ctx.replyWithMarkdown(txt, { parse_mode, ...extra })), hal.logOptions);
     }
     if (!resp) {
         await ctx.timeout();
@@ -73,12 +74,13 @@ const replyWith = async (ctx, func, src, options) => ctx._.done.push(
     })) : { [getKey(src)]: src }, ctx.getExtra(options))
 );
 
-const edit = async (ctx, lastMsgId, text, md, extra) => {
+const edit = async (ctx, lastMsgId, text, extra) => {
     let resp;
-    if (md) {
+    if (!extra?.noMd) {
+        const txt = extra?.parsed ? text : convert(text);
         resp = await utilitas.ignoreErrFunc(async (
         ) => await ctx.telegram.editMessageText(
-            ctx._.chatId, lastMsgId, '', convert(text), { parse_mode, ...extra }
+            ctx._.chatId, lastMsgId, '', txt, { parse_mode, ...extra }
         ), hal.logOptions);
     }
     if (!resp) {
@@ -119,12 +121,12 @@ const ctxExt = ctx => {
         return str;
     };
     ctx.getExtra = (options) => getExtra(ctx, options);
-    ctx.resp = async (text, md, extra) => await resp(ctx, text, md, extra);
-    ctx.edit = async (lastMsgId, text, md, extra) =>
-        await edit(ctx, lastMsgId, text, md, extra);
+    ctx.resp = async (text, extra) => await resp(ctx, text, extra);
+    ctx.edit = async (lastMsgId, text, extra) =>
+        await edit(ctx, lastMsgId, text, extra);
     ctx.ok = async (message, options) => {
         let pages = paginate(message, options);
-        const extra = ctx.getExtra(options);
+        const extra = { ...ctx.getExtra(options), parsed: true };
         const [pageIds, pageMap] = [[], {}];
         options?.pageBreak || ctx._.done.filter(x => x).map(x => {
             pageMap[x?.message_id] || (pageIds.push(x?.message_id));
@@ -138,15 +140,17 @@ const ctxExt = ctx => {
             if (lastMsgId && pageMap[lastMsgId]?.text === pages[i]) {
                 continue;
             }
-            await (lastMsgId ? ctx.edit(lastMsgId, pages[i], options?.md, _extra) // ongoing, edit
-                : ctx.resp(pages[i], options?.md, _extra));                       // new page, reply
+            await (lastMsgId ? ctx.edit(lastMsgId, pages[i], _extra) // ongoing, edit
+                : ctx.resp(pages[i], _extra));                       // new page, reply
             await ctx.timeout();
         }
         return ctx._.done;
     };
     ctx.err = async (m, opts) => {
         log(m);
-        return await ctx.ok(`${bot.EMOJI_WARNING} ${m?.message || m} `, opts);
+        return await ctx.ok(`${bot.EMOJI_WARNING} ${m?.message || m} `, {
+            ...opts, pageBreak: true,
+        });
     };
     ctx.shouldReply = async (text, options) => {
         const should = utilitas.insensitiveHas(hal._?.chatType, ctx._.chatType)

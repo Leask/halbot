@@ -3,7 +3,7 @@ import { bot, hal, utilitas } from '../index.mjs';
 let lorem;
 
 const action = async (ctx, next) => {
-    let resp, md = true;
+    let resp;
     switch (ctx._.cmd.cmd) {
         case 'echo':
             const carry = { ...ctx._ };
@@ -41,17 +41,17 @@ const action = async (ctx, next) => {
                 await ctx.ok(ipsum(), { ...extra, processing: true });
             }
             await ctx.timeout();
-            await ctx.ok(ipsum(), { ...extra, md });
+            await ctx.ok(ipsum(), extra);
             // testing incomplete markdown reply {
-            // await ctx.ok('_8964', { md });
+            // await ctx.ok('_8964', extra);
             // }
             // test pagebreak {
             // await ctx.timeout();
-            // await ctx.ok(ipsum(), { md, pageBreak: true });
+            // await ctx.ok(ipsum(), { pageBreak: true });
             // }
             return;
     }
-    await ctx.ok(resp, { md });
+    await ctx.ok(resp);
 };
 
 export const { _NEED, name, hidden, priority, func, help, cmds } = {

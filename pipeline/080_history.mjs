@@ -65,26 +65,28 @@ const action = async (ctx, next) => {
                     [`${utilitas.getTimeIcon(result[i].created_at)} ${result[i].created_at.toLocaleString()}`,
                     `🏆 ${(Math.round(result[i].score * 100) / 100).toFixed(2)}`].join('  '),
                 ]);
-                await ctx.resp(content, true, {
+                await ctx.resp(content, {
                     reply_parameters: {
                         message_id: result[i].message_id,
                     }, disable_notification: ~~i > 0,
                 });
                 await ctx.timeout();
             }
-            // TODO: no more records not showing!!!!!
-            result.length === hal.SEARCH_LIMIT && await ctx.resp(
-                '___', true, ctx.getExtra({
+            const options = {
+                reply_parameters: {
+                    message_id: ctx.update.callback_query?.message?.reply_to_message?.message_id
+                        || ctx._.message.message_id,
+                }
+            };
+            result.length === hal.SEARCH_LIMIT ? await ctx.resp(
+                '___', ctx.getExtra({
                     buttons: [{
                         label: '🔍 More',
                         text: `/search@${ctx.botInfo.username} ${keywords} `
                             + `--skip=${offset + result.length}`,
                     }],
-                    reply_parameters: {
-                        message_id: ctx.update.callback_query?.message?.reply_to_message?.message_id || ctx._.message.message_id,
-                    },
-                }));
-            result.length || await ctx.err('No more records.');
+                    ...options,
+                })) : await ctx.err('No more records.', options);
             break;
         default:
             await next();

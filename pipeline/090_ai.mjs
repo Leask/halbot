@@ -17,7 +17,7 @@ const listAIs = async ctx => {
             : ''}${x.label}`,
         text: `/set --ai=${x.id}`,
     }));
-    return await ctx.ok(message, { lastMessageId, buttons, md: true });
+    return await ctx.ok(message, { lastMessageId, buttons });
 };
 
 const action = async (ctx, next) => {
