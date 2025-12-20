@@ -6,24 +6,22 @@ const log = (c, o) => utilitas.log(c, _name, { time: 1, ...o || {} });
 
 // https://stackoverflow.com/questions/69924954/an-error-is-issued-when-opening-the-telebot-keyboard
 const keyboards = [[
-    { text: `/ai ${bot.BOT}` },
-    { text: '/help 🛟' },
+    { text: `/ai ${bot.BOT}` }, { text: '/help 🛟' },
 ], [
-    { text: '/set --tts=🔊' },
-    { text: '/set --tts=🔇' },
-], [
-    { text: '/set --chatty=🐵' },
-    { text: '/set --chatty=🙊' },
+    { text: '/set --tts=🔊' }, { text: '/set --tts=🔇' },
 ]];
 
+const getKeyboard = ctx => ctx._.chatType === hal.GROUP ? [
+    ...keyboards, [{ text: '/set --chatty=🐵' }, { text: '/set --chatty=🙊' }]
+] : keyboards;
+
+const ctxExt = ctx => {
+    ctx.getKeyboard = () => getKeyboard(ctx);
+};
+
 const action = async (ctx, next) => {
-    // reload functions
-    const _ok = ctx.ok;
-    // @TODO: this will case keyboard showup everytime
-    // ctx.ok = async (message, options) => await _ok(message, {
-    //     ...options || {},
-    //     ...options?.buttons ? {} : (options?.keyboards || { keyboards }),
-    // });
+    // extend ctx
+    ctxExt(ctx);
     // handle callback query
     if (ctx._.type === 'callback_query') {
         const data = utilitas.parseJson(ctx.update.callback_query.data);
@@ -64,7 +62,7 @@ const action = async (ctx, next) => {
             = { args: ctx._.cmd.args, touchedAt: Date.now() };
     }
     // handle commands
-    switch (ctx.cmd?.cmd) {
+    switch (ctx._.cmd?.cmd) {
         case 'clearkb':
             return await ctx.complete({ keyboards: [] });
     }

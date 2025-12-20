@@ -49,7 +49,7 @@ const action = async (ctx, next) => {
             }
         case 'reset':
             ctx._.session.config = ctx._.config = {};
-            return await ctx.complete();
+            return await ctx.complete({ keyboards: ctx.getKeyboard() });
     }
     await next();
 };

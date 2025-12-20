@@ -141,6 +141,11 @@ const ctxExt = ctx => {
             if (lastMsgId && pageMap[lastMsgId]?.raw === pages[i]) {
                 continue;
             }
+            if (!options?.processing && !_extra?.buttons?.length
+                && !_extra.keyboards && !lastMsgId && ctx.getKeyboard) {
+                delete _extra?.buttons;
+                _extra.keyboards = ctx.getKeyboard();
+            }
             await (lastMsgId ? ctx.edit(lastMsgId, pages[i], _extra) // ongoing, edit
                 : ctx.resp(pages[i], _extra));                       // new page, reply
             await ctx.timeout();
