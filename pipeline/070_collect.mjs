@@ -62,7 +62,7 @@ const collectFile = async (ctx, f) => {
 
 const extract = async (ctx, m) => {
     collectableObjects.map(k => {
-        if (k === 'new_chat_member' && m[k].user.id === ctx.botInfo.id) {
+        if (k === 'new_chat_member' && m[k]?.user?.id === ctx.botInfo.id) {
             return; // ignore current bot joining the group
         }
         return m[k] && ctx.collect(
