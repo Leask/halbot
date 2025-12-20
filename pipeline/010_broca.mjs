@@ -207,7 +207,7 @@ const action = async (ctx, next) => {
             ctx.hello();
         }
     } else if (ctx._.message.group_chat_created) {
-        return ctx.finish();
+        return ctx.err('Please promote me to admin, so I can talk to you.');
     } else if (!ctx._.type) { return log(`Unsupported message type.`); }
     // get chat metadata
     ctx._.chatId = ctx._.message.chat.id;
