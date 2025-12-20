@@ -11,7 +11,7 @@ const keyboards = [[
     { text: '/set --tts=🔊' }, { text: '/set --tts=🔇' },
 ]];
 
-const getKeyboard = ctx => ctx._.chatType === hal.GROUP ? [
+const getKeyboard = ctx => ctx.update?.message?.chat?.type === hal.GROUP ? [
     ...keyboards, [{ text: '/set --chatty=🐵' }, { text: '/set --chatty=🙊' }]
 ] : keyboards;
 
