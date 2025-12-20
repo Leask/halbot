@@ -78,15 +78,13 @@ const action = async (ctx, next) => {
                         || ctx._.message.message_id,
                 }
             };
-            result.length === hal.SEARCH_LIMIT ? await ctx.resp(
-                '___', ctx.getExtra({
-                    buttons: [{
-                        label: '🔍 More',
-                        text: `/search@${ctx.botInfo.username} ${keywords} `
-                            + `--skip=${offset + result.length}`,
-                    }],
-                    ...options,
-                })) : await ctx.err('No more records.', options);
+            result.length === hal.SEARCH_LIMIT ? await ctx.resp('___', {
+                buttons: [{
+                    label: '🔍 More',
+                    text: `/search@${ctx.botInfo.username} ${keywords} `
+                        + `--skip=${offset + result.length}`,
+                }], ...options,
+            }) : await ctx.err('No more records.', options);
             break;
         default:
             await next();

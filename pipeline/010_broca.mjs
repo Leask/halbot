@@ -48,6 +48,7 @@ const resp = async (ctx, text, extra) => {
     // if (ctx._.type === 'inline_query') {
     //     return await ctx.answerInlineQuery([{}, {}]);
     // }
+    extra = getExtra(ctx, extra);
     let resp;
     if (!extra?.noMd) {
         const txt = extra?.parsed ? text : convert(text);
@@ -64,17 +65,18 @@ const resp = async (ctx, text, extra) => {
             ), hal.logOptions
         );
     }
-    resp && ctx._.done.push(resp);
+    resp && ctx._.done.push({ ...resp, raw: text });
     return resp;
 };
 
 const replyWith = async (ctx, func, src, options) => ctx._.done.push(
     await ctx[func](Array.isArray(src) ? src.map(x => ({
         type: x.type || 'photo', media: { [getKey(x.src)]: x.src },
-    })) : { [getKey(src)]: src }, ctx.getExtra(options))
+    })) : { [getKey(src)]: src }, getExtra(ctx, options))
 );
 
 const edit = async (ctx, lastMsgId, text, extra) => {
+    extra = getExtra(ctx, extra);
     let resp;
     if (!extra?.noMd) {
         const txt = extra?.parsed ? text : convert(text);
@@ -90,7 +92,7 @@ const edit = async (ctx, lastMsgId, text, extra) => {
             ctx._.chatId, lastMsgId, '', text, extra
         ), hal.logOptions);
     }
-    resp && ctx._.done.push(resp);
+    resp && ctx._.done.push({ ...resp, raw: text });
     return resp;
 };
 
@@ -120,16 +122,15 @@ const ctxExt = ctx => {
         ctx.collect(str, null, { refresh: true });
         return str;
     };
-    ctx.getExtra = (options) => getExtra(ctx, options);
     ctx.resp = async (text, extra) => await resp(ctx, text, extra);
     ctx.edit = async (lastMsgId, text, extra) =>
         await edit(ctx, lastMsgId, text, extra);
     ctx.ok = async (message, options) => {
         let pages = paginate(message, options);
-        const extra = { ...ctx.getExtra(options), parsed: true };
+        const extra = { ...getExtra(ctx, options), parsed: true };
         const [pageIds, pageMap] = [[], {}];
         options?.pageBreak || ctx._.done.filter(x => x).map(x => {
-            pageMap[x?.message_id] || (pageIds.push(x?.message_id));
+            pageMap[x?.message_id] || pageIds.push(x?.message_id);
             pageMap[x?.message_id] = x;
         });
         for (let i in pages) {
@@ -137,7 +138,7 @@ const ctxExt = ctx => {
             const shouldExtra = options?.lastMessageId || lastPage;
             const _extra = shouldExtra ? extra : {};
             const lastMsgId = ~~(options?.lastMessageId || pageIds[~~i]);
-            if (lastMsgId && pageMap[lastMsgId]?.text === pages[i]) {
+            if (lastMsgId && pageMap[lastMsgId]?.raw === pages[i]) {
                 continue;
             }
             await (lastMsgId ? ctx.edit(lastMsgId, pages[i], _extra) // ongoing, edit

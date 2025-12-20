@@ -6,7 +6,7 @@ const log = (c, o) => utilitas.log(c, _name, { time: 1, ...o || {} });
 const action = async (ctx, next) => {
     if (!ctx._.text && !ctx._.collected.length) { return await next(); }
     let [resp, extra, lock, sResp, lastMsg, lastSent] =
-        [null, { buttons: [] }, 1000 * 5, null, null, 0];
+        [null, { buttons: [] }, 1000 * 3, null, null, 0];
     const ok = async options => {
         const curTime = Date.now();
         if (options?.processing && (
@@ -42,6 +42,7 @@ const action = async (ctx, next) => {
         await ctx.audio(audio.data, { caption: audio.caption });
     }
     // print(resp);
+    await ctx.timeout();
     await resp.text.trim() ? ok({ processing: false })
         : ctx.deleteMessage(ctx._.done[0].message_id);
     ctx._.request = resp.request;
