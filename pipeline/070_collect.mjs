@@ -72,7 +72,6 @@ const extract = async (ctx, m) => {
             ]), PROMPT
         );
     });
-    print(ctx._.collected);
     await Promise.all(collectableFiles.map(async k => {
         if (!m[k]) { return; }
         await sendInit(ctx, EMOJI_LOOK);
