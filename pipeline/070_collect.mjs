@@ -61,12 +61,18 @@ const collectFile = async (ctx, f) => {
 };
 
 const extract = async (ctx, m) => {
-    collectableObjects.map(k => m[k] && ctx.collect(
-        bot.lines([
-            '---', metaPrompt, `type: ${k}`,
-            '---', JSON.stringify(m[k])
-        ]), PROMPT
-    ));
+    collectableObjects.map(k => {
+        if (k === 'new_chat_member' && m[k].user.id === ctx.botInfo.id) {
+            return; // ignore current bot joining the group
+        }
+        return m[k] && ctx.collect(
+            bot.lines([
+                '---', metaPrompt, `type: ${k}`,
+                '---', JSON.stringify(m[k])
+            ]), PROMPT
+        );
+    });
+    print(ctx._.collected);
     await Promise.all(collectableFiles.map(async k => {
         if (!m[k]) { return; }
         await sendInit(ctx, EMOJI_LOOK);
