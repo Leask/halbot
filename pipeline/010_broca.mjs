@@ -200,10 +200,14 @@ const action = async (ctx, next) => {
             + ctx._.message.new_chat_member.user.id + ' => '
             + ctx._.message.new_chat_member.status
         );
-        if (ctx._.message.new_chat_member.user.id !== ctx.botInfo.id
-            || ctx._.message.new_chat_member.status === 'left') {
+        if (ctx._.message.new_chat_member.user.id === ctx.botInfo.id
+            && ctx._.message.new_chat_member.status === 'left') {
             return ctx.finish();
-        } else { ctx.hello(); }
+        } else if (ctx._.message.new_chat_member.user.id === ctx.botInfo.id) {
+            ctx.hello();
+        }
+    } else if (ctx._.message.group_chat_created) {
+        return ctx.finish();
     } else if (!ctx._.type) { return log(`Unsupported message type.`); }
     // get chat metadata
     ctx._.chatId = ctx._.message.chat.id;
