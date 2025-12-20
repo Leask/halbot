@@ -43,8 +43,8 @@ const action = async (ctx, next) => {
     }
     // print(resp);
     await ctx.timeout();
-    await resp.text.trim() ? ok({ processing: false })
-        : ctx.deleteMessage(ctx._.done[0].message_id);
+    await (resp.text.trim() ? ok({ processing: false })
+        : ctx.deleteMessage(ctx._.done[0].message_id));
     ctx._.request = resp.request;
     ctx._.response = resp.response;
     ctx.memorize && await ctx.memorize();
