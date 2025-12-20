@@ -8,11 +8,10 @@ const action = async (ctx, next) => {
     let [resp, extra, lock, sResp, lastMsg, lastSent] =
         [null, { buttons: [] }, 1000 * 3, null, null, 0];
     const ok = async options => {
-        const curTime = Date.now();
         if (options?.processing && (
-            curTime - lastSent < ctx._.limit || lastMsg === resp.text
+            Date.now() - lastSent < ctx._.limit || lastMsg === resp.text
         )) { return; }
-        [lastSent, lastMsg] = [curTime + lock, resp.text];
+        [lastSent, lastMsg] = [Date.now() + lock, resp.text];
         if (!options?.processing) {
             (resp.annotations || []).map((x, i) => extra.buttons.push({
                 label: `${i + 1}. ${x.title}`, url: x.url,
@@ -22,7 +21,7 @@ const action = async (ctx, next) => {
             ...ctx._.keyboards ? { keyboards: ctx._.keyboards } : {},
             ...extra, ...options || {},
         });
-        lastSent = curTime;
+        lastSent = Date.now();
         return sResp;
     };
     resp = await alan.talk(ctx._.text, {
