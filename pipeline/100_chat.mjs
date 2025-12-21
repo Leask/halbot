@@ -5,13 +5,13 @@ const log = (c, o) => utilitas.log(c, _name, { time: 1, ...o || {} });
 
 const action = async (ctx, next) => {
     if (!ctx._.text && !ctx._.collected.length) { return await next(); }
-    let [resp, extra, lock, sResp, lastMsg, lastSent] =
-        [null, { buttons: [] }, 1000 * 3, null, null, 0];
+    let [resp, extra, delay, lock, sResp, lastMsg, lastSent] =
+        [null, { buttons: [] }, 1000 * 3, false, null, null, 0];
     const ok = async options => {
         if (options?.processing && (
-            Date.now() - lastSent < ctx._.limit || lastMsg === resp.text
+            Date.now() - lastSent < ctx._.limit || lastMsg === resp.text || lock
         )) { return; }
-        [lastSent, lastMsg] = [Date.now() + lock, resp.text];
+        [lastSent, lastMsg, lock] = [Date.now() + delay, resp.text, true];
         if (!options?.processing) {
             (resp.annotations || []).map((x, i) => extra.buttons.push({
                 label: `${i + 1}. ${x.title}`, url: x.url,
@@ -21,7 +21,7 @@ const action = async (ctx, next) => {
             ...ctx._.keyboards ? { keyboards: ctx._.keyboards } : {},
             ...extra, ...options || {},
         });
-        lastSent = Date.now();
+        [lastSent, lock] = [Date.now(), false];
         return sResp;
     };
     resp = await alan.talk(ctx._.text, {
