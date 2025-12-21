@@ -174,6 +174,10 @@ const ctxExt = ctx => {
     ctx.image = async (s, o) => await replyWith(ctx, 'replyWithPhoto', s, o);
     ctx.video = async (s, o) => await replyWith(ctx, 'replyWithVideo', s, o);
     ctx.media = async (s, o) => await replyWith(ctx, 'replyWithMediaGroup', s, o);
+    ctx.sessionSet = async () => {
+        ctx._.saved || await sessionSet(ctx._.chatId, ctx._.session);
+        ctx._.saved = true;
+    };
 };
 
 const action = async (ctx, next) => {
@@ -251,7 +255,7 @@ const action = async (ctx, next) => {
         || (ctx._.message.new_chat_member || ctx._.message.left_chat_member))
         && await next();
     // persistence
-    await sessionSet(ctx._.chatId, ctx._.session);
+    await ctx.sessionSet();
     // fallback response and log
     if (ctx._.done.length) { return; }
     const errStr = ctx._.cmd?.cmd
