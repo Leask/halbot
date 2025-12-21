@@ -67,10 +67,6 @@ const init = async (options = {}) => {
     });
     if (options.jinaApiKey) {
         opts = { provider: 'JINA', apiKey: options.jinaApiKey };
-        await alan.init({
-            ...opts, model: options.jinaModel || '*',
-            priority: options.jinaPriority, ...options
-        });
         await web.initSearch(opts);
         if (!_rerank) {
             await rag.initReranker(opts);
