@@ -1,7 +1,6 @@
 import { bot, hal, media, storage, utilitas, vision, web } from '../index.mjs';
 
 const collectableFiles = ['document', 'sticker', 'video_note', 'video'];
-const sendInit = async (ctx, txt) => ctx._.done.length || await ctx.ok(txt);
 
 const [API_ROOT, BUFFER_ENCODE, EMOJI_SPEECH, EMOJI_LOOK, ATTACHMENT, PROMPT]
     = [
@@ -15,6 +14,10 @@ const collectableObjects = [
 ];
 
 const metaPrompt = "The following are meta information changes or attachment details for the current chat. Please respond appropriately. For example, if it's a poll, make a selection based on your understanding. If there are changes in group members, greet or bid farewell to the respective individuals. If it's a geographical location description, provide a suitable answer based on the context. You may also receive other types of information, for which a reasonable, human-like response is expected.";
+
+// Processing will bypass the keyboard update while keeping the message editable.
+const sendInit = async (ctx, txt) => ctx._.done.length
+    || await ctx.ok(txt, { processing: true });
 
 const getFileUrl = async (ctx, file_id) => {
     assert(file_id, 'File ID is required.', 400);
