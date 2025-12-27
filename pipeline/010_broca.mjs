@@ -111,7 +111,7 @@ const sessionSet = async (chatId, session) => {
 };
 
 const ctxExt = ctx => {
-    ctx.timeout = async () => await utilitas.timeout(ctx._.limit);
+    ctx.timeout = async (t) => await utilitas.timeout(t ?? ctx._.limit);
     ctx.collect = (content, type, options) => type ? ctx._.collected.push(
         { type, content }
     ) : (ctx._.text = [

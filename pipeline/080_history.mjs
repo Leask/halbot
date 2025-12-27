@@ -1,7 +1,102 @@
 import { bot, dbio, hal, utilitas } from '../index.mjs';
 
+const [RELEVANCE, SEARCH_LIMIT, SUB_LIMIT] = [0.2, 10, 200]; // Google Rerank limit
 const compact = (str, op) => utilitas.ensureString(str, { ...op || {}, compact: true });
 const compactLimit = (str, op) => compact(str, { ...op || {}, limit: 140 });
+
+const packMessage = (messages) => messages.map(x => ({
+    message_id: x.message_id, score: x.score, created_at: x.created_at,
+    request: x.received_text, response: x.response_text,
+}));
+
+const recall = async (sessionId, keyword, offset = 0, limit = SEARCH_LIMIT, options = {}) => {
+    assert(sessionId, 'Session ID is required.');
+    let [result, _limit, exclude] = [
+        [], hal._.rerank ? SUB_LIMIT : limit,
+        (options?.exclude || []).map(x => `${~~x}`),
+    ];
+    if (!keyword) { return result; }
+    switch (hal._.storage?.provider) {
+        case dbio.MYSQL:
+            result = await hal._.storage?.client?.query?.(
+                'SELECT *, MATCH(`distilled`) '
+                + 'AGAINST(? IN NATURAL LANGUAGE MODE) AS `relevance` '
+                + "FROM ?? WHERE `bot_id` = ? AND `chat_id` = ? "
+                + "AND `received_text` != '' "
+                + "AND `received_text` NOT LIKE '/%' "
+                + "AND `response_text` != '' HAVING relevance > 0 "
+                + (exclude.length ? `AND \`message_id\` NOT IN (${exclude.join(',')}) ` : '')
+                + 'ORDER BY `relevance` DESC '
+                + `LIMIT ${_limit} OFFSET ?`,
+                [keyword, hal.table, hal._.bot.botInfo.id, sessionId, offset]
+            );
+            break;
+        case dbio.POSTGRESQL:
+            // globalThis.debug = 2;
+            const vector = await dbio.encodeVector(await hal._.embed(keyword));
+            result = await hal._.storage?.client?.query?.(
+                `SELECT *, (1 - (distilled_vector <=> $1)) as relevance `
+                + `FROM ${hal.table} WHERE bot_id = $2 AND chat_id = $3 `
+                + `AND received_text != '' `
+                + `AND received_text NOT LIKE '/%' `
+                + `AND response_text != '' `
+                + (exclude.length ? `AND message_id NOT IN (${exclude.join(',')}) ` : '')
+                + `ORDER BY (distilled_vector <=> $1) ASC `
+                + `LIMIT ${_limit} OFFSET $4`,
+                [vector, hal._.bot.botInfo.id, sessionId, offset]
+            );
+            break;
+    }
+    return await rerank(keyword, result, offset, limit, options);
+};
+
+const getContext = async (sessionId, offset = 0, limit = SEARCH_LIMIT, options = {}) => {
+    assert(sessionId, 'Session ID is required.');
+    let result = [];
+    switch (hal._.storage?.provider) {
+        case dbio.MYSQL:
+            result = await hal._.storage?.client?.query?.(
+                'SELECT * FROM ?? WHERE `bot_id` = ? AND `chat_id` = ? '
+                + "AND `received_text` != '' "
+                + "AND `received_text` NOT LIKE '/%' "
+                + "AND `response_text` != '' "
+                + `ORDER BY \`created_at\` DESC LIMIT ${limit} OFFSET ?`,
+                [hal.table, hal._.bot.botInfo.id, sessionId, offset]
+            );
+            break;
+        case dbio.POSTGRESQL:
+            result = await hal._.storage?.client?.query?.(
+                `SELECT * FROM ${hal.table} WHERE bot_id = $1 AND chat_id = $2 `
+                + `AND received_text != '' `
+                + `AND received_text NOT LIKE '/%' `
+                + `AND response_text != '' `
+                + `ORDER BY created_at DESC LIMIT ${limit} OFFSET $3`,
+                [hal._.bot.botInfo.id, sessionId, offset]
+            );
+            break;
+    }
+    return packMessage(result);
+};
+
+const rerank = async (keyword, result, offset = 0, limit = SEARCH_LIMIT, options = {}) => {
+    if (result.length && hal._.rerank) {
+        const keys = {};
+        const _result = [];
+        for (const x of result) {
+            if (!keys[x.distilled]) {
+                keys[x.distilled] = true;
+                _result.push(x);
+            }
+        }
+        const resp = await hal._.rerank(keyword, _result.map(x => x.distilled));
+        resp.map(x => result[x.index].score = x.score);
+        result.sort((a, b) => b.score - a.score);
+        result = result.filter(
+            x => x.score > RELEVANCE
+        ).slice(offset, offset + limit);
+    }
+    return packMessage(result);
+};
 
 const memorize = async (ctx) => {
     // https://limits.tginfo.me/en
@@ -39,10 +134,10 @@ const memorize = async (ctx) => {
 
 const ctxExt = ctx => {
     ctx.memorize = async () => await memorize(ctx);
-    ctx.recall = async (keyword, offset = 0, limit = hal.SEARCH_LIMIT, options = {}) =>
-        await hal.recall(ctx._.chatId, keyword, offset, limit, options);
-    // ctx.getContext = async (offset = 0, limit = hal.SEARCH_LIMIT, options = {}) =>
-    //     await hal.getContext(ctx._.chatId, offset, limit, options);
+    ctx.recall = async (keyword, offset = 0, limit = SEARCH_LIMIT, options = {}) =>
+        await recall(ctx._.chatId, keyword, offset, limit, options);
+    ctx.getContext = async (offset = 0, limit = hal.SEARCH_LIMIT, options = {}) =>
+        await getContext(ctx._.chatId, offset, limit, options);
 };
 
 const action = async (ctx, next) => {
