@@ -21,7 +21,7 @@ const ctxExt = ctx => {
 
 const loadCommands = async chatId => await hal._.storage.get(
     hal.assembleCommandsKey(chatId), {
-    asPrefix: true, sort: [{ 'updatedAt': '-' }], limit: hal.COMMAND_LIMIT
+    asPrefix: true, order: { 'updated_at': '-' }, limit: hal.COMMAND_LIMIT
 }) || {};
 
 const saveCommands = async (chatId, commands = {}) => await Promise.all(
@@ -80,13 +80,14 @@ const action = async (ctx, next) => {
             return await ctx.complete({ keyboards: [] });
     }
     // update commands
-    // @todo: NEED more debug
     await utilitas.ignoreErrFunc(async () => {
-        const cmds = await loadCommands(ctx._.chatId);
-        await hal._.bot.telegram.setMyCommands(hal._.cmds.sort((x, y) =>
-            (cmds?.[y.command.toUpperCase()]?.updatedAt || 0)
-            - (cmds?.[x.command.toUpperCase()]?.updatedAt || 0)
-        ).slice(0, hal.COMMAND_LIMIT), {
+        const cmds = Object.keys(await loadCommands(ctx._.chatId));
+        await hal._.bot.telegram.setMyCommands(hal._.cmds.sort((x, y) => {
+            const [_x, _y] = [x, y].map(
+                i => cmds.indexOf(i.command.toLowerCase())
+            ).map(x => x === -1 ? cmds.length : x);
+            return _x - _y;
+        }).slice(0, hal.COMMAND_LIMIT), {
             scope: { type: 'chat', chat_id: ctx._.chatId },
         }), hal.logOptions
     });
