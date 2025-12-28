@@ -79,8 +79,8 @@ const action = async (ctx, next) => {
         case 'clearkb':
             return await ctx.complete({ keyboards: [] });
     }
-    // update commands
-    await utilitas.ignoreErrFunc(async () => {
+    // update commands (no await, throw it to background)
+    utilitas.ignoreErrFunc(async () => {
         const cmds = Object.keys(await loadCommands(ctx._.chatId));
         await hal._.bot.telegram.setMyCommands(hal._.cmds.sort((x, y) => {
             const [_x, _y] = [x, y].map(
