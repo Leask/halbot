@@ -4,6 +4,10 @@ const sendConfig = async (ctx, obj, options) => await ctx.ok(
     utilitas.prettyJson(obj, { code: true, md: true }), options
 );
 
+const deleteSettings = async chatId => await hal._.storage.del(
+    hal.assembleSettingsKey(chatId), { asPrefix: true }
+);
+
 const ctxExt = ctx => {
     ctx.sendConfig = async (obj, options) => await sendConfig(ctx, obj, options);
 };
@@ -17,40 +21,37 @@ const action = async (ctx, next) => {
                 return await ctx.ok('Please specify a language.');
             }
             const _config = {
-                ...ctx._.session.config = {
-                    ...ctx._.session.config || {},
-                    ...ctx._.config = {
+                ...ctx._.settings = {
+                    ...ctx._.settings,
+                    ...ctx._.settings_updated = {
                         lang: ctx._.cmd.args,
                         hello: `Please reply in ${ctx._.cmd.args}. Hello!`,
                     },
                 }
             };
-            Object.keys(ctx._.config).map(x => _config[x] += ` ${hal.CHECK}`);
+            Object.keys(ctx._.settings_updated).map(x => _config[x] += ` ${hal.CHECK}`);
             ctx.hello();
-            await ctx.sessionSet(); // save config before break
             break;
         case 'toggle':
             parsed = {};
             Object.keys(await hal.parseArgs(ctx._.cmd.args)).map(x =>
-                parsed[x] = !ctx._.session?.config?.[x]);
+                parsed[x] = !ctx._.settings?.[x]);
         case 'set':
             try {
                 const _config = {
-                    ...ctx._.session.config = {
-                        ...ctx._.session?.config || {},
-                        ...ctx._.config = parsed || await hal.parseArgs(ctx._.cmd.args, ctx),
+                    ...ctx._.settings = {
+                        ...ctx._.settings,
+                        ...ctx._.settings_updated = parsed || await hal.parseArgs(ctx._.cmd.args, ctx),
                     }
                 };
-                assert(utilitas.countKeys(ctx._.config), 'No option matched.');
-                Object.keys(ctx._.config).map(x => _config[x] += ` ${hal.CHECK}`);
-                await ctx.sessionSet(); // save config before return
+                assert(utilitas.countKeys(ctx._.settings_updated), 'No option matched.');
+                Object.keys(ctx._.settings_updated).map(x => _config[x] += ` ${hal.CHECK}`);
                 return await ctx.sendConfig(_config);
             } catch (err) {
                 return await ctx.err(err.message || err);
             }
         case 'reset':
-            ctx._.session.config = ctx._.config = {};
-            await ctx.sessionSet(); // save config before return
+            await deleteSettings(ctx._.chatId);
             return await ctx.complete({ keyboards: ctx.getKeyboard() });
     }
     await next();

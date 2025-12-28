@@ -19,13 +19,28 @@ const ctxExt = ctx => {
     ctx.getKeyboard = () => getKeyboard(ctx);
 };
 
+const loadCommands = async chatId => await hal._.storage.get(
+    hal.assembleCommandsKey(chatId), {
+    asPrefix: true, sort: [{ 'updatedAt': '-' }], limit: hal.COMMAND_LIMIT
+}) || {};
+
+const saveCommands = async (chatId, commands = {}) => await Promise.all(
+    Object.entries(commands).map(([key, value]) =>
+        hal._.storage.set(hal.assembleCommandsKey(chatId, key), value)
+    )
+);
+
+const queryCallback = async (chatId, id) => await hal._.storage.get(
+    hal.assembleCallbacksKey(chatId, id)
+);
+
 const action = async (ctx, next) => {
     // extend ctx
     ctxExt(ctx);
     // handle callback query
     if (ctx._.type === 'callback_query') {
         const data = utilitas.parseJson(ctx.update.callback_query.data);
-        const cb = ctx._.session?.callback?.filter?.(x => x.id === data?.callback)?.[0];
+        const cb = await queryCallback(ctx._.chatId, data?.callback);
         if (cb?.text) {
             log(`Callback: ${cb.text}`); // Avoid ctx._.text interference:
             ctx.collect(cb.text, null, { refresh: true });
@@ -57,9 +72,7 @@ const action = async (ctx, next) => {
     // update last touched command
     if (ctx._.cmd) {
         log(`Command: ${JSON.stringify(ctx._.cmd)}`);
-        ctx._.session.cmds || (ctx._.session.cmds = {});
-        ctx._.session.cmds[ctx._.cmd.cmd]
-            = { args: ctx._.cmd.args, touchedAt: Date.now() };
+        await saveCommands(ctx._.chatId, { [ctx._.cmd.cmd]: ctx._.cmd.args });
     }
     // handle commands
     switch (ctx._.cmd?.cmd) {
@@ -67,14 +80,16 @@ const action = async (ctx, next) => {
             return await ctx.complete({ keyboards: [] });
     }
     // update commands
-    await utilitas.ignoreErrFunc(async () =>
+    // @todo: NEED more debug
+    await utilitas.ignoreErrFunc(async () => {
+        const cmds = await loadCommands(ctx._.chatId);
         await hal._.bot.telegram.setMyCommands(hal._.cmds.sort((x, y) =>
-            (ctx._.session?.cmds?.[y.command.toLowerCase()]?.touchedAt || 0)
-            - (ctx._.session?.cmds?.[x.command.toLowerCase()]?.touchedAt || 0)
+            (cmds?.[y.command.toUpperCase()]?.updatedAt || 0)
+            - (cmds?.[x.command.toUpperCase()]?.updatedAt || 0)
         ).slice(0, hal.COMMAND_LIMIT), {
             scope: { type: 'chat', chat_id: ctx._.chatId },
         }), hal.logOptions
-    );
+    });
     // next middleware
     await next();
 };

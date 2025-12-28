@@ -1,12 +1,12 @@
-import { alan, bot, hal, uoid, utilitas } from '../index.mjs';
+import { bot, hal, uoid, utilitas } from '../index.mjs';
 import { convert, paginate } from 'tellegram';
 
 const _name = 'Broca';
 const [PRIVATE_LIMIT, GROUP_LIMIT] = [60 / 60, 60 / 20].map(x => x * 1000);
 const log = (c, o) => utilitas.log(c, _name, { time: 1, ...o || {} });
 const getKey = s => s?.toLowerCase?.()?.startsWith?.('http') ? 'url' : 'source';
-const isMarkdownError = e => e?.description?.includes?.("can't parse entities");
-const [CALLBACK_LIMIT, parse_mode] = [30, bot.PARSE_MODE_MD_V2];
+const parse_mode = bot.PARSE_MODE_MD_V2;
+// const isMarkdownError = e => e?.description?.includes?.("can't parse entities");
 
 const KNOWN_UPDATE_TYPES = [
     'callback_query', 'channel_post', 'edited_message', 'message',
@@ -26,7 +26,7 @@ const getExtra = (ctx, options) => {
                     return { text: button.label, url: button.url };
                 } else if (button.text) {
                     const id = uoid.fakeUuid(button.text);
-                    ctx._.session.callback.push({ id, ...button });
+                    ctx._.callbacks_updated[id] = button;
                     return {
                         text: button.label,
                         callback_data: JSON.stringify({ callback: id }),
@@ -96,18 +96,36 @@ const edit = async (ctx, lastMsgId, text, extra) => {
     return resp;
 };
 
-const sessionGet = async chatId => {
-    const session = await alan.getSession(chatId) || {};
-    session.callback || (session.callback = []);
-    session.config || (session.config = {});
-    return session;
+const loadSettings = async chatId => await hal._.storage.get(
+    hal.assembleSettingsKey(chatId), { asPrefix: true }
+) || {};
+
+const saveSettings = async (chatId, settings = {}) => await Promise.all(
+    Object.entries(settings).map(([key, value]) =>
+        hal._.storage.set(hal.assembleSettingsKey(chatId, key), value)
+    )
+);
+
+const saveCallbacks = async (chatId, callbacks = {}) => await Promise.all(
+    Object.entries(callbacks).map(([key, value]) =>
+        hal._.storage.set(hal.assembleCallbacksKey(chatId, key), value)
+    )
+);
+
+const loadSession = async ctx => {
+    ctx._.settings = await loadSettings(ctx._.chatId);
+    ctx._.settings_updated = {};
+    ctx._.callbacks_updated = {};
+    // print('Loaded settings: ', ctx._.settings);
 };
 
-const sessionSet = async (chatId, session) => {
-    while (session?.callback?.length > CALLBACK_LIMIT) {
-        session.callback.shift();
-    }
-    return await alan.setSession(chatId, session);
+const saveSession = async ctx => {
+    // print('Saving settings: ', ctx._.settings_updated);
+    // print('Saving callbacks: ', ctx._.callbacks_updated);
+    await Promise.all([
+        saveSettings(ctx._.chatId, ctx._.settings_updated),
+        saveCallbacks(ctx._.chatId, ctx._.callbacks_updated),
+    ]);
 };
 
 const ctxExt = ctx => {
@@ -118,7 +136,7 @@ const ctxExt = ctx => {
         (options?.refresh ? '' : ctx._.text) || '', content || ''
     ].filter(x => x.length).join('\n\n'));
     ctx.hello = str => {
-        str = str || ctx._.session?.config?.hello || hal._.hello;
+        str = str || ctx._.settings?.hello || hal._.hello;
         ctx.collect(str, null, { refresh: true });
         return str;
     };
@@ -160,7 +178,7 @@ const ctxExt = ctx => {
     };
     ctx.shouldReply = async (text, options) => {
         const should = utilitas.insensitiveHas(hal._?.chatType, ctx._.chatType)
-            || ctx._.session?.config?.chatty;
+            || ctx._.settings?.chatty;
         text = utilitas.isSet(text, true) ? (text || '') : '';
         if (!should || !text) { return should; }
         return await (options?.error
@@ -174,10 +192,6 @@ const ctxExt = ctx => {
     ctx.image = async (s, o) => await replyWith(ctx, 'replyWithPhoto', s, o);
     ctx.video = async (s, o) => await replyWith(ctx, 'replyWithVideo', s, o);
     ctx.media = async (s, o) => await replyWith(ctx, 'replyWithMediaGroup', s, o);
-    ctx.sessionSet = async () => {
-        ctx._.saved || await sessionSet(ctx._.chatId, ctx._.session);
-        ctx._.saved = true;
-    };
 };
 
 const action = async (ctx, next) => {
@@ -220,8 +234,8 @@ const action = async (ctx, next) => {
     ctx._.message.text && ctx.collect(ctx._.message.text);
     ctx._.message.caption && ctx.collect(ctx._.message.caption);
     // get session
-    ctx._.session = await sessionGet(ctx._.chatId);
-    ctx._.limit = ctx.chatType === hal.PRIVATE ? PRIVATE_LIMIT : GROUP_LIMIT;
+    await loadSession(ctx);
+    ctx._.limit = ctx._.chatType === hal.PRIVATE ? PRIVATE_LIMIT : GROUP_LIMIT;
     ctx._.entities = [
         ...(ctx._.message.entities || []).map(e => ({ ...e, text: ctx._.message.text })),
         ...(ctx._.message.caption_entities || []).map(e => ({ ...e, text: ctx._.message.caption })),
@@ -255,7 +269,7 @@ const action = async (ctx, next) => {
         || (ctx._.message.new_chat_member || ctx._.message.left_chat_member))
         && await next();
     // persistence
-    await ctx.sessionSet();
+    await saveSession(ctx);
     // fallback response and log
     if (ctx._.done.length) { return; }
     const errStr = ctx._.cmd?.cmd
@@ -265,6 +279,5 @@ const action = async (ctx, next) => {
 };
 
 export const { _NEED, name, run, priority, func } = {
-    _NEED: ['telegramifyMarkdown'], name: _name,
-    run: true, priority: 10, func: action,
+    _NEED: ['tellegram'], name: _name, run: true, priority: 10, func: action,
 };

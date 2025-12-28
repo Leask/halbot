@@ -12,8 +12,8 @@ const listAIs = async ctx => {
             x => `${x[1]} \`${x[0]}\``
         )) + `\n\n*AI${ais.length > 0 ? 's' : ''}:*\n`;
     const buttons = ais.map((x, i) => ({
-        label: `${ctx._.session.config?.ai === x.id
-            || (!ctx._.session.config?.ai && i === 0) ? `${hal.CHECK} `
+        label: `${ctx._.settings?.ai === x.id
+            || (!ctx._.settings?.ai && i === 0) ? `${hal.CHECK} `
             : ''}${x.label}`,
         text: `/set --ai=${x.id}`,
     }));
@@ -30,7 +30,7 @@ const action = async (ctx, next) => {
             ctx._.aiId = TOP;
             break;
         default:
-            ctx._.aiId = ctx._.session.config?.ai;
+            ctx._.aiId = ctx._.settings?.ai;
     }
     await next();
 };
