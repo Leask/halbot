@@ -91,13 +91,25 @@
             height: 70px;
             background-color: var(--header-bg);
             border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 2rem;
+            display: block;
+            /* Changed from flex */
+            padding: 0;
+            /* Removed padding */
             z-index: 1000;
             backdrop-filter: blur(5px);
             box-shadow: 0 2px 20px rgba(0, 240, 255, 0.1);
+        }
+
+        .header-content {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-sizing: border-box;
         }
 
         .brand {
@@ -181,7 +193,7 @@
 
         .sender-label {
             font-family: var(--font-body);
-            font-size: 0.75rem;
+            font-size: 14px;
             letter-spacing: 1px;
             margin-bottom: 4px;
             display: flex;
@@ -291,15 +303,17 @@
     <div id="glass-overlay"></div>
 
     <header>
-        <div class="brand">
-            <!-- Simple SVG Logo -->
-            <svg class="logo" viewBox="0 0 24 24">
-                <path
-                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" />
-            </svg>
-            <div class="brand-name">HALBOT</div>
+        <div class="header-content">
+            <div class="brand">
+                <!-- Simple SVG Logo -->
+                <svg class="logo" viewBox="0 0 24 24">
+                    <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" />
+                </svg>
+                <div class="brand-name">HALBOT</div>
+            </div>
+            <div class="session-time" id="sessionTime">SESSION_TIME_PLACEHOLDER</div>
         </div>
-        <div class="session-time" id="sessionTime">SESSION_TIME_PLACEHOLDER</div>
     </header>
 
     <main id="chatMain">
