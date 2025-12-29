@@ -85,6 +85,10 @@ const action = async (ctx, next) => {
     // 4: using webjam config instead of hardcoding the url
     // 5: The rendering style of ``` needs to be optimized.
     // 6: Add the following links only when web functionality is enabled.
+    // 7: Code highlighting processing.
+    // 8: Should "think" and "tools" be collapsed by default? This requires further consideration.
+    // 9: Completely disable the default auto-scroll feature?
+    // 10: Disable pagination and display all items directly?
     await ctx.edit(lastMsg.message_id,
         lastMsg.raw
         + `\n\n\-\-\-\n\n✨ [View in well-formatted page](https://hal.leaskh.com/turns/${ctx._.token}).`
