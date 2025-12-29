@@ -67,14 +67,24 @@ const action = async (ctx, next) => {
         await ctx.timeout();
     }
     // console.log('Finished');
-    await (resp.text.trim() ? ok({ processing: false })
-        : ctx.deleteMessage(ctx._.done[0].message_id));
+    let lastMsg;
+    if (resp.text.trim()) {
+        lastMsg = await ok({ processing: false });
+    } else {
+        await ctx.deleteMessage(ctx._.done[0].message_id);
+    }
     ctx._.request = resp.request;
     ctx._.response = resp.response;
     ctx._.token = token.newId();
     ctx.memorize && await ctx.memorize();
-    await ctx.resp(
-        `📃 [View conversation in well-formatted page](https://hal.leaskh.com/turns/${ctx._.token}).`
+    // @todo:
+    // 1: reduce safe page range
+    // 2: adding ctx.append feature
+    // 3: Consider the layout for small screens, such as the footer and other elements.
+    // 4: using webjam config instead of hardcoding the url
+    await ctx.edit(lastMsg.message_id,
+        lastMsg.raw
+        + `\n\n\-\-\-\n\n✨ [View in well-formatted page](https://hal.leaskh.com/turns/${ctx._.token}).`
     );
     await next();
 };

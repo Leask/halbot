@@ -93,6 +93,14 @@
             gap: 1rem;
         }
 
+        .brand-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+            color: inherit;
+        }
+
         .logo {
             width: 32px;
             height: 32px;
@@ -346,31 +354,33 @@
     <header>
         <div class="header-content">
             <div class="brand">
-                <!-- HAL9000 Eye Logo -->
-                <svg class="logo" viewBox="0 0 100 100">
-                    <defs>
-                        <radialGradient id="lens-glow" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
-                            <stop offset="0%" style="stop-color:#ffeb3b;stop-opacity:1" />
-                            <stop offset="20%" style="stop-color:#ff9800;stop-opacity:1" />
-                            <stop offset="60%" style="stop-color:#f44336;stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:#b71c1c;stop-opacity:1" />
-                        </radialGradient>
-                        <linearGradient id="metal-rim" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#e0e0e0;stop-opacity:1" />
-                            <stop offset="50%" style="stop-color:#9e9e9e;stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:#616161;stop-opacity:1" />
-                        </linearGradient>
-                    </defs>
-                    <!-- Outer Rim -->
-                    <circle cx="50" cy="50" r="48" style="fill:url(#metal-rim);stroke:#333;stroke-width:2" />
-                    <!-- Inner Housing -->
-                    <circle cx="50" cy="50" r="42" style="fill:#111" />
-                    <!-- The Lens -->
-                    <circle cx="50" cy="50" r="28" style="fill:url(#lens-glow);stroke:#800000;stroke-width:1" />
-                    <!-- Reflection highlight for realism -->
-                    <circle cx="35" cy="35" r="5" style="fill:#fff;opacity:0.6;filter:blur(2px)" />
-                </svg>
-                <div class="brand-name">HAL9000</div>
+                <a href="https://github.com/Leask/halbot" target="_blank" class="brand-link">
+                    <!-- HAL9000 Eye Logo -->
+                    <svg class="logo" viewBox="0 0 100 100">
+                        <defs>
+                            <radialGradient id="lens-glow" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                                <stop offset="0%" style="stop-color:#ffeb3b;stop-opacity:1" />
+                                <stop offset="20%" style="stop-color:#ff9800;stop-opacity:1" />
+                                <stop offset="60%" style="stop-color:#f44336;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#b71c1c;stop-opacity:1" />
+                            </radialGradient>
+                            <linearGradient id="metal-rim" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#e0e0e0;stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:#9e9e9e;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#616161;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <!-- Outer Rim -->
+                        <circle cx="50" cy="50" r="48" style="fill:url(#metal-rim);stroke:#333;stroke-width:2" />
+                        <!-- Inner Housing -->
+                        <circle cx="50" cy="50" r="42" style="fill:#111" />
+                        <!-- The Lens -->
+                        <circle cx="50" cy="50" r="28" style="fill:url(#lens-glow);stroke:#800000;stroke-width:1" />
+                        <!-- Reflection highlight for realism -->
+                        <circle cx="35" cy="35" r="5" style="fill:#fff;opacity:0.6;filter:blur(2px)" />
+                    </svg>
+                    <div class="brand-name">HAL9000</div>
+                </a>
             </div>
             <div class="session-info">
                 <div class="chat-id" id="chatId">Chat ID: XXXXXX</div>
@@ -414,9 +424,14 @@
 
         // Served Turns (Mock logic or could be from data if available)
         const servedTurns = document.getElementById('servedTurns');
-        // If the server provides a total count, use it. Otherwise mock.
-        const randomTurns = Math.floor(Math.random() * 5000) + 1000;
-        servedTurns.textContent = `Processed ${randomTurns.toLocaleString()} prompts.`;
+        let totalTurns = 0;
+        if (chatData.prompt_count) {
+            totalTurns = chatData.prompt_count;
+        } else {
+            // If the server provides a total count, use it. Otherwise mock.
+            totalTurns = Math.floor(Math.random() * 5000) + 1000;
+        }
+        servedTurns.textContent = `Processed ${Number(totalTurns).toLocaleString()} prompts.`;
 
         function renderMessage(msg) {
             const row = document.createElement('div');

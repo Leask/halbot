@@ -10,6 +10,7 @@ const process = async (ctx, next) => {
         `SELECT * FROM ${hal.table} WHERE token = $1`,
         [ctx.params.token]
     );
+    const prompt_count = await dbio.countAll(hal.table);
     result.received = JSON.parse(result.received);
     result.response = JSON.parse(result.response);
     // print(result);
@@ -27,7 +28,7 @@ const process = async (ctx, next) => {
     });
     ctx.body = await renderHtml(JSON.stringify({
         bot_id: result.bot_id, chat_id: result.chat_id,
-        chat_type: result.chat_type, messages,
+        chat_type: result.chat_type, messages, prompt_count,
     }));
 };
 
