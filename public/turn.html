@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HALBOT Chat</title>
+    <title>HAL9000 Chat</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -126,7 +126,7 @@
         }
 
         .brand-name {
-            font-family: var(--font-display);
+            font-family: var(--font-body);
             font-size: 1.5rem;
             font-weight: 700;
             letter-spacing: 2px;
@@ -135,7 +135,7 @@
         }
 
         .session-time {
-            font-family: var(--font-display);
+            font-family: var(--font-body);
             font-size: 0.9rem;
             color: #888;
         }
@@ -279,7 +279,7 @@
             display: block;
             padding: 0;
             color: #444;
-            font-family: var(--font-display);
+            font-family: var(--font-body);
             font-size: 0.8rem;
             z-index: 1000;
             backdrop-filter: blur(5px);
@@ -308,12 +308,31 @@
     <header>
         <div class="header-content">
             <div class="brand">
-                <!-- Simple SVG Logo -->
-                <svg class="logo" viewBox="0 0 24 24">
-                    <path
-                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" />
+                <!-- HAL9000 Eye Logo -->
+                <svg class="logo" viewBox="0 0 100 100">
+                    <defs>
+                        <radialGradient id="lens-glow" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                            <stop offset="0%" style="stop-color:#ffeb3b;stop-opacity:1" />
+                            <stop offset="20%" style="stop-color:#ff9800;stop-opacity:1" />
+                            <stop offset="60%" style="stop-color:#f44336;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#b71c1c;stop-opacity:1" />
+                        </radialGradient>
+                        <linearGradient id="metal-rim" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#e0e0e0;stop-opacity:1" />
+                            <stop offset="50%" style="stop-color:#9e9e9e;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#616161;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <!-- Outer Rim -->
+                    <circle cx="50" cy="50" r="48" style="fill:url(#metal-rim);stroke:#333;stroke-width:2" />
+                    <!-- Inner Housing -->
+                    <circle cx="50" cy="50" r="42" style="fill:#111" />
+                    <!-- The Lens -->
+                    <circle cx="50" cy="50" r="28" style="fill:url(#lens-glow);stroke:#800000;stroke-width:1" />
+                    <!-- Reflection highlight for realism -->
+                    <circle cx="35" cy="35" r="5" style="fill:#fff;opacity:0.6;filter:blur(2px)" />
                 </svg>
-                <div class="brand-name">HALBOT</div>
+                <div class="brand-name">HAL9000</div>
             </div>
             <div class="session-time" id="sessionTime">SESSION_TIME_PLACEHOLDER</div>
         </div>
@@ -337,7 +356,7 @@
         const messages = [
             {
                 role: 'robot',
-                content: "Greetings. I am **HALBOT**. *System status normal.* How can I assist you today?"
+                content: "Greetings. I am **HAL9000**. *System status normal.* How can I assist you today?"
             },
             {
                 role: 'human',
@@ -370,7 +389,7 @@
             const sender = document.createElement('div');
             sender.className = 'sender-label';
             sender.innerHTML = msg.role === 'robot'
-                ? '🤖 Halbot'
+                ? '🤖 HAL9000'
                 : '😺 Operator';
 
             const bubble = document.createElement('div');
