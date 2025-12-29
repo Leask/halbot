@@ -2,33 +2,35 @@ import { dbio, hal, utilitas } from '../index.mjs';
 import { readFile } from 'fs/promises';
 
 const getPath = (subPath) => utilitas.__(import.meta.url, subPath);
-const getTemplate = async () => await readFile(getPath('turn.html'), 'utf-8');
-
-const renderTemplate = async (data) => {
-    const template = await getTemplate();
-    return template.replace(/{([^}]+)}/g, (match, key) => data[key] || match);
-};
+const getHtml = async () => await readFile(getPath('turn.html'), 'utf-8');
+const renderHtml = async (data) => await getHtml().then((html) => html.replace("'{{data}}'", data));
 
 const process = async (ctx, next) => {
-    // const resp = await web.get(ctx.request.query.url, { encode: 'BUFFER' });
-    // const chT = new Date(ctx.request.header?.['if-modified-since'] || undefined);
-    // const mdT = new Date(resp.headers['last-modified']?.[0] || undefined);
-    // ctx.set('content-type', resp.headers['content-type']);
-    // ctx.set('last-modified', resp.headers['last-modified']);
-    // ctx.set('cache-control', 'max-age=0');
-    // if (Date.isDate(chT, true) && Date.isDate(mdT, true) && chT >= mdT) {
-    //     return ctx.status = 304;
-    // }
-    // ctx.body = resp.content;
-    const result = await dbio.queryOne(`SELECT * FROM ${hal.table} WHERE token = $1`, [ctx.params.token]);
-    print(result);
-    ctx.body = await renderTemplate({});
+    const result = await dbio.queryOne(
+        `SELECT * FROM ${hal.table} WHERE token = $1`,
+        [ctx.params.token]
+    );
+    ctx.body = await renderHtml(JSON.stringify(result));
+    // ctx.body = await renderHtml(JSON.stringify({
+    //     bot_id: result.bot_id,
+    //     chat_id: result.chat_id,
+    //     chat_type: result.chat_type,
+    //     messages: [{
+    //         role: `${result.received.message.from.username} (${result.received.message.from.firstname} ${result.received.message.from.lastname})`,
+    //         text: result.received_text,
+    //         time: new Date(result.received.message.date * 1000),
+    //     }, {
+    //         role: 'HAL9000',
+    //         text: result.response_text,
+    //         time: new Date(result.updated_at)
+    //     }],
+    // }));
 };
 
 export const { actions } = {
     actions: [
         {
-            path: 'turn/:token',
+            path: 'turns/:token',
             method: 'GET',
             process,
         },
