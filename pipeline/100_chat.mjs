@@ -89,6 +89,7 @@ const action = async (ctx, next) => {
     // 8: Should "think" and "tools" be collapsed by default? This requires further consideration.
     // 9: Completely disable the default auto-scroll feature?
     // 10: Disable pagination and display all items directly?
+    // 11: How are image, audio, and video formats displayed? (File tokens must be protected and require server-side forwarding.)
     await ctx.edit(lastMsg.message_id,
         lastMsg.raw
         + `\n\n\-\-\-\n\n✨ [View in well-formatted page](https://hal.leaskh.com/turns/${ctx._.token}).`
