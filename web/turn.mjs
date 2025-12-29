@@ -10,21 +10,25 @@ const process = async (ctx, next) => {
         `SELECT * FROM ${hal.table} WHERE token = $1`,
         [ctx.params.token]
     );
-    ctx.body = await renderHtml(JSON.stringify(result));
-    // ctx.body = await renderHtml(JSON.stringify({
-    //     bot_id: result.bot_id,
-    //     chat_id: result.chat_id,
-    //     chat_type: result.chat_type,
-    //     messages: [{
-    //         role: `${result.received.message.from.username} (${result.received.message.from.firstname} ${result.received.message.from.lastname})`,
-    //         text: result.received_text,
-    //         time: new Date(result.received.message.date * 1000),
-    //     }, {
-    //         role: 'HAL9000',
-    //         text: result.response_text,
-    //         time: new Date(result.updated_at)
-    //     }],
-    // }));
+    result.received = JSON.parse(result.received);
+    result.response = JSON.parse(result.response);
+    // print(result);
+    const messages = [{
+        role: `${result.received.message.from.username} (${result.received.message.from.first_name} ${result.received.message.from.last_name})`,
+        text: result.received_text,
+        time: new Date(result.received.message.date * 1000),
+    }];
+    result.response.forEach(r => {
+        messages.push({
+            role: 'HAL9000',
+            text: r.raw,
+            time: new Date((r.edit_date || r.date) * 1000),
+        });
+    });
+    ctx.body = await renderHtml(JSON.stringify({
+        bot_id: result.bot_id, chat_id: result.chat_id,
+        chat_type: result.chat_type, messages,
+    }));
 };
 
 export const { actions } = {

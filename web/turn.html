@@ -405,26 +405,8 @@
     </footer>
 
     <script>
-        // Placeholder data
-        const data = '{{data}}';
-        const messages = [
-            {
-                role: 'robot',
-                content: "Greetings. I am **HAL9000**. *System status normal.* How can I assist you today?"
-            },
-            {
-                role: 'human',
-                content: "Can you analyze the `turn.html` file for me? I need a summary of its structure."
-            },
-            {
-                role: 'robot',
-                content: "Certainly. \n\nThe `turn.html` file consists of three main sections:\n\n1. **Header**: Fixed at the top, displaying status.\n2. **Main**: A scrolling area for our conversation.\n3. **Footer**: Fixed at the bottom.\n\nHere is a snippet of the proposed css:\n\n```css\nmain {\n  overflow-y: auto;\n}\n```\n\nAnd here is a data comparison:\n\n| Component | Status | Priority |\n| :--- | :--- | :--- |\n| Header | Active | High |\n| Footer | Fixed | Medium |\n| Canvas | Fluid | Low |"
-            },
-            {
-                role: 'human',
-                content: "That looks correct. Make sure the colors are cool."
-            }
-        ];
+        // Injected Data
+        const chatData = '{{data}}';
 
         const chatId = document.getElementById('chatId');
         const currentYear = document.getElementById('currentYear');
@@ -433,23 +415,32 @@
         const now = new Date();
         currentYear.textContent = now.getFullYear(); // Copyright year
 
-        // Random Chat ID
-        const randomId = Math.random().toString(36).substring(2, 8).toUpperCase();
-        chatId.textContent = `Chat ID: ${randomId}`;
+        // Set Chat ID from data
+        if (chatData.chat_id) {
+            chatId.textContent = `Chat ID: ${chatData.chat_id}`;
+        } else {
+            chatId.textContent = `Chat ID: UNKNOWN`;
+        }
 
-        // Random Served Turns
+        // Served Turns (Mock logic or could be from data if available)
         const servedTurns = document.getElementById('servedTurns');
+        // If the server provides a total count, use it. Otherwise mock.
         const randomTurns = Math.floor(Math.random() * 5000) + 1000;
         servedTurns.textContent = `Processed ${randomTurns.toLocaleString()} prompts.`;
 
         function renderMessage(msg) {
             const row = document.createElement('div');
-            row.className = `message-row ${msg.role}`;
+            // Determine role class based on specific role string
+            // "HAL9000" -> robot
+            // Anything else -> human
+            const roleClass = msg.role === 'HAL9000' ? 'robot' : 'human';
+            row.className = `message-row ${roleClass}`;
 
             const group = document.createElement('div');
             group.className = 'message-group';
 
-            const senderName = msg.role === 'robot' ? '🤖 HAL9000' : '😺 Operator';
+            // Mapping sender name
+            const senderName = msg.role === 'HAL9000' ? '🤖 HAL9000' : `😺 ${msg.role}`;
 
             const bubble = document.createElement('div');
             bubble.className = 'message-bubble';
@@ -463,8 +454,14 @@
 
             const timeSpan = document.createElement('span');
             timeSpan.className = 'message-time';
-            // Use current time for simulated messages or msg.timestamp if available
-            const msgTime = new Date().toLocaleString();
+
+            // Parse time from msg.time (ISO string)
+            let msgTime = '';
+            if (msg.time) {
+                msgTime = new Date(msg.time).toLocaleString();
+            } else {
+                msgTime = new Date().toLocaleString();
+            }
             timeSpan.textContent = msgTime;
 
             nameDiv.appendChild(nameSpan);
@@ -475,7 +472,7 @@
             // Content
             const contentDiv = document.createElement('div');
             contentDiv.className = 'message-content';
-            contentDiv.innerHTML = marked.parse(msg.content);
+            contentDiv.innerHTML = marked.parse(msg.text || ''); // Use msg.text from JSON
             bubble.appendChild(contentDiv);
 
             group.appendChild(bubble);
@@ -483,17 +480,19 @@
             chatContainer.appendChild(row);
         }
 
-        // Render loop with slight delay for effect
+        // Render loop
         let delay = 0;
-        messages.forEach(msg => {
-            setTimeout(() => {
-                renderMessage(msg);
-                // Scroll to bottom
-                const main = document.getElementById('chatMain');
-                main.scrollTop = main.scrollHeight;
-            }, delay);
-            delay += 800;
-        });
+        if (chatData.messages && Array.isArray(chatData.messages)) {
+            chatData.messages.forEach(msg => {
+                setTimeout(() => {
+                    renderMessage(msg);
+                    // Scroll to bottom
+                    const main = document.getElementById('chatMain');
+                    main.scrollTop = main.scrollHeight;
+                }, delay);
+                delay += 800; // Keep delay effect
+            });
+        }
 
         // Abstract Fluid Background Animation
         const canvas = document.getElementById('neural-canvas');
