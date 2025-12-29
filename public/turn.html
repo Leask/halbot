@@ -25,7 +25,7 @@
             --robot-border: #00f0ff;
             --human-border: #ff0055;
             --font-display: 'Orbitron', sans-serif;
-            --font-body: 'Inter', sans-serif;
+            --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
         }
 
         /* Neural Network Background */
@@ -35,8 +35,22 @@
             left: 0;
             width: 100%;
             height: 100%;
+            z-index: -2;
+            background: #0a0a0c;
+        }
+
+        /* Frosted Glass Overlay */
+        #glass-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: -1;
-            background: radial-gradient(circle at center, #1a1a2e 0%, #0a0a0c 100%);
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+            background: rgba(10, 10, 12, 0.05);
+            pointer-events: none;
         }
 
         body,
@@ -121,13 +135,14 @@
             /* Header height + gap */
             padding-bottom: 80px;
             /* Footer height + gap */
-            padding-left: 1rem;
-            padding-right: 1rem;
+            padding-left: 20px;
+            padding-right: 20px;
             box-sizing: border-box;
             overflow-y: auto;
             scroll-behavior: smooth;
             max-width: 900px;
             margin: 0 auto;
+            width: 100%;
         }
 
         .chat-container {
@@ -158,14 +173,14 @@
         }
 
         .message-group {
-            max-width: 80%;
+            width: 100%;
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
         }
 
         .sender-label {
-            font-family: var(--font-display);
+            font-family: var(--font-body);
             font-size: 0.75rem;
             letter-spacing: 1px;
             margin-bottom: 4px;
@@ -186,11 +201,12 @@
         .message-bubble {
             padding: 1.5rem;
             border-radius: 4px;
-            line-height: 1.6;
+            font-size: 16px;
+            line-height: 1.5;
             position: relative;
             background: var(--robot-bg);
             border-left: 3px solid var(--primary-color);
-            color: #ddd;
+            color: #c9d1d9;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
@@ -272,6 +288,7 @@
 <body>
 
     <canvas id="neural-canvas"></canvas>
+    <div id="glass-overlay"></div>
 
     <header>
         <div class="brand">
@@ -336,8 +353,8 @@
             const sender = document.createElement('div');
             sender.className = 'sender-label';
             sender.innerHTML = msg.role === 'robot'
-                ? '<svg style="width:12px;height:12px;fill:currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg> HALBOT'
-                : '<svg style="width:12px;height:12px;fill:currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg> OPERATOR';
+                ? '🤖 Halbot'
+                : '😺 Operator';
 
             const bubble = document.createElement('div');
             bubble.className = 'message-bubble';
