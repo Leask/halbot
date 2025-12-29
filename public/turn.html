@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HALBOT Chat</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0a0a0c;
+            --header-bg: rgba(10, 10, 12, 0.95);
+            --footer-bg: rgba(10, 10, 12, 0.95);
+            --border-color: #333;
+            --primary-color: #00f0ff;
+            /* Sci-fi Cyan */
+            --text-color: #e0e0e0;
+            --robot-bg: #1a1a1f;
+            --human-bg: #003340;
+            --robot-border: #00f0ff;
+            --human-border: #ff0055;
+            --font-display: 'Orbitron', sans-serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-body);
+            height: 100%;
+            overflow: hidden;
+            /* Prevent body scroll, handle in main */
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-color);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-color);
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background-color: var(--header-bg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 2px 20px rgba(0, 240, 255, 0.1);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            width: 32px;
+            height: 32px;
+            fill: var(--primary-color);
+            filter: drop-shadow(0 0 5px var(--primary-color));
+        }
+
+        .brand-name {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--primary-color);
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+        }
+
+        .session-time {
+            font-family: var(--font-display);
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        /* Main Content */
+        main {
+            height: 100vh;
+            padding-top: 80px;
+            /* Header height + gap */
+            padding-bottom: 80px;
+            /* Footer height + gap */
+            padding-left: 1rem;
+            padding-right: 1rem;
+            box-sizing: border-box;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .message-row {
+            display: flex;
+            width: 100%;
+            opacity: 0;
+            animation: fadeIn 0.3s forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .message-row.robot {
+            justify-content: flex-start;
+        }
+
+        .message-row.human {
+            justify-content: flex-end;
+        }
+
+        .message-group {
+            max-width: 80%;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .sender-label {
+            font-family: var(--font-display);
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .robot .sender-label {
+            color: var(--primary-color);
+        }
+
+        .human .sender-label {
+            color: #ff0055;
+            justify-content: flex-end;
+        }
+
+        .message-bubble {
+            padding: 1.5rem;
+            border-radius: 4px;
+            line-height: 1.6;
+            position: relative;
+            background: var(--robot-bg);
+            border-left: 3px solid var(--primary-color);
+            color: #ddd;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .human .message-bubble {
+            background: var(--human-bg);
+            border-left: none;
+            border-right: 3px solid #ff0055;
+            color: #fff;
+        }
+
+        /* Markdown Styles */
+        .message-bubble h1,
+        .message-bubble h2,
+        .message-bubble h3 {
+            margin-top: 0;
+            font-family: var(--font-display);
+            color: #fff;
+        }
+
+        .message-bubble code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9em;
+        }
+
+        .message-bubble pre {
+            background: #000;
+            padding: 1rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            border: 1px solid #333;
+        }
+
+        .message-bubble pre code {
+            background: transparent;
+            padding: 0;
+        }
+
+        .message-bubble p {
+            margin: 0 0 1rem 0;
+        }
+
+        .message-bubble p:last-child {
+            margin: 0;
+        }
+
+        /* Footer */
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background-color: var(--footer-bg);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #444;
+            font-family: var(--font-display);
+            font-size: 0.8rem;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .footer-content {
+            width: 100%;
+            max-width: 900px;
+            padding: 0 1rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="brand">
+            <!-- Simple SVG Logo -->
+            <svg class="logo" viewBox="0 0 24 24">
+                <path
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" />
+            </svg>
+            <div class="brand-name">HALBOT</div>
+        </div>
+        <div class="session-time" id="sessionTime">SESSION_TIME_PLACEHOLDER</div>
+    </header>
+
+    <main id="chatMain">
+        <div class="chat-container" id="chatContainer">
+            <!-- Messages will be injected here -->
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <span>STATUS: ONLINE</span>
+            <span>SECURE CONNECTION ESTABLISHED</span>
+        </div>
+    </footer>
+
+    <script>
+        // Placeholder data
+        const messages = [
+            {
+                role: 'robot',
+                content: "Greetings. I am **HALBOT**. *System status normal.* How can I assist you today?"
+            },
+            {
+                role: 'human',
+                content: "Can you analyze the `turn.html` file for me? I need a summary of its structure."
+            },
+            {
+                role: 'robot',
+                content: "Certainly. \n\nThe `turn.html` file consists of three main sections:\n\n1. **Header**: Fixed at the top, displaying status.\n2. **Main**: A scrolling area for our conversation.\n3. **Footer**: Fixed at the bottom.\n\nHere is a snippet of the proposed css:\n\n```css\nmain {\n  overflow-y: auto;\n}\n```"
+            },
+            {
+                role: 'human',
+                content: "That looks correct. Make sure the colors are cool."
+            }
+        ];
+
+        const chatContainer = document.getElementById('chatContainer');
+        const sessionTime = document.getElementById('sessionTime');
+
+        // Set session time
+        const now = new Date();
+        sessionTime.textContent = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+
+        function renderMessage(msg) {
+            const row = document.createElement('div');
+            row.className = `message-row ${msg.role}`;
+
+            const group = document.createElement('div');
+            group.className = 'message-group';
+
+            const sender = document.createElement('div');
+            sender.className = 'sender-label';
+            sender.innerHTML = msg.role === 'robot'
+                ? '<svg style="width:12px;height:12px;fill:currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg> HALBOT'
+                : 'OPERATOR <svg style="width:12px;height:12px;fill:currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
+
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+            bubble.innerHTML = marked.parse(msg.content);
+
+            group.appendChild(sender);
+            group.appendChild(bubble);
+            row.appendChild(group);
+            chatContainer.appendChild(row);
+        }
+
+        // Render loop with slight delay for effect
+        let delay = 0;
+        messages.forEach(msg => {
+            setTimeout(() => {
+                renderMessage(msg);
+                // Scroll to bottom
+                const main = document.getElementById('chatMain');
+                main.scrollTop = main.scrollHeight;
+            }, delay);
+            delay += 800;
+        });
+
+    </script>
+</body>
+
+</html>
