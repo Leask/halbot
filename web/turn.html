@@ -126,6 +126,9 @@
         /* Main Content */
         main {
             height: 100vh;
+            /* Fallback */
+            height: 100dvh;
+            /* Mobile viewport fix */
             padding-top: calc(70px + 1rem);
             /* Header height + Gap (same as gap between bubbles) */
             padding-bottom: 80px;
@@ -134,7 +137,11 @@
             padding-right: 20px;
             box-sizing: border-box;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            /* iOS Momentum Scrolling */
             scroll-behavior: smooth;
+            overscroll-behavior-y: contain;
+            /* Prevent pull-to-refresh on body */
             max-width: 900px;
             margin: 0 auto;
             width: 100%;

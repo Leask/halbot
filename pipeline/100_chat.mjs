@@ -74,7 +74,7 @@ const action = async (ctx, next) => {
     ctx._.token = token.newId();
     ctx.memorize && await ctx.memorize();
     await ctx.resp(
-        `[📄 View conversation in well-formatted web page.](https://hal.leaskh.com/turns/${ctx._.token})`
+        `📃 [View conversation in well-formatted page](https://hal.leaskh.com/turns/${ctx._.token}).`
     );
     await next();
 };
