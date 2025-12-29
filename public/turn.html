@@ -51,13 +51,76 @@
             width: 200vw;
             height: 200vh;
             background-image:
-                linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
-            background-size: 40px 40px;
+                linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
+            background-size: 60px 60px;
             transform: perspective(500px) rotateX(60deg) translateY(-100px) translateZ(-200px);
-            animation: cyber-grid-move 20s linear infinite;
-            z-index: -1;
+            animation: cyber-grid-move 10s linear infinite;
+            z-index: -2;
             pointer-events: none;
+        }
+
+        /* Stars Background */
+        /* Stars Background */
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -3;
+            background: #0a0a0c;
+            /* Base background color here */
+            overflow: hidden;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0;
+            animation: twinkle var(--duration) ease-in-out infinite;
+            animation-delay: var(--delay);
+        }
+
+        @keyframes twinkle {
+
+            0%,
+            100% {
+                opacity: 0.2;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.5);
+            }
+        }
+
+        /* Twinkling Layer removed (integrated into stars) */
+
+        /* Horizon Glow */
+        .horizon-glow {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50vh;
+            background: radial-gradient(ellipse at bottom, rgba(0, 240, 255, 0.15) 0%, transparent 70%);
+            z-index: -2;
+            pointer-events: none;
+            animation: pulse-glow 5s ease-in-out infinite alternate;
+        }
+
+
+        @keyframes pulse-glow {
+            from {
+                opacity: 0.5;
+            }
+
+            to {
+                opacity: 0.8;
+            }
         }
 
         @keyframes cyber-grid-move {
@@ -66,7 +129,7 @@
             }
 
             100% {
-                transform: perspective(500px) rotateX(60deg) translateY(40px) translateZ(-200px);
+                transform: perspective(500px) rotateX(60deg) translateY(60px) translateZ(-200px);
             }
         }
 
@@ -74,7 +137,8 @@
         html {
             margin: 0;
             padding: 0;
-            background-color: var(--bg-color);
+            background-color: transparent;
+            /* Changed from var(--bg-color) to transparent to show fixed bg */
             color: var(--text-color);
             font-family: var(--font-body);
             height: 100%;
@@ -303,7 +367,9 @@
 
 <body>
 
+    <div class="stars-container" id="starsContainer"></div>
     <div class="cyber-grid"></div>
+    <div class="horizon-glow"></div>
 
     <header>
         <div class="brand">
@@ -392,6 +458,31 @@
             }, delay);
             delay += 800;
         });
+
+        // Generate Stars
+        const starsContainer = document.getElementById('starsContainer');
+        const starCount = 200;
+
+        for (let i = 0; i < starCount; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+
+            // Random positioning
+            const x = Math.random() * 100;
+            const y = Math.random() * 100;
+            const size = Math.random() * 2 + 1; // 1px to 3px
+            const duration = Math.random() * 3 + 2; // 2s to 5s
+            const delay = Math.random() * 5;
+
+            star.style.left = `${x}%`;
+            star.style.top = `${y}%`;
+            star.style.width = `${size}px`;
+            star.style.height = `${size}px`;
+            star.style.setProperty('--duration', `${duration}s`);
+            star.style.setProperty('--delay', `${delay}s`);
+
+            starsContainer.appendChild(star);
+        }
 
     </script>
 </body>
