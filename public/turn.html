@@ -144,7 +144,7 @@
         }
 
         .message-row.human {
-            justify-content: flex-end;
+            justify-content: flex-start;
         }
 
         .message-group {
@@ -170,7 +170,7 @@
 
         .human .sender-label {
             color: #ff0055;
-            justify-content: flex-end;
+            justify-content: flex-start;
         }
 
         .message-bubble {
@@ -186,8 +186,8 @@
 
         .human .message-bubble {
             background: var(--human-bg);
-            border-left: none;
-            border-right: 3px solid #ff0055;
+            border-left: 3px solid #ff0055;
+            border-right: none;
             color: #fff;
         }
 
@@ -325,7 +325,7 @@
             sender.className = 'sender-label';
             sender.innerHTML = msg.role === 'robot'
                 ? '<svg style="width:12px;height:12px;fill:currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg> HALBOT'
-                : 'OPERATOR <svg style="width:12px;height:12px;fill:currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
+                : '<svg style="width:12px;height:12px;fill:currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg> OPERATOR';
 
             const bubble = document.createElement('div');
             bubble.className = 'message-bubble';
