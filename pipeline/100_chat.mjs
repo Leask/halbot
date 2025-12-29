@@ -70,6 +70,7 @@ const action = async (ctx, next) => {
     let lastMsg;
     if (resp.text.trim()) {
         lastMsg = await ok({ processing: false });
+        lastMsg = lastMsg[lastMsg.length - 1];
     } else {
         await ctx.deleteMessage(ctx._.done[0].message_id);
     }
@@ -82,6 +83,7 @@ const action = async (ctx, next) => {
     // 2: adding ctx.append feature
     // 3: Consider the layout for small screens, such as the footer and other elements.
     // 4: using webjam config instead of hardcoding the url
+    // 5: Add the following links only when web functionality is enabled.
     await ctx.edit(lastMsg.message_id,
         lastMsg.raw
         + `\n\n\-\-\-\n\n✨ [View in well-formatted page](https://hal.leaskh.com/turns/${ctx._.token}).`
