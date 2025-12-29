@@ -127,7 +127,14 @@
             /* Removed text-shadow */
         }
 
-        .session-time {
+        .session-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
+        }
+
+        .chat-id {
             font-family: var(--font-body);
             font-size: 0.9rem;
             color: #888;
@@ -188,25 +195,30 @@
             font-family: var(--font-body);
             font-size: 13px;
             font-weight: 600;
-            margin-bottom: 4px;
+            padding: 8px 16px;
             display: flex;
             align-items: center;
+            justify-content: space-between;
+            /* Push time to right */
             gap: 6px;
-            opacity: 0.9;
+            /* Header background darker than bubble */
+            background: rgba(0, 0, 0, 0.05);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 8px 8px 0 0;
             color: #333;
             /* Dark gray for all */
         }
 
-        .robot .sender-name-inside {
-            /* Unifying color */
+        .message-time {
+            font-weight: 400;
+            opacity: 0.6;
+            font-size: 0.85em;
         }
 
-        .human .sender-name-inside {
-            /* Unifying color */
-        }
 
         .message-bubble {
-            padding: 1rem;
+            padding: 0;
+            /* Removed padding from container */
             border-radius: 8px;
             font-size: 16px;
             line-height: 1.5;
@@ -216,6 +228,12 @@
             color: #333;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
             backdrop-filter: blur(5px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message-content {
+            padding: 1rem;
         }
 
         .human .message-bubble {
@@ -306,6 +324,16 @@
             backdrop-filter: blur(5px);
         }
 
+        footer a {
+            color: #666;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        footer a:hover {
+            color: var(--primary-color);
+        }
+
         .footer-content {
             width: 100%;
             max-width: 900px;
@@ -354,7 +382,9 @@
                 </svg>
                 <div class="brand-name">HAL9000</div>
             </div>
-            <div class="session-time" id="chatId">Chat ID: XXXXXX</div>
+            <div class="session-info">
+                <div class="chat-id" id="chatId">Chat ID: XXXXXX</div>
+            </div>
         </div>
     </header>
 
@@ -366,8 +396,11 @@
 
     <footer>
         <div class="footer-content">
-            <span>STATUS: ONLINE</span>
-            <span id="sessionTimeFooter">TIME_PLACEHOLDER</span>
+            <span id="servedTurns">Served ... turns of conversations.</span>
+            <span id="copyright">
+                &copy; 2023-<span id="currentYear"></span> <a href="https://LeaskH.com" target="_blank">LeaskH.com</a> |
+                <a href="https://twitter.com/LeaskH" target="_blank">@LeaskH</a>
+            </span>
         </div>
     </footer>
 
@@ -393,15 +426,20 @@
         ];
 
         const chatId = document.getElementById('chatId');
-        const sessionTimeFooter = document.getElementById('sessionTimeFooter');
+        const currentYear = document.getElementById('currentYear');
 
         // Set session time and ID
         const now = new Date();
-        sessionTimeFooter.textContent = now.toLocaleDateString() + ' ' + now.toLocaleTimeString(); // Time in footer
+        currentYear.textContent = now.getFullYear(); // Copyright year
 
         // Random Chat ID
         const randomId = Math.random().toString(36).substring(2, 8).toUpperCase();
         chatId.textContent = `Chat ID: ${randomId}`;
+
+        // Random Served Turns
+        const servedTurns = document.getElementById('servedTurns');
+        const randomTurns = Math.floor(Math.random() * 5000) + 1000;
+        servedTurns.textContent = `Processed ${randomTurns.toLocaleString()} prompts.`;
 
         function renderMessage(msg) {
             const row = document.createElement('div');
@@ -418,12 +456,24 @@
             // Name inside the bubble
             const nameDiv = document.createElement('div');
             nameDiv.className = 'sender-name-inside';
-            nameDiv.textContent = senderName;
+
+            const nameSpan = document.createElement('span');
+            nameSpan.textContent = senderName;
+
+            const timeSpan = document.createElement('span');
+            timeSpan.className = 'message-time';
+            // Use current time for simulated messages or msg.timestamp if available
+            const msgTime = new Date().toLocaleString();
+            timeSpan.textContent = msgTime;
+
+            nameDiv.appendChild(nameSpan);
+            nameDiv.appendChild(timeSpan);
 
             bubble.appendChild(nameDiv);
 
             // Content
             const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
             contentDiv.innerHTML = marked.parse(msg.content);
             bubble.appendChild(contentDiv);
 
