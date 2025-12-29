@@ -28,6 +28,48 @@
             --font-body: 'Inter', sans-serif;
         }
 
+        /* Scanline Effect */
+        body::after {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0.1) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+            z-index: 900;
+            pointer-events: none;
+        }
+
+        /* Dynamic Grid Background */
+        .cyber-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 200vw;
+            height: 200vh;
+            background-image:
+                linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            transform: perspective(500px) rotateX(60deg) translateY(-100px) translateZ(-200px);
+            animation: cyber-grid-move 20s linear infinite;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        @keyframes cyber-grid-move {
+            0% {
+                transform: perspective(500px) rotateX(60deg) translateY(0) translateZ(-200px);
+            }
+
+            100% {
+                transform: perspective(500px) rotateX(60deg) translateY(40px) translateZ(-200px);
+            }
+        }
+
         body,
         html {
             margin: 0;
@@ -260,6 +302,8 @@
 </head>
 
 <body>
+
+    <div class="cyber-grid"></div>
 
     <header>
         <div class="brand">
