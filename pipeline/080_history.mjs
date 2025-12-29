@@ -1,4 +1,5 @@
 import { bot, dbio, hal, utilitas } from '../index.mjs';
+import { token } from 'webjam';
 
 const [RELEVANCE, SEARCH_LIMIT, SUB_LIMIT] = [0.2, 10, 200]; // Google Rerank limit
 const compact = (str, op) => utilitas.ensureString(str, { ...op || {}, compact: true });
@@ -118,7 +119,7 @@ const memorize = async (ctx) => {
         chat_type: ctx._.chatType, message_id: ctx._.messageId,
         received: JSON.stringify(received), received_text,
         response: JSON.stringify(response), response_text,
-        collected: JSON.stringify(collected), distilled,
+        collected: JSON.stringify(collected), distilled, token: token.newId(),
     };
     await utilitas.ignoreErrFunc(async () => {
         event.distilled_vector = hal._.embed

@@ -99,6 +99,7 @@ const init = async (options = {}) => {
         provider: 'telegram',
         rerank: _rerank,
         storage: options?.storage,
+        web: options?.web,
     });
     return _hal;
 };
