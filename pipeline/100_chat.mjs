@@ -1,4 +1,5 @@
 import { alan } from '../index.mjs';
+import { token } from 'webjam';
 
 const _name = 'Chat';
 const log = (c, o) => utilitas.log(c, _name, { time: 1, ...o || {} });
@@ -70,7 +71,11 @@ const action = async (ctx, next) => {
         : ctx.deleteMessage(ctx._.done[0].message_id));
     ctx._.request = resp.request;
     ctx._.response = resp.response;
+    ctx._.token = token.newId();
     ctx.memorize && await ctx.memorize();
+    await ctx.resp(
+        `[📄 View conversation in well-formatted web page.](https://hal.leaskh.com/turns/${ctx._.token})`
+    );
     await next();
 };
 
