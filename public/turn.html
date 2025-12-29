@@ -372,9 +372,6 @@
             const particleCount = 70;
             const connectionDistance = 150;
             const particleSpeed = 0.5;
-            const mouseDistance = 200;
-
-            let mouse = { x: null, y: null };
 
             function resize() {
                 width = canvas.width = window.innerWidth;
@@ -397,22 +394,6 @@
                     // Bounce off edges
                     if (this.x < 0 || this.x > width) this.vx *= -1;
                     if (this.y < 0 || this.y > height) this.vy *= -1;
-
-                    // Mouse interaction
-                    if (mouse.x != null) {
-                        let dx = mouse.x - this.x;
-                        let dy = mouse.y - this.y;
-                        let distance = Math.sqrt(dx * dx + dy * dy);
-                        if (distance < mouseDistance) {
-                            const forceDirectionX = dx / distance;
-                            const forceDirectionY = dy / distance;
-                            const force = (mouseDistance - distance) / mouseDistance;
-                            const directionX = forceDirectionX * force * 0.5; // push factor
-                            const directionY = forceDirectionY * force * 0.5;
-                            this.vx -= directionX;
-                            this.vy -= directionY;
-                        }
-                    }
                 }
 
                 draw() {
@@ -460,11 +441,6 @@
             window.addEventListener('resize', () => {
                 resize();
                 initParticles();
-            });
-
-            window.addEventListener('mousemove', (e) => {
-                mouse.x = e.x;
-                mouse.y = e.y;
             });
 
             resize();
