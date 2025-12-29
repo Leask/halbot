@@ -488,12 +488,25 @@
         // Render loop
         let delay = 0;
         if (chatData.messages && Array.isArray(chatData.messages)) {
-            chatData.messages.forEach(msg => {
+            chatData.messages.forEach((msg, index) => {
                 setTimeout(() => {
                     renderMessage(msg);
-                    // Scroll to bottom
                     const main = document.getElementById('chatMain');
-                    main.scrollTop = main.scrollHeight;
+
+                    // Check if it is the last message
+                    if (index === chatData.messages.length - 1) {
+                        // For the last message, scroll to its top (start) with a small offset
+                        const lastMsgElement = document.getElementById('chatContainer').lastElementChild;
+                        if (lastMsgElement) {
+                            main.scrollTo({
+                                top: lastMsgElement.offsetTop - 25,
+                                behavior: 'smooth'
+                            });
+                        }
+                    } else {
+                        // For other messages, keep scrolling to bottom
+                        main.scrollTop = main.scrollHeight;
+                    }
                 }, delay);
                 delay += 800; // Keep delay effect
             });
