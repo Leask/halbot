@@ -14,12 +14,14 @@
     <style>
         :root {
             --bg-color: #0a0a0c;
-            --header-bg: rgba(10, 10, 12, 0.95);
-            --footer-bg: rgba(10, 10, 12, 0.95);
-            --border-color: #333;
+            --header-bg: rgba(255, 255, 255, 0.4);
+            --footer-bg: rgba(255, 255, 255, 0.4);
+            --border-color: rgba(0, 0, 0, 0.1);
+            /* Lighter border */
             --primary-color: #00f0ff;
             /* Sci-fi Cyan */
-            --text-color: #e0e0e0;
+            --text-color: #333;
+            /* Dark text for light background */
             --robot-bg: #1a1a1f;
             --human-bg: #003340;
             --robot-border: #00f0ff;
@@ -28,7 +30,7 @@
             --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
         }
 
-        /* Neural Network Background */
+        /* Abstract Fluid Background */
         #neural-canvas {
             position: fixed;
             top: 0;
@@ -36,22 +38,12 @@
             width: 100%;
             height: 100%;
             z-index: -2;
-            background: #0a0a0c;
+            background: #f0f0f0;
+            /* Key to the liquid effect: heavy blur and high saturation */
+            filter: blur(80px) saturate(150%) contrast(120%);
+            opacity: 0.8;
         }
 
-        /* Frosted Glass Overlay */
-        #glass-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            backdrop-filter: blur(3px);
-            -webkit-backdrop-filter: blur(3px);
-            background: rgba(10, 10, 12, 0.05);
-            pointer-events: none;
-        }
 
         body,
         html {
@@ -122,7 +114,7 @@
             width: 32px;
             height: 32px;
             fill: var(--primary-color);
-            filter: drop-shadow(0 0 5px var(--primary-color));
+            /* Removed drop-shadow */
         }
 
         .brand-name {
@@ -130,8 +122,9 @@
             font-size: 1.5rem;
             font-weight: 700;
             letter-spacing: 2px;
-            color: var(--primary-color);
-            text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+            color: #333;
+            /* Dark gray */
+            /* Removed text-shadow */
         }
 
         .session-time {
@@ -143,8 +136,8 @@
         /* Main Content */
         main {
             height: 100vh;
-            padding-top: 80px;
-            /* Header height + gap */
+            padding-top: calc(70px + 1rem);
+            /* Header height + Gap (same as gap between bubbles) */
             padding-bottom: 80px;
             /* Footer height + gap */
             padding-left: 20px;
@@ -160,7 +153,7 @@
         .chat-container {
             display: flex;
             flex-direction: column;
-            gap: 2rem;
+            gap: 1rem;
         }
 
         .message-row {
@@ -191,42 +184,44 @@
             gap: 0.5rem;
         }
 
-        .sender-label {
+        .sender-name-inside {
             font-family: var(--font-body);
-            font-size: 14px;
-            letter-spacing: 1px;
+            font-size: 13px;
+            font-weight: 600;
             margin-bottom: 4px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
+            opacity: 0.9;
+            color: #333;
+            /* Dark gray for all */
         }
 
-        .robot .sender-label {
-            color: var(--primary-color);
+        .robot .sender-name-inside {
+            /* Unifying color */
         }
 
-        .human .sender-label {
-            color: #ff0055;
-            justify-content: flex-start;
+        .human .sender-name-inside {
+            /* Unifying color */
         }
 
         .message-bubble {
-            padding: 1.5rem;
-            border-radius: 4px;
+            padding: 1rem;
+            border-radius: 8px;
             font-size: 16px;
             line-height: 1.5;
             position: relative;
-            background: rgba(26, 26, 31, 0.8);
-            border-left: 3px solid var(--primary-color);
-            color: #c9d1d9;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.6);
+            /* Removed border-left */
+            color: #333;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
             backdrop-filter: blur(5px);
         }
 
         .human .message-bubble {
-            border-left: 3px solid #ff0055;
+            border-left: none;
             border-right: none;
-            color: #c9d1d9;
+            color: #333;
         }
 
         /* Markdown Styles */
@@ -235,28 +230,54 @@
         .message-bubble h3 {
             margin-top: 0;
             font-family: var(--font-display);
-            color: #fff;
+            color: #333;
         }
 
         .message-bubble code {
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.05);
+            /* Light gray */
             padding: 2px 6px;
             border-radius: 4px;
             font-family: 'Courier New', Courier, monospace;
             font-size: 0.9em;
+            color: #d63384;
+            /* Pinkish code color */
         }
 
         .message-bubble pre {
-            background: #000;
+            background: #f4f4f4;
+            /* Light background */
             padding: 1rem;
             border-radius: 4px;
             overflow-x: auto;
-            border: 1px solid #333;
+            border: 1px solid #ddd;
+            color: #333;
         }
 
         .message-bubble pre code {
             background: transparent;
             padding: 0;
+            color: inherit;
+        }
+
+        /* Table Styles */
+        .message-bubble table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.95em;
+        }
+
+        .message-bubble th,
+        .message-bubble td {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .message-bubble th {
+            background-color: rgba(0, 0, 0, 0.05);
+            font-weight: 600;
         }
 
         .message-bubble p {
@@ -303,7 +324,6 @@
 <body>
 
     <canvas id="neural-canvas"></canvas>
-    <div id="glass-overlay"></div>
 
     <header>
         <div class="header-content">
@@ -334,7 +354,7 @@
                 </svg>
                 <div class="brand-name">HAL9000</div>
             </div>
-            <div class="session-time" id="sessionTime">SESSION_TIME_PLACEHOLDER</div>
+            <div class="session-time" id="chatId">Chat ID: XXXXXX</div>
         </div>
     </header>
 
@@ -347,7 +367,7 @@
     <footer>
         <div class="footer-content">
             <span>STATUS: ONLINE</span>
-            <span>SECURE CONNECTION ESTABLISHED</span>
+            <span id="sessionTimeFooter">TIME_PLACEHOLDER</span>
         </div>
     </footer>
 
@@ -364,7 +384,7 @@
             },
             {
                 role: 'robot',
-                content: "Certainly. \n\nThe `turn.html` file consists of three main sections:\n\n1. **Header**: Fixed at the top, displaying status.\n2. **Main**: A scrolling area for our conversation.\n3. **Footer**: Fixed at the bottom.\n\nHere is a snippet of the proposed css:\n\n```css\nmain {\n  overflow-y: auto;\n}\n```"
+                content: "Certainly. \n\nThe `turn.html` file consists of three main sections:\n\n1. **Header**: Fixed at the top, displaying status.\n2. **Main**: A scrolling area for our conversation.\n3. **Footer**: Fixed at the bottom.\n\nHere is a snippet of the proposed css:\n\n```css\nmain {\n  overflow-y: auto;\n}\n```\n\nAnd here is a data comparison:\n\n| Component | Status | Priority |\n| :--- | :--- | :--- |\n| Header | Active | High |\n| Footer | Fixed | Medium |\n| Canvas | Fluid | Low |"
             },
             {
                 role: 'human',
@@ -372,12 +392,16 @@
             }
         ];
 
-        const chatContainer = document.getElementById('chatContainer');
-        const sessionTime = document.getElementById('sessionTime');
+        const chatId = document.getElementById('chatId');
+        const sessionTimeFooter = document.getElementById('sessionTimeFooter');
 
-        // Set session time
+        // Set session time and ID
         const now = new Date();
-        sessionTime.textContent = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+        sessionTimeFooter.textContent = now.toLocaleDateString() + ' ' + now.toLocaleTimeString(); // Time in footer
+
+        // Random Chat ID
+        const randomId = Math.random().toString(36).substring(2, 8).toUpperCase();
+        chatId.textContent = `Chat ID: ${randomId}`;
 
         function renderMessage(msg) {
             const row = document.createElement('div');
@@ -386,17 +410,23 @@
             const group = document.createElement('div');
             group.className = 'message-group';
 
-            const sender = document.createElement('div');
-            sender.className = 'sender-label';
-            sender.innerHTML = msg.role === 'robot'
-                ? '🤖 HAL9000'
-                : '😺 Operator';
+            const senderName = msg.role === 'robot' ? '🤖 HAL9000' : '😺 Operator';
 
             const bubble = document.createElement('div');
             bubble.className = 'message-bubble';
-            bubble.innerHTML = marked.parse(msg.content);
 
-            group.appendChild(sender);
+            // Name inside the bubble
+            const nameDiv = document.createElement('div');
+            nameDiv.className = 'sender-name-inside';
+            nameDiv.textContent = senderName;
+
+            bubble.appendChild(nameDiv);
+
+            // Content
+            const contentDiv = document.createElement('div');
+            contentDiv.innerHTML = marked.parse(msg.content);
+            bubble.appendChild(contentDiv);
+
             group.appendChild(bubble);
             row.appendChild(group);
             chatContainer.appendChild(row);
@@ -414,90 +444,85 @@
             delay += 800;
         });
 
-        // Neural Network Animation
+        // Abstract Fluid Background Animation
         const canvas = document.getElementById('neural-canvas');
         if (canvas) {
             const ctx = canvas.getContext('2d');
             let width, height;
-            let particles = [];
+            let blobs = [];
 
             // Configuration
-            const particleCount = 70;
-            const connectionDistance = 150;
-            const particleSpeed = 0.5;
+            const blobCount = 12;
+            const baseRadius = 250; // Large blobs
 
             function resize() {
                 width = canvas.width = window.innerWidth;
                 height = canvas.height = window.innerHeight;
             }
 
-            class Particle {
+            class Blob {
                 constructor() {
                     this.x = Math.random() * width;
                     this.y = Math.random() * height;
-                    this.vx = (Math.random() - 0.5) * particleSpeed;
-                    this.vy = (Math.random() - 0.5) * particleSpeed;
-                    this.size = Math.random() * 2 + 1;
+                    this.vx = (Math.random() - 0.5) * 1.5; // Smooth slow movement
+                    this.vy = (Math.random() - 0.5) * 1.5;
+                    this.radius = baseRadius + Math.random() * 150;
+                    // Vibrant colors: High Saturation, Medium Lightness
+                    this.hue = Math.random() * 360;
+                    this.hueSpeed = 0.2 + Math.random() * 0.3;
                 }
 
                 update() {
                     this.x += this.vx;
                     this.y += this.vy;
+                    this.hue += this.hueSpeed; // Color shift
 
-                    // Bounce off edges
-                    if (this.x < 0 || this.x > width) this.vx *= -1;
-                    if (this.y < 0 || this.y > height) this.vy *= -1;
+                    // Soft bounce off edges
+                    if (this.x < -this.radius || this.x > width + this.radius) this.vx *= -1;
+                    if (this.y < -this.radius || this.y > height + this.radius) this.vy *= -1;
                 }
 
                 draw() {
-                    ctx.fillStyle = 'rgba(0, 240, 255, 0.7)';
                     ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    // Radial gradient for soft edges
+                    const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
+                    gradient.addColorStop(0, `hsla(${this.hue}, 85%, 60%, 0.8)`);
+                    gradient.addColorStop(0.6, `hsla(${this.hue}, 85%, 60%, 0.4)`);
+                    gradient.addColorStop(1, `hsla(${this.hue}, 85%, 60%, 0)`);
+
+                    ctx.fillStyle = gradient;
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
                     ctx.fill();
                 }
             }
 
-            function initParticles() {
-                particles = [];
-                for (let i = 0; i < particleCount; i++) {
-                    particles.push(new Particle());
+            function initBlobs() {
+                blobs = [];
+                for (let i = 0; i < blobCount; i++) {
+                    blobs.push(new Blob());
                 }
             }
 
             function animate() {
                 ctx.clearRect(0, 0, width, height);
 
-                for (let i = 0; i < particles.length; i++) {
-                    particles[i].update();
-                    particles[i].draw();
+                // 'screen' blend mode makes colors vibrant and additive where they overlap
+                ctx.globalCompositeOperation = 'screen';
 
-                    // Draw connections
-                    for (let j = i; j < particles.length; j++) {
-                        let dx = particles[i].x - particles[j].x;
-                        let dy = particles[i].y - particles[j].y;
-                        let distance = Math.sqrt(dx * dx + dy * dy);
-
-                        if (distance < connectionDistance) {
-                            ctx.beginPath();
-                            let opacity = 1 - (distance / connectionDistance);
-                            ctx.strokeStyle = `rgba(0, 240, 255, ${opacity * 0.4})`;
-                            ctx.lineWidth = 1;
-                            ctx.moveTo(particles[i].x, particles[i].y);
-                            ctx.lineTo(particles[j].x, particles[j].y);
-                            ctx.stroke();
-                        }
-                    }
+                for (let i = 0; i < blobs.length; i++) {
+                    blobs[i].update();
+                    blobs[i].draw();
                 }
                 requestAnimationFrame(animate);
             }
 
             window.addEventListener('resize', () => {
                 resize();
-                initParticles();
+                initBlobs();
             });
 
             resize();
-            initParticles();
+            initBlobs();
             animate();
         }
 
