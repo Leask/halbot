@@ -276,9 +276,8 @@
             height: 60px;
             background-color: var(--footer-bg);
             border-top: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: block;
+            padding: 0;
             color: #444;
             font-family: var(--font-display);
             font-size: 0.8rem;
@@ -289,9 +288,13 @@
         .footer-content {
             width: 100%;
             max-width: 900px;
-            padding: 0 1rem;
+            margin: 0 auto;
+            padding: 0 20px;
+            height: 100%;
             display: flex;
+            align-items: center;
             justify-content: space-between;
+            box-sizing: border-box;
         }
 
     </style>
