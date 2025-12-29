@@ -28,109 +28,15 @@
             --font-body: 'Inter', sans-serif;
         }
 
-        /* Scanline Effect */
-        body::after {
-            content: " ";
-            display: block;
-            position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0.1) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            background-size: 100% 2px, 3px 100%;
-            z-index: 900;
-            pointer-events: none;
-        }
-
-        /* Dynamic Grid Background */
-        .cyber-grid {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 200vw;
-            height: 200vh;
-            background-image:
-                linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
-            background-size: 60px 60px;
-            transform: perspective(500px) rotateX(60deg) translateY(-100px) translateZ(-200px);
-            animation: cyber-grid-move 10s linear infinite;
-            z-index: -2;
-            pointer-events: none;
-        }
-
-        /* Stars Background */
-        /* Stars Background */
-        .stars-container {
+        /* Neural Network Background */
+        #neural-canvas {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -3;
-            background: #0a0a0c;
-            /* Base background color here */
-            overflow: hidden;
-        }
-
-        .star {
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-            opacity: 0;
-            animation: twinkle var(--duration) ease-in-out infinite;
-            animation-delay: var(--delay);
-        }
-
-        @keyframes twinkle {
-
-            0%,
-            100% {
-                opacity: 0.2;
-                transform: scale(1);
-            }
-
-            50% {
-                opacity: 1;
-                transform: scale(1.5);
-            }
-        }
-
-        /* Twinkling Layer removed (integrated into stars) */
-
-        /* Horizon Glow */
-        .horizon-glow {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 50vh;
-            background: radial-gradient(ellipse at bottom, rgba(0, 240, 255, 0.15) 0%, transparent 70%);
-            z-index: -2;
-            pointer-events: none;
-            animation: pulse-glow 5s ease-in-out infinite alternate;
-        }
-
-
-        @keyframes pulse-glow {
-            from {
-                opacity: 0.5;
-            }
-
-            to {
-                opacity: 0.8;
-            }
-        }
-
-        @keyframes cyber-grid-move {
-            0% {
-                transform: perspective(500px) rotateX(60deg) translateY(0) translateZ(-200px);
-            }
-
-            100% {
-                transform: perspective(500px) rotateX(60deg) translateY(60px) translateZ(-200px);
-            }
+            z-index: -1;
+            background: radial-gradient(circle at center, #1a1a2e 0%, #0a0a0c 100%);
         }
 
         body,
@@ -138,12 +44,10 @@
             margin: 0;
             padding: 0;
             background-color: transparent;
-            /* Changed from var(--bg-color) to transparent to show fixed bg */
             color: var(--text-color);
             font-family: var(--font-body);
             height: 100%;
             overflow: hidden;
-            /* Prevent body scroll, handle in main */
         }
 
         /* Scrollbar Styling */
@@ -367,9 +271,7 @@
 
 <body>
 
-    <div class="stars-container" id="starsContainer"></div>
-    <div class="cyber-grid"></div>
-    <div class="horizon-glow"></div>
+    <canvas id="neural-canvas"></canvas>
 
     <header>
         <div class="brand">
@@ -459,29 +361,115 @@
             delay += 800;
         });
 
-        // Generate Stars
-        const starsContainer = document.getElementById('starsContainer');
-        const starCount = 200;
+        // Neural Network Animation
+        const canvas = document.getElementById('neural-canvas');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            let particles = [];
 
-        for (let i = 0; i < starCount; i++) {
-            const star = document.createElement('div');
-            star.className = 'star';
+            // Configuration
+            const particleCount = 70;
+            const connectionDistance = 150;
+            const particleSpeed = 0.5;
+            const mouseDistance = 200;
 
-            // Random positioning
-            const x = Math.random() * 100;
-            const y = Math.random() * 100;
-            const size = Math.random() * 2 + 1; // 1px to 3px
-            const duration = Math.random() * 3 + 2; // 2s to 5s
-            const delay = Math.random() * 5;
+            let mouse = { x: null, y: null };
 
-            star.style.left = `${x}%`;
-            star.style.top = `${y}%`;
-            star.style.width = `${size}px`;
-            star.style.height = `${size}px`;
-            star.style.setProperty('--duration', `${duration}s`);
-            star.style.setProperty('--delay', `${delay}s`);
+            function resize() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            }
 
-            starsContainer.appendChild(star);
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * height;
+                    this.vx = (Math.random() - 0.5) * particleSpeed;
+                    this.vy = (Math.random() - 0.5) * particleSpeed;
+                    this.size = Math.random() * 2 + 1;
+                }
+
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+
+                    // Bounce off edges
+                    if (this.x < 0 || this.x > width) this.vx *= -1;
+                    if (this.y < 0 || this.y > height) this.vy *= -1;
+
+                    // Mouse interaction
+                    if (mouse.x != null) {
+                        let dx = mouse.x - this.x;
+                        let dy = mouse.y - this.y;
+                        let distance = Math.sqrt(dx * dx + dy * dy);
+                        if (distance < mouseDistance) {
+                            const forceDirectionX = dx / distance;
+                            const forceDirectionY = dy / distance;
+                            const force = (mouseDistance - distance) / mouseDistance;
+                            const directionX = forceDirectionX * force * 0.5; // push factor
+                            const directionY = forceDirectionY * force * 0.5;
+                            this.vx -= directionX;
+                            this.vy -= directionY;
+                        }
+                    }
+                }
+
+                draw() {
+                    ctx.fillStyle = 'rgba(0, 240, 255, 0.7)';
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            function initParticles() {
+                particles = [];
+                for (let i = 0; i < particleCount; i++) {
+                    particles.push(new Particle());
+                }
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+
+                for (let i = 0; i < particles.length; i++) {
+                    particles[i].update();
+                    particles[i].draw();
+
+                    // Draw connections
+                    for (let j = i; j < particles.length; j++) {
+                        let dx = particles[i].x - particles[j].x;
+                        let dy = particles[i].y - particles[j].y;
+                        let distance = Math.sqrt(dx * dx + dy * dy);
+
+                        if (distance < connectionDistance) {
+                            ctx.beginPath();
+                            let opacity = 1 - (distance / connectionDistance);
+                            ctx.strokeStyle = `rgba(0, 240, 255, ${opacity * 0.4})`;
+                            ctx.lineWidth = 1;
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+                requestAnimationFrame(animate);
+            }
+
+            window.addEventListener('resize', () => {
+                resize();
+                initParticles();
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                mouse.x = e.x;
+                mouse.y = e.y;
+            });
+
+            resize();
+            initParticles();
+            animate();
         }
 
     </script>
