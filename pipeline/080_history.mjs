@@ -105,9 +105,9 @@ const memorize = async (ctx) => {
     const received_text = ctx._.request || ctx._.text || '';
     const id = received.update_id;
     let response = {};
-    ctx._.done.map(m => m?.text && (response[m.message_id] = m));
+    ctx._.done.map(m => response[m.message_id] = m);
     response = Object.values(response).sort((a, b) => a.message_id - b.message_id);
-    const response_text = ctx?._.response || response.map(x => x.text).join('\n');
+    const response_text = ctx?._?.response || response.map(x => x?.text || '').filter(Boolean).join('\n');
     const collected = ctx._.collected.filter(x => String.isString(x.content));
     const distilled = compact(bot.lines([
         received_text, response_text, ...collected.map(x => x.content)
