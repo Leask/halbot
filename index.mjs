@@ -20,7 +20,7 @@ const init = async (options = {}) => {
         opts = { provider: 'OPENROUTER', apiKey: options.openrouterApiKey };
         await alan.init({
             ...opts,
-            model: options.openrouterModel || '*',
+            model: options.openrouterModel,
             priority: options.openrouterPriority, ...options,
         })
         if (!_embed) {
