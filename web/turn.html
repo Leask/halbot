@@ -266,11 +266,34 @@
 
         /* Code Block Fixes */
         .markdown-body pre {
-            padding: 16px !important;
+            padding: 36px 16px 16px 16px !important;
             background-color: #f6f8fa !important;
             border-radius: 6px !important;
             margin-top: 16px !important;
             margin-bottom: 16px !important;
+            position: relative !important;
+        }
+
+        .markdown-body pre[data-language]::before {
+            content: attr(data-language);
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 28px;
+            background: #e1e4e8;
+            color: #586069;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            border-radius: 6px 6px 0 0;
+            text-transform: uppercase;
+        }
+
+        .markdown-body pre:not([data-language]) {
+            padding: 16px !important;
         }
 
         .markdown-body pre code {
@@ -484,6 +507,18 @@
             // Highlight Code
             contentDiv.querySelectorAll('pre code').forEach((block) => {
                 hljs.highlightElement(block);
+
+                // Detect language and set attribute
+                let lang = '';
+                block.classList.forEach(cls => {
+                    if (cls.startsWith('language-')) {
+                        lang = cls.replace('language-', '');
+                    }
+                });
+                if (lang) {
+                    block.parentElement.setAttribute('data-language', lang);
+                }
+
                 if (block.classList.contains('language-think')) {
                     const pre = block.parentElement;
                     pre.classList.add('think-block');
