@@ -50,7 +50,12 @@ const process = async (ctx, next) => {
     const first = result.response?.[0];
     let modelLine = first?.text?.split('\n')?.[0] || '';
     modelLine = modelLine.includes('/') ? modelLine.replace(/:.*$/g, '') : '';
-    const role = `HAL9000 (${modelLine})`;
+    let role = 'HAL9000';
+    if (/^\p{Extended_Pictographic}/u.test(modelLine)) {
+        role = `${modelLine.split(' ')[0]} ${role}`;
+        modelLine = modelLine.split(' ').slice(1).join(' ');
+    }
+    role = `${role} (${modelLine})`;
 
     const last = result.response?.[result.response?.length - 1];
     const defaultTime = new Date((last?.edit_date || last?.date || result.received.message.date) * 1000);

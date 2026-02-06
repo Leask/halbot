@@ -461,7 +461,9 @@
             group.className = 'message-group';
 
             // Mapping sender name
-            const senderName = msg.role.includes('HAL9000') ? `🤖 ${msg.role}` : `😺 ${msg.role}`;
+            const senderName = /^\p{Extended_Pictographic}/u.test(msg.role)
+                ? msg.role
+                : (msg.role.includes('HAL9000') ? `🤖 ${msg.role}` : `😺 ${msg.role}`);
 
             const bubble = document.createElement('div');
             bubble.className = 'message-bubble';
