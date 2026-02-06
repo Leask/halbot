@@ -42,13 +42,13 @@
     "mime": "^4.1.0",
     "mysql2": "^3.16.3",
     "office-text-extractor": "^4.0.0",
-    "openai": "^6.17.0",
+    "openai": "^6.18.0",
     "pg": "^8.18.0",
     "pgvector": "^0.2.1",
     "telegraf": "^4.16.3",
     "tellegram": "^1.1.18",
     "tesseract.js": "^7.0.0",
-    "webjam": "^1995.3.5",
+    "webjam": "^1995.3.6",
     "youtube-transcript": "^1.2.1"
   }
 }
