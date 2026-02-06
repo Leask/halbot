@@ -1,4 +1,4 @@
-import { alan } from '../index.mjs';
+import { callosum, alan } from '../index.mjs';
 import { token } from 'webjam';
 
 const _name = 'Chat';
@@ -92,7 +92,7 @@ const action = async (ctx, next) => {
     // 11: How are image, audio, and video formats displayed? (File tokens must be protected and require server-side forwarding.)
     await ctx.edit(lastMsg.message_id,
         lastMsg.raw
-        + `\n\n\-\-\-\n\n✨ [View in well-formatted page](https://hal.leaskh.com/turns/${ctx._.token}).`
+        + `\n\n\-\-\-\n\n✨ [View web version](${await callosum.call('getUrl')}/turns/${ctx._.token}).`
     );
     await next();
 };
