@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HAL9000 Chat</title>
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3CradialGradient id='a' cx='50%25' cy='50%25' r='50%25' fx='50%25' fy='50%25'%3E%3Cstop offset='0%25' stop-color='%23ffeb3b'/%3E%3Cstop offset='20%25' stop-color='%23ff9800'/%3E%3Cstop offset='60%25' stop-color='%23f44336'/%3E%3Cstop offset='100%25' stop-color='%23b71c1c'/%3E%3C/radialGradient%3E%3ClinearGradient id='b' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23e0e0e0'/%3E%3Cstop offset='50%25' stop-color='%239e9e9e'/%3E%3Cstop offset='100%25' stop-color='%23616161'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='48' fill='url(%23b)' stroke='%23333' stroke-width='2'/%3E%3Ccircle cx='50' cy='50' r='42' fill='%23111'/%3E%3Ccircle cx='50' cy='50' r='28' fill='url(%23a)' stroke='%23800000' stroke-width='1'/%3E%3Cellipse cx='60' cy='40' rx='10' ry='6' fill='rgba(255,255,255,0.4)' transform='rotate(-45 60 40)'/%3E%3C/svg%3E">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.6.1/github-markdown-light.min.css">
@@ -594,7 +596,7 @@
                         btn.textContent = '-';
 
                         const fullHeight = pre.scrollHeight;
-                        pre.style.height = '60px'; // Replaced 42px
+                        pre.style.height = '58px'; // Replaced 60px
                         pre.offsetHeight; // Force reflow
                         pre.style.height = fullHeight + 'px';
 
@@ -612,7 +614,7 @@
                         const fullHeight = pre.offsetHeight;
                         pre.style.height = fullHeight + 'px';
                         pre.offsetHeight; // Force reflow
-                        pre.style.height = '60px'; // Replaced 42px
+                        pre.style.height = '58px'; // Replaced 60px
                     }
                 };
                 pre.appendChild(btn);
@@ -625,6 +627,11 @@
                     pre.style.wordBreak = 'break-word';
                     block.style.whiteSpace = 'pre-wrap';
                     block.style.wordBreak = 'break-word';
+
+                    // Default Collapse for think/tools
+                    pre.classList.add('collapsed');
+                    pre.style.height = '58px';
+                    btn.textContent = '+';
                 }
             });
 
