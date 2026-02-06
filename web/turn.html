@@ -486,6 +486,9 @@
                 hljs.highlightElement(block);
             });
 
+            // Open links in new tab
+            contentDiv.querySelectorAll('a').forEach(a => a.target = '_blank');
+
             bubble.appendChild(contentDiv);
 
             group.appendChild(bubble);
