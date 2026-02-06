@@ -62,6 +62,16 @@ const process = async (ctx, next) => {
                 time: new Date((x.edit_date || x.date || result.received.message.date) * 1000),
             });
         }
+        const a = x.audio || x.voice;
+        if (a) {
+            let text = `<audio controls src="/file/${a.file_id}" style="width: 100%; display: block;"></audio>`;
+            if (x.caption) { text += `\n\n${x.caption}`; }
+            messages.push({
+                role,
+                text,
+                time: new Date((x.edit_date || x.date || result.received.message.date) * 1000),
+            });
+        }
     });
     ctx.body = await renderHtml(JSON.stringify({
         bot_id: result.bot_id, chat_id: result.chat_id,
