@@ -49,9 +49,11 @@ const process = async (ctx, next) => {
     result.response.map(x => {
         const p = x.photo?.[x.photo?.length - 1];
         if (p) {
+            let text = `![Image](/file/${p.file_id})`;
+            if (x.caption) { text += `\n\n${x.caption}`; }
             messages.push({
                 role: 'HAL9000',
-                text: `![Image](/file/${p.file_id})`,
+                text,
                 time: new Date((x.edit_date || x.date || result.received.message.date) * 1000),
             });
         }
