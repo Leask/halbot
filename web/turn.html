@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HAL9000 Chat</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.6.1/github-markdown-light.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -52,8 +55,7 @@
             background-color: transparent;
             color: var(--text-color);
             font-family: var(--font-body);
-            height: 100%;
-            overflow: hidden;
+            min-height: 100%;
         }
 
 
@@ -133,23 +135,11 @@
 
         /* Main Content */
         main {
-            height: 100vh;
-            /* Fallback */
-            height: 100dvh;
-            /* Mobile viewport fix */
             padding-top: calc(70px + 1rem);
-            /* Header height + Gap (same as gap between bubbles) */
             padding-bottom: 80px;
-            /* Footer height + gap */
             padding-left: 20px;
             padding-right: 20px;
             box-sizing: border-box;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-            /* iOS Momentum Scrolling */
-            scroll-behavior: smooth;
-            overscroll-behavior-y: contain;
-            /* Prevent pull-to-refresh on body */
             max-width: 900px;
             margin: 0 auto;
             width: 100%;
@@ -241,40 +231,23 @@
         }
 
         /* Markdown Styles */
-        .message-bubble h1,
-        .message-bubble h2,
-        .message-bubble h3 {
-            margin-top: 0;
-            font-family: var(--font-display);
-            color: #333;
+        /* Markdown Overrides */
+        .markdown-body {
+            background-color: transparent !important;
+            font-family: inherit !important;
+            font-size: 1em !important;
+            padding: 0 0.5rem !important;
         }
 
-        .message-bubble code {
-            background: rgba(0, 0, 0, 0.05);
-            /* Light gray */
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 0.9em;
-            color: #d63384;
-            /* Pinkish code color */
+        .markdown-body img {
+            max-width: 100%;
+            border-radius: 8px;
+            display: block;
+            margin: 10px 0;
         }
 
-        .message-bubble pre {
-            background: #f4f4f4;
-            /* Light background */
-            padding: 1rem;
-            border-radius: 4px;
-            overflow-x: auto;
-            border: 1px solid #ddd;
-            color: #333;
-        }
-
-        .message-bubble pre code {
-            background: transparent;
-            padding: 0;
-            color: inherit;
-        }
+        .markdown-body > :first-child { margin-top: 0 !important; }
+        .markdown-body > :last-child { margin-bottom: 0 !important; }
 
         /* Table Styles */
         .message-bubble table {
@@ -476,8 +449,14 @@
 
             // Content
             const contentDiv = document.createElement('div');
-            contentDiv.className = 'message-content';
-            contentDiv.innerHTML = marked.parse(msg.text || ''); // Use msg.text from JSON
+            contentDiv.className = 'message-content markdown-body';
+            contentDiv.innerHTML = marked.parse(msg.text || '');
+
+            // Highlight Code
+            contentDiv.querySelectorAll('pre code').forEach((block) => {
+               hljs.highlightElement(block);
+            });
+
             bubble.appendChild(contentDiv);
 
             group.appendChild(bubble);
@@ -495,17 +474,15 @@
 
                     // Check if it is the last message
                     if (index === chatData.messages.length - 1) {
-                        // For the last message, scroll to its top (start) with a small offset
                         const lastMsgElement = document.getElementById('chatContainer').lastElementChild;
                         if (lastMsgElement) {
-                            main.scrollTo({
-                                top: lastMsgElement.offsetTop - 25,
+                            window.scrollTo({
+                                top: lastMsgElement.getBoundingClientRect().top + window.scrollY - 100,
                                 behavior: 'smooth'
                             });
                         }
                     } else {
-                        // For other messages, keep scrolling to bottom
-                        main.scrollTop = main.scrollHeight;
+                        window.scrollTo(0, document.body.scrollHeight);
                     }
                 }, delay);
                 delay += 800; // Keep delay effect
