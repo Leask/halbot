@@ -29,10 +29,22 @@ const process = async (ctx, next) => {
     result.received = JSON.parse(result.received);
     result.response = JSON.parse(result.response);
 
+    const msg = result.received.message;
+    let userText = result.received_text || '';
+
+    const p = msg.photo?.[msg.photo?.length - 1];
+    if (p) { userText = `![Image](/file/${p.file_id})\n\n${userText}`; }
+
+    const a = msg.audio || msg.voice;
+    if (a) { userText = `<audio controls src="/file/${a.file_id}" style="width: 100%; display: block; margin-bottom: 8px;"></audio>\n\n${userText}`; }
+
+    const v = msg.video || msg.video_note;
+    if (v) { userText = `<video controls src="/file/${v.file_id}" style="width: 100%; display: block; border-radius: 8px; margin-bottom: 8px;"></video>\n\n${userText}`; }
+
     const messages = [{
-        role: `${result.received.message.from.username} (${result.received.message.from.first_name} ${result.received.message.from.last_name})`,
-        text: result.received_text,
-        time: new Date(result.received.message.date * 1000),
+        role: `${msg.from.username} (${msg.from.first_name} ${msg.from.last_name})`,
+        text: userText.trim(),
+        time: new Date(msg.date * 1000),
     }];
 
     const first = result.response?.[0];
@@ -65,6 +77,16 @@ const process = async (ctx, next) => {
         const a = x.audio || x.voice;
         if (a) {
             let text = `<audio controls src="/file/${a.file_id}" style="width: 100%; display: block;"></audio>`;
+            if (x.caption) { text += `\n\n${x.caption}`; }
+            messages.push({
+                role,
+                text,
+                time: new Date((x.edit_date || x.date || result.received.message.date) * 1000),
+            });
+        }
+        const v = x.video || x.video_note;
+        if (v) {
+            let text = `<video controls src="/file/${v.file_id}" style="width: 100%; display: block; border-radius: 8px;"></video>`;
             if (x.caption) { text += `\n\n${x.caption}`; }
             messages.push({
                 role,

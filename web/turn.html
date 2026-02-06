@@ -497,6 +497,11 @@
 
             // Highlight Code
             contentDiv.querySelectorAll('pre code').forEach((block) => {
+                // Trim think block content
+                if (block.classList.contains('language-think')) {
+                    block.textContent = block.textContent.trim();
+                }
+
                 hljs.highlightElement(block);
 
                 // Detect language and set attribute
