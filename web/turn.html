@@ -204,6 +204,33 @@
             font-size: 0.85em;
         }
 
+        .model-info {
+            display: inline;
+            font-size: 0.85em;
+            font-weight: 400;
+            color: #666;
+            margin-left: 6px;
+        }
+
+        @media (max-width: 600px) {
+            .sender-name-inside {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 4px;
+            }
+
+            .message-time {
+                align-self: flex-start;
+                font-size: 0.8em;
+            }
+
+            .model-info {
+                display: block;
+                margin-left: 0;
+                margin-top: 2px;
+            }
+        }
+
 
         .message-bubble {
             padding: 0;
@@ -274,6 +301,23 @@
             background-color: #f6f8fa !important;
             border-radius: 6px !important;
             position: relative !important;
+            overflow: hidden !important;
+            transition: height 0.3s ease;
+            box-sizing: border-box !important;
+        }
+
+        .markdown-body pre .collapse-btn {
+            position: absolute;
+            top: 2px;
+            right: 8px;
+            cursor: pointer;
+            color: #666;
+            font-size: 20px;
+            line-height: 24px;
+            z-index: 10;
+            user-select: none;
+            font-family: monospace;
+            font-weight: bold;
         }
 
         .markdown-body pre[data-language]::before {
@@ -471,7 +515,6 @@
             const group = document.createElement('div');
             group.className = 'message-group';
 
-            // Mapping sender name
             const senderName = /^\p{Extended_Pictographic}/u.test(msg.role)
                 ? msg.role
                 : (msg.role.includes('HAL9000') ? `🤖 ${msg.role}` : `😺 ${msg.role}`);
@@ -484,7 +527,13 @@
             nameDiv.className = 'sender-name-inside';
 
             const nameSpan = document.createElement('span');
-            nameSpan.textContent = senderName;
+            // Split Model Info (Content in parentheses at the end)
+            const match = senderName.match(/^(.*)(\(.*\))$/);
+            if (match) {
+                nameSpan.innerHTML = `<span class="base-name">${match[1].trim()}</span><span class="model-info">${match[2].trim()}</span>`;
+            } else {
+                nameSpan.textContent = senderName;
+            }
 
             const timeSpan = document.createElement('span');
             timeSpan.className = 'message-time';
@@ -524,12 +573,51 @@
                         lang = cls.replace('language-', '');
                     }
                 });
-                if (lang) {
-                    block.parentElement.setAttribute('data-language', lang);
-                }
+                if (!lang) lang = 'TXT'; // Default lang for header
+                block.parentElement.setAttribute('data-language', lang);
+
+                // Collapse Button
+                const pre = block.parentElement;
+                const btn = document.createElement('span');
+                let transitionTimeout;
+
+                btn.className = 'collapse-btn';
+                btn.textContent = '-';
+
+                btn.onclick = (e) => {
+                    e.stopPropagation();
+                    if (transitionTimeout) clearTimeout(transitionTimeout);
+
+                    if (pre.classList.contains('collapsed')) {
+                        // EXPAND
+                        pre.classList.remove('collapsed');
+                        btn.textContent = '-';
+
+                        const fullHeight = pre.scrollHeight;
+                        pre.style.height = '60px'; // Replaced 42px
+                        pre.offsetHeight; // Force reflow
+                        pre.style.height = fullHeight + 'px';
+
+                        transitionTimeout = setTimeout(() => {
+                            if (!pre.classList.contains('collapsed')) {
+                                pre.style.height = 'auto';
+                            }
+                        }, 300);
+
+                    } else {
+                        // COLLAPSE
+                        pre.classList.add('collapsed');
+                        btn.textContent = '+';
+
+                        const fullHeight = pre.offsetHeight;
+                        pre.style.height = fullHeight + 'px';
+                        pre.offsetHeight; // Force reflow
+                        pre.style.height = '60px'; // Replaced 42px
+                    }
+                };
+                pre.appendChild(btn);
 
                 if (block.classList.contains('language-think') || block.classList.contains('language-tools')) {
-                    const pre = block.parentElement;
                     if (block.classList.contains('language-tools')) { pre.classList.add('tools-block'); }
                     else { pre.classList.add('think-block'); }
 
