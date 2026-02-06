@@ -28,19 +28,24 @@ const process = async (ctx, next) => {
     const prompt_count = await dbio.countAll(hal.table);
     result.received = JSON.parse(result.received);
     result.response = JSON.parse(result.response);
-    // print(result);
+
     const messages = [{
         role: `${result.received.message.from.username} (${result.received.message.from.first_name} ${result.received.message.from.last_name})`,
         text: result.received_text,
         time: new Date(result.received.message.date * 1000),
     }];
 
+    const first = result.response?.[0];
+    let modelLine = first?.text?.split('\n')?.[0] || '';
+    modelLine = modelLine.includes('/') ? modelLine.replace(/:.*$/g, '') : '';
+    const role = `HAL9000 (${modelLine})`;
+
     const last = result.response?.[result.response?.length - 1];
     const defaultTime = new Date((last?.edit_date || last?.date || result.received.message.date) * 1000);
 
     if (result.response_text) {
         messages.push({
-            role: 'HAL9000',
+            role,
             text: result.response_text,
             time: defaultTime,
         });
@@ -52,7 +57,7 @@ const process = async (ctx, next) => {
             let text = `![Image](/file/${p.file_id})`;
             if (x.caption) { text += `\n\n${x.caption}`; }
             messages.push({
-                role: 'HAL9000',
+                role,
                 text,
                 time: new Date((x.edit_date || x.date || result.received.message.date) * 1000),
             });

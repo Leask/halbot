@@ -463,14 +463,14 @@
             // Determine role class based on specific role string
             // "HAL9000" -> robot
             // Anything else -> human
-            const roleClass = msg.role === 'HAL9000' ? 'robot' : 'human';
+            const roleClass = msg.role.includes('HAL9000') ? 'robot' : 'human';
             row.className = `message-row ${roleClass}`;
 
             const group = document.createElement('div');
             group.className = 'message-group';
 
             // Mapping sender name
-            const senderName = msg.role === 'HAL9000' ? '🤖 HAL9000' : `😺 ${msg.role}`;
+            const senderName = msg.role.includes('HAL9000') ? `🤖 ${msg.role}` : `😺 ${msg.role}`;
 
             const bubble = document.createElement('div');
             bubble.className = 'message-bubble';
