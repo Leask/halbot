@@ -231,6 +231,17 @@
             color: #333;
         }
 
+        /* Think & Tools Block Auto-Wrap */
+        .markdown-body pre.think-block,
+        .markdown-body pre.think-block code,
+        .markdown-body pre.tools-block,
+        .markdown-body pre.tools-block code {
+            white-space: pre-wrap !important;
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
+            word-break: break-word !important;
+        }
+
         /* Markdown Styles */
         /* Markdown Overrides */
         .markdown-body {
@@ -499,8 +510,8 @@
 
             // Highlight Code
             contentDiv.querySelectorAll('pre code').forEach((block) => {
-                // Trim think block content
-                if (block.classList.contains('language-think')) {
+                // Trim think/tools block content
+                if (block.classList.contains('language-think') || block.classList.contains('language-tools')) {
                     block.textContent = block.textContent.trim();
                 }
 
@@ -517,9 +528,11 @@
                     block.parentElement.setAttribute('data-language', lang);
                 }
 
-                if (block.classList.contains('language-think')) {
+                if (block.classList.contains('language-think') || block.classList.contains('language-tools')) {
                     const pre = block.parentElement;
-                    pre.classList.add('think-block');
+                    if (block.classList.contains('language-tools')) { pre.classList.add('tools-block'); }
+                    else { pre.classList.add('think-block'); }
+
                     pre.style.whiteSpace = 'pre-wrap';
                     pre.style.wordBreak = 'break-word';
                     block.style.whiteSpace = 'pre-wrap';
