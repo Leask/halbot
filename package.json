@@ -1,7 +1,7 @@
 {
   "name": "halbot",
   "description": "Just another AI powered Telegram bot, which is simple design, easy to use, extendable and fun.",
-  "version": "1995.1.42",
+  "version": "1995.1.43",
   "private": false,
   "homepage": "https://github.com/Leask/halbot",
   "type": "module",
