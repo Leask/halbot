@@ -1,4 +1,4 @@
-import { dbio, hal, utilitas } from '../index.mjs';
+import { callosum, dbio, hal, utilitas } from '../index.mjs';
 import { readFile } from 'fs/promises';
 
 const getPath = (subPath) => utilitas.__(import.meta.url, subPath);
@@ -7,12 +7,15 @@ const renderHtml = async (data) => await getHtml().then((html) => html.replace("
 
 const file = async (ctx) => {
     try {
-        const url = await hal._.bot.telegram.getFileLink(ctx.params.id);
-        const resp = await fetch(url.href);
+        const url = await callosum.call('getFileLink', { args: [ctx.params.id] });
+        const resp = await fetch(url);
+        if (!resp.ok) { throw new Error(`Fetch failed: ${resp.status}`); }
         ctx.set('Content-Type', resp.headers.get('Content-Type'));
         ctx.body = Buffer.from(await resp.arrayBuffer());
     } catch (err) {
+        console.error('Error serving file:', ctx.params.id, err);
         ctx.status = 404;
+        ctx.body = 'Not Found';
     }
 };
 
