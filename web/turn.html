@@ -491,6 +491,7 @@
         // Set Chat ID from data
         if (chatData.chat_id) {
             chatId.textContent = `Chat ID: ${chatData.chat_id}`;
+            document.title = `HAL 9000 Chat: ${chatData.chat_id}`;
         } else {
             chatId.textContent = `Chat ID: UNKNOWN`;
         }
