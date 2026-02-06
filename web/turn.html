@@ -478,6 +478,12 @@
     </footer>
 
     <script>
+        // Register custom languages to suppress warnings
+        if (window.hljs) {
+            hljs.registerLanguage('think', () => ({ contains: [] }));
+            hljs.registerLanguage('tools', () => ({ contains: [] }));
+        }
+
         // Injected Data
         const chatData = '{{data}}';
 
@@ -745,7 +751,6 @@
 
             window.addEventListener('resize', () => {
                 resize();
-                initBlobs();
             });
 
             resize();
