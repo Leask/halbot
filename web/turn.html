@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HAL9000 Chat</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.6.1/github-markdown-light.min.css">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.6.1/github-markdown-light.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -236,7 +237,7 @@
             background-color: transparent !important;
             font-family: inherit !important;
             font-size: 1em !important;
-            padding: 0 0.5rem !important;
+            padding: 8px 16px !important;
         }
 
         .markdown-body img {
@@ -246,8 +247,36 @@
             margin: 10px 0;
         }
 
-        .markdown-body > :first-child { margin-top: 0 !important; }
-        .markdown-body > :last-child { margin-bottom: 0 !important; }
+        .markdown-body> :first-child {
+            margin-top: 0 !important;
+        }
+
+        .markdown-body> :last-child {
+            margin-bottom: 0 !important;
+        }
+
+        /* Force spacing for code blocks even if they are the first element */
+        .markdown-body>pre:first-child {
+            margin-top: 8px !important;
+        }
+
+        .markdown-body>pre:last-child {
+            margin-bottom: 8px !important;
+        }
+
+        /* Code Block Fixes */
+        .markdown-body pre {
+            padding: 16px !important;
+            background-color: #f6f8fa !important;
+            border-radius: 6px !important;
+            margin-top: 16px !important;
+            margin-bottom: 16px !important;
+        }
+
+        .markdown-body pre code {
+            padding: 0 !important;
+            background: transparent !important;
+        }
 
         /* Table Styles */
         .message-bubble table {
@@ -454,7 +483,7 @@
 
             // Highlight Code
             contentDiv.querySelectorAll('pre code').forEach((block) => {
-               hljs.highlightElement(block);
+                hljs.highlightElement(block);
             });
 
             bubble.appendChild(contentDiv);
