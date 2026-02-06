@@ -484,6 +484,14 @@
             // Highlight Code
             contentDiv.querySelectorAll('pre code').forEach((block) => {
                 hljs.highlightElement(block);
+                if (block.classList.contains('language-think')) {
+                    const pre = block.parentElement;
+                    pre.classList.add('think-block');
+                    pre.style.whiteSpace = 'pre-wrap';
+                    pre.style.wordBreak = 'break-word';
+                    block.style.whiteSpace = 'pre-wrap';
+                    block.style.wordBreak = 'break-word';
+                }
             });
 
             // Open links in new tab
