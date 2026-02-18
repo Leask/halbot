@@ -48,7 +48,7 @@ const process = async (ctx, next) => {
     }];
 
     const first = result.response?.[0];
-    let modelLine = first?.text?.split('\n')?.[0] || '';
+    let modelLine = first?.text?.replace?.(/^📃 PAGE [\d\/ ]*:\n\n/, '')?.split?.('\n')?.[0] || '';
     modelLine = modelLine.includes('/') ? modelLine.replace(/:.*$/g, '') : '';
     let role = 'HAL9000';
     if (/^\p{Extended_Pictographic}/u.test(modelLine)) {
