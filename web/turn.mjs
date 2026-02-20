@@ -3,7 +3,13 @@ import { readFile } from 'fs/promises';
 
 const getPath = (subPath) => utilitas.__(import.meta.url, subPath);
 const getHtml = async () => await readFile(getPath('turn.html'), 'utf-8');
-const renderHtml = async (data) => await getHtml().then((html) => html.replace("'{{data}}'", data));
+const safeStringify = (obj) => JSON.stringify(obj)
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e')
+    .replace(/&/g, '\\u0026')
+    .replace(/\u2028/g, '\\u2028')
+    .replace(/\u2029/g, '\\u2029');
+const renderHtml = async (data) => await getHtml().then((html) => html.replace("'{{data}}'", () => data));
 
 const file = async (ctx) => {
     try {
@@ -100,7 +106,7 @@ const process = async (ctx, next) => {
             });
         }
     });
-    ctx.body = await renderHtml(JSON.stringify({
+    ctx.body = await renderHtml(safeStringify({
         bot_id: result.bot_id, chat_id: result.chat_id,
         chat_type: result.chat_type, messages, prompt_count,
     }));
