@@ -9,7 +9,8 @@ const safeStringify = (obj) => JSON.stringify(obj)
     .replace(/&/g, '\\u0026')
     .replace(/\u2028/g, '\\u2028')
     .replace(/\u2029/g, '\\u2029');
-const renderHtml = async (data) => await getHtml().then((html) => html.replace("'{{data}}'", () => data));
+const renderHtml = async (data, metaTags = '') => await getHtml()
+    .then((html) => html.replace("'{{data}}'", () => data).replace('{{meta_tags}}', () => metaTags));
 
 const file = async (ctx) => {
     try {
@@ -106,10 +107,34 @@ const process = async (ctx, next) => {
             });
         }
     });
+    let previewText = messages.length ? messages[0].text : 'A conversation with HAL9000';
+    previewText = previewText.replace(/<[^>]+>/g, '').substring(0, 160).trim() + '...';
+
+    // Construct dynamic meta tags
+    const pageTitle = `HAL9000 Chat: ${result.chat_id}`;
+    const escapedDesc = previewText.replace(/"/g, '&quot;');
+    const escapedTitle = pageTitle.replace(/"/g, '&quot;');
+
+    const metaTags = `
+    <!-- Standard Meta -->
+    <meta name="description" content="${escapedDesc}">
+
+    <!-- Open Graph / Facebook / Meta -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="${escapedTitle}">
+    <meta property="og:description" content="${escapedDesc}">
+    <meta property="og:site_name" content="HAL9000">
+
+    <!-- Twitter / Telegram -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="${escapedTitle}">
+    <meta name="twitter:description" content="${escapedDesc}">
+    `.trim();
+
     ctx.body = await renderHtml(safeStringify({
         bot_id: result.bot_id, chat_id: result.chat_id,
         chat_type: result.chat_type, messages, prompt_count,
-    }));
+    }), metaTags);
 };
 
 export const { actions } = {
