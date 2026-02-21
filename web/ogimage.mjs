@@ -76,7 +76,7 @@ const process = async (ctx, next) => {
                     backgroundColor: '#0a0a0c', // HAL9000 Dark bg
                     backgroundImage: 'radial-gradient(circle at 25px 25px, rgba(255, 255, 255, 0.05) 2%, transparent 0%), radial-gradient(circle at 75px 75px, rgba(255, 255, 255, 0.05) 2%, transparent 0%)',
                     backgroundSize: '100px 100px',
-                    padding: '60px',
+                    padding: '35px 60px 95px 60px',
                     fontFamily: '"Inter"',
                     color: '#ffffff',
                 },

@@ -113,7 +113,7 @@ const process = async (ctx, next) => {
     const ogImageUrl = `https://${ctx.host}/og-image/${ctx.params.token}`;
 
     // Construct dynamic meta tags
-    const pageTitle = `Chat ID: ${result.chat_id}`;
+    const pageTitle = `HAL9000 Chat: ${result.chat_id}`;
     const escapedDesc = previewText.replace(/"/g, '&quot;');
     const escapedTitle = pageTitle.replace(/"/g, '&quot;');
 
