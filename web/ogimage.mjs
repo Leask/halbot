@@ -1,12 +1,6 @@
-import { callosum, dbio, hal } from '../index.mjs';
+import { dbio, hal } from '../index.mjs';
 import satori from 'satori';
 import { Resvg } from '@resvg/resvg-js';
-import { readFile } from 'fs/promises';
-import { fileURLToPath } from 'url';
-import path from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 // Pre-load font
 let interFontBuffer;
