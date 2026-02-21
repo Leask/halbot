@@ -9,26 +9,33 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Pre-load font
-let fontBuffer;
+let interFontBuffer;
+let notoFontBuffer;
 
-const getFont = async () => {
-    if (!fontBuffer) {
-        // Attempt to load a default system font or a bundled font.
-        // Inter is best. We'll download it once if needed, or rely on a local copy.
-        // For simplicity, we will fetch Inter from Google Fonts if not cached.
+const getFonts = async () => {
+    if (!interFontBuffer) {
         try {
-            // Because we need a buffer, reading from a local file is much safer.
-            // Let's assume we can fetch it once or we place a font file in /assets/.
-            // For now, let's fetch Inter-Regular directly if we don't have it.
             const url = 'https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZJhjp-Ek-_EeA.woff';
             const res = await fetch(url);
-            fontBuffer = await res.arrayBuffer();
+            interFontBuffer = await res.arrayBuffer();
         } catch (e) {
-            console.error('Failed to load font:', e);
-            throw new Error('Font loading failed');
+            console.error('Failed to load Inter font:', e);
+            throw new Error('Inter Font loading failed');
         }
     }
-    return fontBuffer;
+    if (!notoFontBuffer) {
+        try {
+            // Fetching a complete Noto Sans TC OTF from JSDelivr to ensure all CJK glyphs load in Satori
+            const url = 'https://cdn.jsdelivr.net/gh/googlefonts/noto-cjk@main/Sans/OTF/TraditionalChinese/NotoSansCJKtc-Regular.otf';
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+            notoFontBuffer = await res.arrayBuffer();
+        } catch (e) {
+            console.error('Failed to load Noto font:', e);
+            throw new Error('Noto Font loading failed');
+        }
+    }
+    return { inter: interFontBuffer, noto: notoFontBuffer };
 };
 
 const process = async (ctx, next) => {
@@ -52,14 +59,14 @@ const process = async (ctx, next) => {
     const username = msg.from.username || msg.from.first_name || 'User';
     const chatId = result.chat_id || 'Unknown';
 
-    // Limit text length
+    // Allow CSS to handle text clamping, but give a safe upper limit to prevent memory overloads
     let previewText = userText.replace(/<[^>]+>/g, '').trim();
-    if (previewText.length > 150) {
-        previewText = previewText.substring(0, 150) + '...';
+    if (previewText.length > 500) {
+        previewText = previewText.substring(0, 500) + '...';
     }
 
     // 2. Build Satori VDOM
-    const fontData = await getFont();
+    const fonts = await getFonts();
 
     const svg = await satori(
         {
@@ -75,7 +82,7 @@ const process = async (ctx, next) => {
                     backgroundColor: '#0a0a0c', // HAL9000 Dark bg
                     backgroundImage: 'radial-gradient(circle at 25px 25px, rgba(255, 255, 255, 0.05) 2%, transparent 0%), radial-gradient(circle at 75px 75px, rgba(255, 255, 255, 0.05) 2%, transparent 0%)',
                     backgroundSize: '100px 100px',
-                    padding: '80px',
+                    padding: '60px',
                     fontFamily: '"Inter"',
                     color: '#ffffff',
                 },
@@ -91,33 +98,14 @@ const process = async (ctx, next) => {
                             },
                             children: [
                                 {
-                                    type: 'div',
+                                    type: 'img',
                                     props: {
+                                        src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3CradialGradient id='lens-glow' cx='50%25' cy='50%25' r='50%25' fx='50%25' fy='50%25'%3E%3Cstop offset='0%25' style='stop-color:%23ffeb3b;stop-opacity:1' /%3E%3Cstop offset='20%25' style='stop-color:%23ff9800;stop-opacity:1' /%3E%3Cstop offset='60%25' style='stop-color:%23f44336;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23b71c1c;stop-opacity:1' /%3E%3C/radialGradient%3E%3ClinearGradient id='metal-rim' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23e0e0e0;stop-opacity:1' /%3E%3Cstop offset='50%25' style='stop-color:%239e9e9e;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23616161;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='48' style='fill:url(%23metal-rim);stroke:%23333;stroke-width:2' /%3E%3Ccircle cx='50' cy='50' r='42' style='fill:%23111' /%3E%3Ccircle cx='50' cy='50' r='28' style='fill:url(%23lens-glow);stroke:%23800000;stroke-width:1' /%3E%3Ccircle cx='35' cy='35' r='5' style='fill:%23fff;opacity:0.6;' /%3E%3C/svg%3E",
                                         style: {
                                             width: '64px',
                                             height: '64px',
-                                            borderRadius: '50%',
-                                            background: 'radial-gradient(circle at center, #ffeb3b 0%, #ff9800 20%, #f44336 60%, #b71c1c 100%)',
-                                            border: '4px solid #333',
-                                            marginRight: '20px',
-                                            display: 'flex',
-                                            justifyContent: 'center',
-                                            alignItems: 'center'
-                                        },
-                                        children: [
-                                            {
-                                                type: 'div',
-                                                props: {
-                                                    style: {
-                                                        width: '20px',
-                                                        height: '20px',
-                                                        borderRadius: '50%',
-                                                        backgroundColor: 'white',
-                                                        opacity: 0.6
-                                                    }
-                                                }
-                                            }
-                                        ]
+                                            marginRight: '20px'
+                                        }
                                     }
                                 },
                                 {
@@ -143,24 +131,28 @@ const process = async (ctx, next) => {
                         type: 'div',
                         props: {
                             style: {
-                                display: 'flex',
-                                fontSize: '42px',
+                                display: '-webkit-box',
+                                WebkitLineClamp: 4,
+                                WebkitBoxOrient: 'vertical',
+                                fontSize: '38px',
                                 color: '#eee',
-                                lineHeight: '1.4',
+                                lineHeight: '1.5',
                                 background: 'rgba(255,255,255,0.05)',
                                 padding: '30px',
-                                borderRadius: '16px',
                                 borderLeft: '8px solid #00f0ff',
-                                maxWidth: '1000px'
+                                maxWidth: '1080px',
+                                wordBreak: 'break-all',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis'
                             },
-                            children: `"${previewText}"`
+                            children: previewText
                         }
                     },
                     // Footer Username
                     {
                         type: 'div',
                         props: {
-                            style: { marginTop: '40px', fontSize: '32px', color: '#aaa', display: 'flex', alignItems: 'center' },
+                            style: { marginTop: 'auto', fontSize: '28px', color: '#aaa', display: 'flex', alignItems: 'center' },
                             children: [
                                 {
                                     type: 'span',
@@ -179,7 +171,13 @@ const process = async (ctx, next) => {
             fonts: [
                 {
                     name: 'Inter',
-                    data: fontData,
+                    data: fonts.inter,
+                    weight: 400,
+                    style: 'normal',
+                },
+                {
+                    name: 'Noto Sans TC',
+                    data: fonts.noto,
                     weight: 400,
                     style: 'normal',
                 },
