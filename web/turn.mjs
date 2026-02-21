@@ -110,6 +110,8 @@ const process = async (ctx, next) => {
     let previewText = messages.length ? messages[0].text : 'A conversation with HAL9000';
     previewText = previewText.replace(/<[^>]+>/g, '').substring(0, 160).trim() + '...';
 
+    const ogImageUrl = `https://${ctx.host}/og-image/${ctx.params.token}`;
+
     // Construct dynamic meta tags
     const pageTitle = `HAL9000 Chat: ${result.chat_id}`;
     const escapedDesc = previewText.replace(/"/g, '&quot;');
@@ -124,11 +126,13 @@ const process = async (ctx, next) => {
     <meta property="og:title" content="${escapedTitle}">
     <meta property="og:description" content="${escapedDesc}">
     <meta property="og:site_name" content="HAL9000">
+    <meta property="og:image" content="${ogImageUrl}">
 
     <!-- Twitter / Telegram -->
-    <meta name="twitter:card" content="summary">
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="${escapedTitle}">
     <meta name="twitter:description" content="${escapedDesc}">
+    <meta name="twitter:image" content="${ogImageUrl}">
     `.trim();
 
     ctx.body = await renderHtml(safeStringify({
