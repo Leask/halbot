@@ -108,7 +108,7 @@ const process = async (ctx, next) => {
         }
     });
     let previewText = messages.length ? messages[0].text : 'A conversation with HAL9000';
-    previewText = previewText.replace(/<[^>]+>/g, '').substring(0, 160).trim() + '...';
+    previewText = previewText.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').substring(0, 160).trim() + '...';
 
     const ogImageUrl = `https://${ctx.host}/og-image/${ctx.params.token}`;
 

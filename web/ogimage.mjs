@@ -54,7 +54,7 @@ const process = async (ctx, next) => {
     const chatId = result.chat_id || 'Unknown';
 
     // Allow CSS to handle text clamping, but give a safe upper limit to prevent memory overloads
-    let previewText = userText.replace(/<[^>]+>/g, '').trim();
+    let previewText = userText.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
     if (previewText.length > 500) {
         previewText = previewText.substring(0, 500) + '...';
     }
