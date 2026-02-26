@@ -51,7 +51,7 @@
     "telegraf": "^4.16.3",
     "tellegram": "^1.1.18",
     "tesseract.js": "^7.0.0",
-    "webjam": "^1995.3.9",
+    "webjam": "^1995.3.10",
     "youtube-transcript": "^1.2.1"
   }
 }
