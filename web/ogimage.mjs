@@ -6,12 +6,25 @@ import { Resvg } from '@resvg/resvg-js';
 let interFontBuffer;
 let notoFontBuffer;
 
+const fetchWithRetry = async (url, retries = 3) => {
+    for (let i = 0; i < retries; i++) {
+        try {
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+            return await res.arrayBuffer();
+        } catch (e) {
+            if (i === retries - 1) throw e;
+            await new Promise(r => setTimeout(r, 1000)); // wait 1s before retry
+        }
+    }
+};
+
 const getFonts = async () => {
     if (!interFontBuffer) {
         try {
+            // Fetching Inter from Google Fonts per user preference
             const url = 'https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZJhjp-Ek-_EeA.woff';
-            const res = await fetch(url);
-            interFontBuffer = await res.arrayBuffer();
+            interFontBuffer = await fetchWithRetry(url);
         } catch (e) {
             console.error('Failed to load Inter font:', e);
             throw new Error('Inter Font loading failed');
@@ -21,9 +34,7 @@ const getFonts = async () => {
         try {
             // Fetching a complete Noto Sans TC OTF from JSDelivr to ensure all CJK glyphs load in Satori
             const url = 'https://cdn.jsdelivr.net/gh/googlefonts/noto-cjk@main/Sans/OTF/TraditionalChinese/NotoSansCJKtc-Regular.otf';
-            const res = await fetch(url);
-            if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
-            notoFontBuffer = await res.arrayBuffer();
+            notoFontBuffer = await fetchWithRetry(url);
         } catch (e) {
             console.error('Failed to load Noto font:', e);
             throw new Error('Noto Font loading failed');
