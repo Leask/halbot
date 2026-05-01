@@ -3,11 +3,30 @@ import { bot, dbio, hal, utilitas } from '../index.mjs';
 const [RELEVANCE, SEARCH_LIMIT, SUB_LIMIT] = [0.2, 10, 200]; // Google Rerank limit
 const compact = (str, op) => utilitas.ensureString(str, { ...op || {}, compact: true });
 const compactLimit = (str, op) => compact(str, { ...op || {}, limit: 140 });
+const quote = key => `"${key}"`;
 
 const packMessage = (messages) => messages.map(x => ({
     message_id: x.message_id, score: x.score, created_at: x.created_at,
     request: x.received_text, response: x.response_text,
 }));
+
+const upsertPostgresqlEvent = async event => {
+    event = {
+        ...event,
+        distilled_vector: await dbio.encodeVector(event.distilled_vector),
+    };
+    const fields = Object.keys(event);
+    const values = fields.map(key => event[key]);
+    const placeholders = fields.map((key, i) => key === 'distilled_vector'
+        ? `quantize_to_rabitq8($${i + 1}::vector)` : `$${i + 1}`);
+    return await hal._.storage?.client?.query?.(
+        `INSERT INTO ${hal.table} (${fields.map(quote).join(', ')}) `
+        + `VALUES (${placeholders.join(', ')}) `
+        + `ON CONFLICT ("id") DO UPDATE SET `
+        + fields.map(key => `${quote(key)} = EXCLUDED.${quote(key)}`).join(', '),
+        values
+    );
+};
 
 const recall = async (sessionId, keyword, offset = 0, limit = SEARCH_LIMIT, options = {}) => {
     assert(sessionId, 'Session ID is required.');
@@ -35,13 +54,14 @@ const recall = async (sessionId, keyword, offset = 0, limit = SEARCH_LIMIT, opti
             // globalThis.debug = 2;
             const vector = await dbio.encodeVector(await hal._.embed(keyword));
             result = await hal._.storage?.client?.query?.(
-                `SELECT *, (1 - (distilled_vector <=> $1)) as relevance `
+                `SELECT *, (1 - (distilled_vector <=> `
+                + `quantize_to_rabitq8($1::vector))) as relevance `
                 + `FROM ${hal.table} WHERE bot_id = $2 AND chat_id = $3 `
                 + `AND received_text != '' `
                 + `AND received_text NOT LIKE '/%' `
                 + `AND response_text != '' `
                 + (exclude.length ? `AND message_id NOT IN (${exclude.join(',')}) ` : '')
-                + `ORDER BY (distilled_vector <=> $1) ASC `
+                + `ORDER BY (distilled_vector <=> quantize_to_rabitq8($1::vector)) ASC `
                 + `LIMIT ${_limit} OFFSET $4`,
                 [vector, hal._.bot.botInfo.id, sessionId, offset]
             );
@@ -127,6 +147,8 @@ const memorize = async (ctx) => {
             case dbio.MYSQL:
                 event.distilled_vector = JSON.stringify(event.distilled_vector);
                 break;
+            case dbio.POSTGRESQL:
+                return await upsertPostgresqlEvent(event);
         }
         await hal._.storage?.client?.upsert?.(hal.table, event, { skipEcho: true });
     }, hal.logOptions);
