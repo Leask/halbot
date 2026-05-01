@@ -11,11 +11,27 @@ const init = async (options = {}) => {
     const info = bot.lines([
         `[${bot.BOT} ${pkg.title}](${pkg.homepage})`, pkg.description
     ]);
-    // use google's search if google is enabled
-    options.googleApiKey && options.googleCx && await web.initSearch({
-        provider: 'GOOGLE', apiKey: options.googleApiKey, cx: options.googleCx,
-    });
-    // use openrouter's AI models, embedding if OpenRouter is enabled
+    // use google rerank
+    if (options?.googleCredentials && options.googleProjectId) {
+        opts = {
+            provider: 'GOOGLE', credentials: options.googleCredentials,
+            projectId: options.googleProjectId,
+        };
+        if (!_rerank) {
+            await rag.initReranker(opts);
+            _rerank = rag.rerank;
+        }
+    }
+    // use jina search and reranker
+    if (options.jinaApiKey) {
+        opts = { provider: 'JINA', apiKey: options.jinaApiKey };
+        await web.initSearch(opts);
+        if (!_rerank) {
+            await rag.initReranker(opts);
+            _rerank = rag.rerank;
+        }
+    }
+    // use openrouter's AI models
     if (options.openrouterApiKey) {
         opts = { provider: 'OPENROUTER', apiKey: options.openrouterApiKey };
         await alan.init({
@@ -27,17 +43,8 @@ const init = async (options = {}) => {
             await rag.initEmbedding(opts);
             _embed = rag.embed;
         }
-    }
-    // use google's imagen, veo, tts if google is enabled
-    if (options.googleApiKey) {
-        opts = { provider: 'GOOGLE', apiKey: options.googleApiKey };
-        await alan.init({
-            ...opts, model: options.googleModel || '*',
-            priority: options.googlePriority, ...options,
-        });
-    }
-    // use openai's embedding, tts if openai is enabled, and google is not
-    if (options.openaiApiKey) {
+        // use openai models, embedding if openrouter is disabled
+    } else if (options.openaiApiKey && options.openaiModels) {
         opts = { provider: 'OPENAI', apiKey: options.openaiApiKey };
         await alan.init({
             ...opts, model: options.openaiModel || '*',
@@ -48,31 +55,15 @@ const init = async (options = {}) => {
             _embed = rag.embed;
         }
     }
-    // use google rerank if google is enabled
-    if (options?.googleCredentials && options.googleProjectId) {
-        opts = {
-            provider: 'GOOGLE', credentials: options.googleCredentials,
-            projectId: options.googleProjectId,
-        };
-        if (!_rerank) {
-            await rag.initReranker(opts);
-            _rerank = rag.rerank;
-        }
+    // use google's veo
+    if (options.googleApiKey) {
+        opts = { provider: 'GOOGLE', apiKey: options.googleApiKey };
+        await alan.init({
+            ...opts, model: options.googleModel || '*',
+            priority: options.googlePriority, ...options,
+        });
     }
-    // init other ai providers
-    options.siliconflowApiKey && await alan.init({
-        provider: 'SILICONFLOW', apiKey: options.siliconflowApiKey,
-        model: options.siliconflowModel || '*',
-        priority: options.siliconflowPriority, ...options,
-    });
-    if (options.jinaApiKey) {
-        opts = { provider: 'JINA', apiKey: options.jinaApiKey };
-        await web.initSearch(opts);
-        if (!_rerank) {
-            await rag.initReranker(opts);
-            _rerank = rag.rerank;
-        }
-    }
+    // use ollama
     if (options?.ollamaEnabled || options?.ollamaEndpoint) {
         await alan.init({
             provider: 'OLLAMA', model: options?.ollamaModel || '*',
