@@ -1,4 +1,4 @@
-import { callosum, alan } from '../index.mjs';
+import { callosum, alan, utilitas } from '../index.mjs';
 import { token } from 'webjam';
 
 const _name = 'Chat';

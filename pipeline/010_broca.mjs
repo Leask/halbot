@@ -1,5 +1,6 @@
-import { bot, hal, uoid, utilitas } from '../index.mjs';
+import { bot, hal, storage, uoid, utilitas } from '../index.mjs';
 import { convert, paginate } from 'tellegram';
+import { v4 as uuidv4 } from 'uuid';
 
 const _name = 'Broca';
 const [PRIVATE_LIMIT, GROUP_LIMIT] = [60 / 60, 60 / 20].map(x => x * 1000);
@@ -44,6 +45,24 @@ const getExtra = (ctx, options) => {
     return resp;
 };
 
+const getMediaName = func => func.replace(/^replyWith/, '') || 'File';
+
+const packInputFile = async (func, media) => {
+    if (media.filename || media.url || !Buffer.isBuffer(media.source)) {
+        return media;
+    }
+    const { extension } = await storage.getMime(media.source);
+    return { ...media, filename: `${getMediaName(func)}_${uuidv4()}.${extension}` };
+};
+
+const getMedia = async (func, src) => {
+    if (src?.source || src?.url) { return await packInputFile(func, src); }
+    if (Buffer.isBuffer(src)) {
+        return await packInputFile(func, { source: src });
+    }
+    return { [getKey(src)]: src };
+};
+
 const resp = async (ctx, text, extra) => {
     // if (ctx._.type === 'inline_query') {
     //     return await ctx.answerInlineQuery([{}, {}]);
@@ -72,7 +91,7 @@ const resp = async (ctx, text, extra) => {
 const replyWith = async (ctx, func, src, options) => ctx._.done.push(
     await ctx[func](Array.isArray(src) ? src.map(x => ({
         type: x.type || 'photo', media: { [getKey(x.src)]: x.src },
-    })) : { [getKey(src)]: src }, getExtra(ctx, options))
+    })) : await getMedia(func, src), getExtra(ctx, options))
 );
 
 const edit = async (ctx, lastMsgId, text, extra) => {
