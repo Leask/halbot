@@ -33,7 +33,11 @@ const init = async (options = {}) => {
     }
     // use openrouter's AI models
     if (options.openrouterApiKey) {
-        opts = { provider: 'OPENROUTER', apiKey: options.openrouterApiKey };
+        opts = {
+            provider: 'OPENROUTER',
+            apiKey: options.openrouterApiKey,
+            preset: options?.openrouterPreset,
+        };
         await alan.init({
             ...opts,
             model: options.openrouterModel,
