@@ -85,38 +85,26 @@ All supported configuration fields:
     "openrouterModel": "[[Custom OpenRouter Model ID]]",
     // OPTIONAL, integer.
     "openrouterPriority": "[[Custom OpenRouter Priority]]",
+    // OPTIONAL, string.
+    "openrouterPreset": "[[Custom OpenRouter Preset ID]]",
 
-    // Set some of these fields if you need Google's search, imagen, veo, TTS features.
+    // Set some of these fields if you need Google's models that doesn't support OpenRouter.
     // OPTIONAL, string.
     "googleApiKey": "[[Google Cloud / Gemini API Key]]",
-    // OPTIONAL, string, set if you need Google Search as a tool.
-    "googleCx": "[[Google Search Engine ID]]",
 
-    // Set some of these fields if you need OpenAI's ChatGPT, TTS/STT, Embedding features.
+    // Set some of these fields if you need OpenAI(or compatible API)'s models.
     // OPTIONAL, string.
     "openaiApiKey": "[[OpenAI API Key]]",
     // OPTIONAL, string.
     "openaiEndpoint": "[[Custom OpenAI API endpoint]]",
-    // OPTIONAL, string, default: [[latest gpt mainstream model]].
+    // OPTIONAL, string.
     "openaiModel": "[[Custom OpenAI Model ID]]",
     // OPTIONAL, integer.
     "openaiPriority": "[[Custom OpenAI Priority]]",
 
-    // Set some of these fields if you need SiliconFlow's AI models.
-    // OPTIONAL, string.
-    "siliconflowApiKey": "[[SiliconFlow API Key]]",
-    // OPTIONAL, string.
-    "siliconflowModel": "[[Custom SiliconFlow Model ID]]",
-    // OPTIONAL, integer.
-    "siliconflowPriority": "[[Custom SiliconFlow Priority]]",
-
-    // Set some of these fields if you need Jina's DeepSearch, reader, search features.
+    // Set some of these fields if you need Jina's web search or reranker features.
     // OPTIONAL, string.
     "jinaApiKey": "[[Jina API Key]]",
-    // OPTIONAL, string.
-    "jinaModel": "[[Custom Jina Model ID]]",
-    // OPTIONAL, integer.
-    "jinaPriority": "[[Custom Jina Priority]]",
 
     // Set some of these fields if you need Ollama features.
     // OPTIONAL, boolean.
