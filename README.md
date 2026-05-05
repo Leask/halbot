@@ -29,15 +29,14 @@ alt="Halbot live demo" width="240" height="180" border="10" /></a>
 
 - [Telegram](https://telegram.org/) Bot (`Telegram Bot` token required)
 - [OpenRouter](https://openrouter.ai/) (`OpenRouter` API Key required)
-- [ChatGPT](https://openai.com/blog/chatgpt) (`OpenAI` API key required)
-- [Jina](https://jina.ai/api-dashboard/deepsearch) (`Jina` API Key required)
+- [ChatGPT](https://openai.com/blog/chatgpt) or compatible API (`OpenAI` API key required)
 - [Ollama](https://github.com/jmorganca/ollama) (Install `Ollama` and serve your model)
-- Speech-to-Text (`OpenAI` or `Google` API key required, or your own engine)
-- Text-to-Speech (`OpenAI` or `Google` API key required, or your own engine)
-- Image generation by DALL·E or Imagen (`OpenAI` or `Google` API key required, or your own engine)
-- Video generation by veo (`Google` API key required, or your own engine)
-- OCR/OBJECT_DETECT (`OpenAI` or `Google` API key required, or your own engine)
-- DeepSearch (`Jina` API Key required)
+- Speech-to-Text (`OpenRouter` API key required, or your own engine)
+- Text-to-Speech (`OpenRouter` API key required, or your own engine)
+- Image generation (`OpenRouter` API key required, or your own engine)
+- Video generation (`OpenRouter` API key required, or your own engine)
+- OCR/OBJECT_DETECT (`OpenRouter` API key required, or your own engine)
+- DeepSearch (`Google` API Key required)
 - Feeding webpage and [YouTube](https://www.youtube.com/) to enhance your prompt
 - Support Tools (Function Calls)
 - Custom prompt at your fingertips
@@ -48,7 +47,6 @@ alt="Halbot live demo" width="240" height="180" border="10" /></a>
 - Multimodal support for all supported models.
 - Automatically selects the optimal model for the task.
 - Audio input and output support for supported models, not just TTS.
-- Google `Search as a tool` support for [Gemini 2.0](https://ai.google.dev/gemini-api/docs/models/gemini-v2).
 - Markdown rendering
 - Reference rendering
 - Code block rendering, developers friendly.
