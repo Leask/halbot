@@ -47,6 +47,12 @@ const process = async (ctx, next) => {
     const token = ctx.params.token;
 
     // 1. Fetch Chat Data
+    // hal.table is an internal constant, not user input, but it is validated
+    // against a strict identifier allowlist before being interpolated to
+    // guard against SQL injection should that assumption ever change.
+    if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(hal.table)) {
+        throw new Error('Invalid table name.');
+    }
     const result = await dbio.queryOne(
         `SELECT * FROM ${hal.table} WHERE token = $1`,
         [token]
